@@ -1,0 +1,143 @@
+<html t:type="layout" title="message:comparisonOfSolutions-page"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<h1>${message:comparisonOfSolutions-page}</h1>
+<div class="card bg-light p-0">
+	<div class="card-body p-3 pb-0">
+		<form t:type="form" t:id="selectTestForm">
+			<div class="form-group">
+				<label t:type="label" for="selectTestInstance">${message:selectTestInstance-label}</label>
+				<select size="4" class="form-control form-control-sm"
+					t:id="selectTestInstance" t:type="select"
+					t:model="testInstanceSelectModel" t:value="selectedTestInstance"
+					t:zone="zTestInstance" t:required="true"></select>
+			</div>
+		</form>
+	</div>
+</div>
+
+<t:zone t:id="zTestInstance" id="zTestInstance">
+	<t:if t:test="selectedTestInstance">
+		<h2 class="mt-3">${selectedTestInstance?.title}</h2>
+		<t:loop t:source="taskInTestInstances" t:value="taskInTestInstance">
+			<h3>
+				<a role="button" data-toggle="collapse"
+					href="#collapse${taskInTestInstance.taskInTestInstanceId}"
+					aria-expanded="false"
+					aria-controls="collapse${taskInTestInstance.taskInTestInstanceId}">
+					${taskInTestInstance.task.title}</a>
+			</h3>
+			<div class="collapse"
+				id="collapse${taskInTestInstance.taskInTestInstanceId}">
+				<div class="card imgMaxHeight">
+					<t:outputraw t:value="taskInTestInstance.task.description" />
+				</div>
+			</div>
+			<div class="row">
+				<t:if t:test="lastEvaluatedSolutionForTaskInTestInstance">
+					<div class="col-sm-6">
+						<h4>${message:yourLastSolution-label}:</h4>
+						<p>${lastEvaluatedSolutionForTaskInTestInstance.submittedOn}</p>
+						<t:if t:test="SQL">
+							<t:code
+								t:additionalClass="${classLastSolutionForTaskInTestInstance}"
+								t:value="lastEvaluatedSolutionForTaskInTestInstance.submission"></t:code>
+						</t:if>
+						<t:if t:test="UPLOAD">
+							<t:outputraw t:value="FileFromSubmission"></t:outputraw>
+							<a class="btn btn-warning btn-sm" href="" t:type="actionlink"
+								t:context="lastEvaluatedSolutionForTaskInTestInstance"
+								t:id="DownloadFile">${message:load-label}</a>
+						</t:if>
+						<t:if t:test="TEXT">
+							<t:code
+								t:additionalClass="${classLastSolutionForTaskInTestInstance} img100pct "
+								t:value="lastEvaluatedSolutionForTaskInTestInstance.submission"></t:code>
+						</t:if>
+					</div>
+					<div class="col-sm-6">
+						<t:if
+							t:test="lastEvaluatedSolutionForTaskInTestInstance.studentStartedTest.testInstance.openForReviewByStudents">
+							<div t:type="if"
+								t:test="lastEvaluatedSolutionForTaskInTestInstance.evaluations">
+								<h4>
+									${message:grade-label}: <span class="badge">
+										${submissionsFirstEvaluation?.grade}</span>
+								</h4>
+								<p>${message:feedback-label}:</p>
+								<div class="card feedback">
+									<t:outputraw t:value="submissionsFirstEvaluation?.feedback"
+										class="card-body" />
+								</div>
+								<p>
+									<button class="btn btn-primary" role="button" href=""
+										t:type="pagelink" t:page="ComplaintsAndDiscussions"
+										t:context="submissionsFirstEvaluation">
+										${message:ComplaintsAndDiscussions-page}</button>
+								</p>
+							</div>
+							<div t:type="if" t:test="otherSolutions">
+								<p>
+									<a class="btn btn-secondary" role="button"
+										data-toggle="collapse"
+										href="#collapseSolutions${taskInTestInstance.taskInTestInstanceId}"
+										aria-expanded="false"
+										aria-controls="#collapseSolutions${taskInTestInstance.taskInTestInstanceId}">${message:otherSolutions-label}
+										<span class="caret"></span>
+									</a>
+								</p>
+								<div
+									id="collapseSolutions${taskInTestInstance.taskInTestInstanceId}"
+									class="collapse">
+									<div class="card card-body pre-scrollable ">
+										<t:loop t:source="otherSolutions"
+											t:value="otherStudentSubmitSolution">
+											<t:if t:test="SQL">
+												<t:code t:value="otherStudentSubmitSolution.submission"></t:code>
+											</t:if>
+											<t:if t:test="UPLOAD">
+												<t:outputraw t:value="FileFromOtherStudentSubmission"></t:outputraw>
+												<a class="btn btn-warning btn-sm" href=""
+													t:type="actionlink" t:context="otherStudentSubmitSolution"
+													t:id="DownloadFileOther">${message:load-label}</a>
+											</t:if>
+											<t:if t:test="TEXT">
+												<t:code t:value="otherStudentSubmitSolution.submission"></t:code>
+											</t:if>
+										</t:loop>
+									</div>
+								</div>
+								<p:else>
+									<t:if t:test="lastSolutionCorrect">
+										<p class="bg-warning">
+											<t:SVGIcon t:path="info" />
+											${message:noCorrectSolutionsByOthers-label}
+										</p>
+										<p:else>
+											<p class="bg-danger">
+												<t:SVGIcon t:path="alert-triangle" />
+												${message:youDontHaveCorrectSolution-label}
+											</p>
+										</p:else>
+									</t:if>
+								</p:else>
+							</div>
+							<p:else>
+								<p>${message:reviewNotAllowed-label}</p>
+							</p:else>
+						</t:if>
+					</div>
+					<p:else>
+						<div class="col-sm-12">
+							<p>${message:youDontHaveASolutionOrSolutionIsNotEvaluatedAndCantBeCompared-label}</p>
+						</div>
+					</p:else>
+				</t:if>
+			</div>
+			<hr />
+		</t:loop>
+		<hr />
+		<h3>Вкупно поени: ${totalPoints}</h3>
+	</t:if>
+</t:zone>
+</html>

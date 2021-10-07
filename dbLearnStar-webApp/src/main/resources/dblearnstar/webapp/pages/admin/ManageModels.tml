@@ -1,0 +1,47 @@
+<html t:type="layout" title="message:admin/ManageModels-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<style>
+img {
+	max-height: 10em;
+}
+</style>
+<h1>${message:admin/ManageModels-pagelink}</h1>
+
+<p>
+	<span t:type="unless" t:test="modelToEdit"> <a href=""
+		t:type="actionlink" t:id="NewModel" class="btn btn-sm btn-primary"><t:SVGIcon
+				t:path="plus-square" /> ${message:New-label}</a>
+	</span>
+</p>
+
+<div t:type="if" t:test="modelToEdit" class="card bg-light p-3 mb-3">
+	<form t:type="beaneditform" t:id="frmNewModel" t:object="modelToEdit"
+		t:exclude="modelId" t:value="OK" t:cancel="true">
+		<p:diagramSvg>
+			<div class="form-group">
+				<t:label t:for="diagramSvg" />
+				<t:textarea t:id="diagramSvg" t:mixins="WebEditor"
+					t:value="modelToEdit.diagramSvg" />
+			</div>
+		</p:diagramSvg>
+	</form>
+</div>
+
+<table class="table table-sm" t:type="grid" t:source="allModels"
+	t:row="model" t:exclude="modelId" t:add="actions">
+	<p:diagramSvgCell>
+		<t:outputraw t:value="${model.diagramSvg}" />
+	</p:diagramSvgCell>
+	<p:diagramUrlCell>
+		<img src="${model.diagramUrl}" />
+	</p:diagramUrlCell>
+	<p:actionsCell>
+		<a href="" t:type="actionlink" t:id="EditModel" t:context="model"
+			class="btn btn-sm btn-primary"><t:SVGIcon t:path="edit" />
+			${message:edit-label}</a>
+	</p:actionsCell>
+</table>
+
+</html>

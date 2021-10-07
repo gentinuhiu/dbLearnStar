@@ -1,0 +1,20 @@
+<html t:type="layout" title="message:admin/Reevaluation-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<h1>${message:admin/Reevaluation-pagelink}</h1>
+
+<div class="row">
+	<div class="col-lg-12">
+		<table t:type="grid" t:source="allTestInstances" t:row="testInstance"
+			t:add="select" t:exclude="testInstanceId, scheduledFor,description">
+			<p:selectCell>
+				<a href="" t:type="actionLink" t:id="reEvalTest"
+					t:context="testInstance">${message:reevaluate-label}</a>
+			</p:selectCell>
+		</table>
+		<a href="" t:type="actionLink" t:id="reEvalAll"
+			class="btn btn-primary">${message:reevaluateAll-label}</a>
+	</div>
+</div>
+</html>

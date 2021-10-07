@@ -1,0 +1,53 @@
+.correct {
+	/*
+		https://www.w3schools.com/colors/colors_british.asp - Green */
+	background: #9dd29c;
+}
+
+.incorrect {
+	/*
+		https://www.w3schools.com/colors/colors_british.asp - Carnival red */
+	background: #c71c2c;
+	color: white;
+}
+
+td[data-grid-property=submission] {
+	font-family: mono;
+	white-space: pre-wrap;
+	font-size: 75%;
+	overflow: scroll !important;
+}
+
+td[data-grid-property=submittedOn] {
+	width: 14rem !important;
+}
+
+code {
+	font-family: 'Fira Code', monospace, mono;
+	font-size: 75% !important;
+}
+
+.code {
+	max-height: 25rem;
+}
+
+.feedback {
+	overflow-wrap: normal;
+	overflow: scroll;
+	white-space: pre-line;
+	hyphens: auto;
+	max-height: 25rem;
+}
+
+.img100pct img {
+	width: 95%;
+}
+
+.imgMaxHeight img {
+	object-fit: contain;
+	max-height: 40rem;
+}
+
+hr {
+	size: 2;
+}

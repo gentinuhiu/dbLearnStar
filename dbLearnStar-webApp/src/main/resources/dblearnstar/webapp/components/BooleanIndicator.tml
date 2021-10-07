@@ -1,0 +1,28 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<t:content>
+	<t:if test="valueIsNotNull">
+		<t:if test="value">
+			<t:if t:test="showCheckMark">
+				<span class="mono lead">✔</span>
+				<p:else>
+					<span class="mono">${message:boolean-true-label}</span>
+				</p:else>
+			</t:if>
+			<p:else>
+				<t:if t:test="showNo">
+					<t:if t:test="showCheckMark">
+						<span class="mono lead">✗</span>
+						<p:else>
+							<span class="mono">${message:boolean-false-label}</span>
+						</p:else>
+					</t:if>
+				</t:if>
+			</p:else>
+		</t:if>
+		<p:else>
+			<!-- null -->
+		</p:else>
+	</t:if>
+</t:content>
+</html>

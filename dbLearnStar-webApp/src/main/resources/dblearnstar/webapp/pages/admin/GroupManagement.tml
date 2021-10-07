@@ -1,0 +1,85 @@
+<html t:type="layout" title="message:admin/GroupManagement-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<h2>${message:admin/GroupManagement-pagelink}</h2>
+<div t:type="if" t:test="editGroup">
+	<p:then>
+		<h3>Group Info</h3>
+		<div class="col-sm-12">
+			<form t:id="NewGroupForm" t:type="BeanEditForm" t:object="editGroup"
+				class="form-horizontal" t:exclude="groupId" t:cancel="true">
+			</form>
+		</div>
+		<h3>Group members</h3>
+		<div class="col-sm-12">
+			<ol style="columns: 3;">
+				<li t:type="loop" t:id="groupMembers"
+					t:source="editGroup.groupMembers" t:value="groupMember">
+					${groupMember.student.person.lastName}
+					${groupMember.student.person.firstName}
+					[${groupMember.student.person.userName}]<a href=""
+					t:type="actionlink" t:id="DeleteGroupMember"
+					t:context="groupMember" class="btn btn-sm btn-default"><t:SVGIcon
+							t:path="user-minus" /></a>
+				</li>
+				<li><a href="" t:type="actionlink" t:id="newMember"
+					t:context="editGroup" class="btn btn-sm btn-info" role="button"><t:SVGIcon
+							t:path="user-plus" /> New member</a></li>
+			</ol>
+			<div t:type="if" t:test="editGroupMember">
+				<form t:id="NewMemberForm" t:type="beaneditform"
+					t:object="editGroupMember" t:model="modelGroupMember"
+					t:cancel="true">
+					<p:student>
+						<select t:type="select" t:model="AllStudentsModel"
+							t:value="editGroupMember.student"></select>
+					</p:student>
+				</form>
+			</div>
+		</div>
+		<h3>Group Focus On Tests</h3>
+		<div class="col-sm-12">
+			<ol>
+				<li t:type="loop" t:id="groupFocusOnTests"
+					t:source="editGroup.groupFocusOnTests" t:value="groupFocusOnTest">
+					${groupFocusOnTest.testInstance.title}<a href=""
+					t:type="actionlink" t:id="DeleteGroupFocusOnTest"
+					t:context="groupFocusOnTest" class="btn btn-sm btn-default"><t:SVGIcon
+							t:path="minus-square" /></a>
+				</li>
+				<li><a href="" t:type="actionlink" t:id="newFocusOnTest"
+					t:context="editGroup" class="btn btn-sm btn-info" role="button"><span
+						class="plus-square"></span> New Focus On Test</a></li>
+			</ol>
+			<div t:type="if" t:test="editGroupFocusOnTest">
+				<form t:id="NewFocusOnTestForm" t:type="beaneditform"
+					t:object="editGroupFocusOnTest" t:model="modelGroupFocusOnTest"
+					t:cancel="true">
+					<p:testInstance>
+						<select t:type="select" t:model="AllTestInstancesModel"
+							t:value="editGroupFocusOnTest.testInstance"></select>
+					</p:testInstance>
+				</form>
+			</div>
+		</div>
+	</p:then>
+	<p:else>
+		<a href="" t:type="actionlink" t:id="newGroup"
+			class="btn btn-sm btn-primary" role="button"><t:SVGIcon
+				t:path="plus-square" /> New group</a>
+	</p:else>
+</div>
+<table t:type="grid" t:source="allGroups" t:row="group" t:add="edit">
+	<p:titleCell>${group.title}</p:titleCell>
+	<p:editCell>
+		<a href="" t:type="actionlink" t:context="group"
+			title="message:symbol-edit" t:id="edit"
+			class="btn btn-sm btn-primary" role="button"><t:SVGIcon
+				t:path="edit" /> ${message:symbol-edit}</a>
+		<a href="" t:type="actionlink" t:context="group"
+			title="message:symbol-delete" t:id="delete"
+			class="btn btn-sm btn-danger" role="button"><t:SVGIcon
+				t:path="minus-square" /> ${message:symbol-delete}</a>
+	</p:editCell>
+</table>
+</html>

@@ -1,0 +1,20 @@
+<html t:type="layout" title="message:admin/activeUsers-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<h1>${message:admin/activeUsers-pagelink}</h1>
+<div class="card bg-light mb-3">
+	<div class="card-body">
+		<form t:type="form" class="form-inline">
+			<div class="form-group mr-3">
+				<label t:type="label" t:for="seconds" /> <input t:type="textfield"
+					t:value="seconds" t:id="seconds" />
+			</div>
+			<button t:type="submit" t:value="OK"></button>
+		</form>
+	</div>
+</div>
+
+<table t:type="grid" t:source="activePersons"></table>
+
+</html>

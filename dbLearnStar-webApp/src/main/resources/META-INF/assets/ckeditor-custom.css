@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+p.comment {
+	background: #ffff80;
+}
+
+.inlinecomment {
+	background: #ffffa0;
+	margin-left: 2rem;
+	border-left: 1px solid black;
+	padding-left: 0.5rem;
+}
+
+.resultschema {
+	background: #d0d0ff;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+}
+
+div.box {
+	padding: 0.5em;
+	background: #e0e0e0;
+}

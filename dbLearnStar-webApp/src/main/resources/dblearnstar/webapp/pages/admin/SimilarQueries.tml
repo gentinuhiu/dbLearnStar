@@ -1,0 +1,124 @@
+<html t:type="layout" title="message:index-page"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<h2>${message:recent-submissions-label}</h2>
+<h3>${message:filter-label}</h3>
+<div class="row">
+	<form t:type="form" t:id="selectStudentForm" class="form-vertical">
+		<div class="form-group col-sm-5">
+			<label t:type="label" for="selectTestInstance"></label><select
+				t:id="selectTestInstance" t:type="select"
+				t:model="selectTestInstanceModel" t:value="filterTestInstance"
+				class="form-control" t:zone="zTask"></select>
+		</div>
+		<div class="form-group col-sm-3">
+			<t:zone t:id="zTask" id="zTask">
+				<t:if t:test="filterTestInstance">
+					<label t:type="label" for="selectTaskInTestInstance"></label>
+					<select t:id="selectTaskInTestInstance" t:type="select"
+						t:model="selectTaskInTestInstanceModel"
+						t:value="filterTaskInTestInstance" class="form-control"
+						t:zone="zSubmissions"></select>
+				</t:if>
+			</t:zone>
+		</div>
+		<div class="form-group col-sm-4">
+			<t:zone t:id="zStudent" id="zStudent">
+				<label t:type="label" for="selectStudent"></label>
+				<select t:id="selectStudent" t:type="select"
+					t:model="SelectStudentsModel" t:value="filterStudent"
+					t:zone="zSubmissions" class="form-control"></select>
+			</t:zone>
+		</div>
+		<div class="form-group col-sm-3 form-inline">
+			<label t:type="label" for="onlyEval"></label>
+			<t:checkbox t:id="onlyEval" onclick="this.form.submit();"
+				class="form-control" />
+		</div>
+		<div class="form-group col-sm-3 form-inline">
+			<label t:type="label" for="onlyCorrect"></label>
+			<t:checkbox t:id="onlyCorrect" onclick="this.form.submit();"
+				class="form-control" />
+		</div>
+		<div class="form-group col-sm-3 form-inline">
+			<label t:type="label" for="onlyLast"></label>
+			<t:checkbox t:id="onlyLast" onclick="this.form.submit();"
+				class="form-control" />
+		</div>
+		<div class="form-group col-sm-3 form-inline">
+			<label t:type="label" for="hideClientInfo"></label>
+			<t:checkbox t:id="hideClientInfo" onclick="this.form.submit();"
+				class="form-control" />
+		</div>
+		<t:errors />
+	</form>
+</div>
+<h3>${message:submissions-label}</h3>
+<div class="row">
+	<div t:type="zone" t:id="zSubmissions" id="zSubmissions">
+		<t:if t:test="filterTestInstance">
+			<table t:id="recentsubmission" t:type="Grid"
+				t:source="allSubmissions" t:row="submission" t:model="modelSSS"
+				t:rowsperpage="10" class="table table-condensed">
+				<p:submissionCell>
+					<t:code t:value="submission.submission"></t:code>
+				</p:submissionCell>
+				<p:clientInfoCell>
+					<t:code t:value="submission.clientInfo"></t:code>
+				</p:clientInfoCell>
+				<p:submittedByCell>
+					<a href="" t:type="actionlink" t:id="ShowUserActivities"
+						t:context="submission" t:zone="zSelectStudents">
+						${submittedByNameWithId} </a>
+				</p:submittedByCell>
+				<p:notForEvaluationCell>
+					<t:booleanindicator t:value="submission?.notForEvaluation"
+						showCheckMark="true" />
+					<a href="" t:type="actionlink" t:id="reevaluateSubmission"
+						t:context="submission" t:zone="zSubmissions"
+						class="btn btn-sm btn-info">${message:reevaluate-label}</a>
+				</p:notForEvaluationCell>
+				<p:evaluationSimpleCell>
+					<t:booleanindicator t:value="submission?.evaluationSimple"
+						showCheckMark="true" />
+				</p:evaluationSimpleCell>
+				<p:evaluationComplexCell>
+					<t:booleanindicator t:value="submission?.evaluationComplex"
+						showCheckMark="true" />
+				</p:evaluationComplexCell>
+				<p:evaluationExamCell>
+					<t:booleanindicator t:value="submission?.evaluationExam"
+						showCheckMark="true" />
+				</p:evaluationExamCell>
+				<p:submittedOnCell>
+					<t:output format="literal:yyyy-MM-dd hh:mm:ss.S"
+						value="submission?.submittedOn" />
+				</p:submittedOnCell>
+			</table>
+		</t:if>
+	</div>
+</div>
+<h2>${message:similar-queries-label}</h2>
+<div class="row">
+	<table class="table table-hover table-bordered table-striped">
+		<tr>
+			<th class="colSql">Q1</th>
+			<th class="colSm">Name 1</th>
+			<th class="colSm">IP 1</th>
+			<th class="colSql">Q2</th>
+			<th class="colSm">Name 2</th>
+			<th class="colSm">IP 2</th>
+			<th class="colSm">Delay</th>
+		</tr>
+		<tr t:type="loop" t:source="similarQueries" t:value="redica">
+			<td class="sqlcode colSql">${redicaSol1}</td>
+			<td>${redicaName1}</td>
+			<td>${redicaIp1}</td>
+			<td class="sqlcode colSql">${redicaSol2}</td>
+			<td>${redicaName2}</td>
+			<td>${redicaIp2}</td>
+			<td>${redicaDif}</td>
+		</tr>
+	</table>
+</div>
+</html>

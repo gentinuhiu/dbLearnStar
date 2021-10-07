@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="dbLearn* Application Test Suite" annotations="1.5">
+	<test name="Unit Tests">
+		<packages>
+			<package name="dblearnstar.webapp" />
+		</packages>
+	</test>
+</suite>
+

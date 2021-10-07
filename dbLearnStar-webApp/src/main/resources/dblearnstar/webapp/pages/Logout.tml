@@ -1,0 +1,34 @@
+<html t:type="layout"
+	title="${message:app-title} ${message:logout-page}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<head>
+<title>${message:logout-page}</title>
+</head>
+<body>
+	<h1>${message:logout-page}</h1>
+
+	<h2>
+		<t:SVGIcon t:path="check-square" />
+		${message:application-logout}
+	</h2>
+
+	<p>${message:logout-info-application}</p>
+
+	<h2>
+		<t:SVGIcon t:path="minus-square" />
+		CAS ${message:logout-page}
+	</h2>
+
+	<p>
+		<b>${message:logout-info-total}</b>
+	</p>
+
+	<p>
+		${message:logout-desc-total}<br /> <a href="${casLogoutLink}"
+			class="btn btn-primary"><t:SVGIcon t:path="log-out" />
+			${message:logout-desc-total-title}</a> <br />
+		${message:logout-desc-total-cont}
+	</p>
+</body>
+</html>

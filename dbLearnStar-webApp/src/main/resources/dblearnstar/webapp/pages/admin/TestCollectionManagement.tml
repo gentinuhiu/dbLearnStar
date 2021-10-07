@@ -1,0 +1,91 @@
+<html t:type="layout" title="message:admin/TestCollectionManagement-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<style>
+DIV.palette SELECT {
+	width: 45em;
+}
+</style>
+
+<h1>${message:admin/TestCollectionManagement-pagelink}</h1>
+
+<div t:type="if" t:test="toAddTestInstance" class="card mb-3 bg-light">
+	<div t:type="modalbox" t:additionalClassDialog="modal-lg">
+		<div class="card-header">
+			<h3>selectedTestInstance</h3>
+		</div>
+		<div class="card-body">
+			<form t:type="form" t:id="chooseTestInstance" class="form">
+				<div class="form-group">
+					<label t:type="label" t:for="selectedTestInstance"></label> <select
+						size="7" t:type="select" t:id="selectedTestInstance"
+						t:model="modelTestInstance" t:value="selectedTestInstance"
+						class="form-control" />
+				</div>
+				<t:submit t:value="Select"></t:submit>
+				<t:submit t:mode="Cancel" t:value="Cancel" class="btn btn-secondary"></t:submit>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div t:type="if" t:test="editorTestCollection"
+	class="card mb-3 bg-light">
+	<div t:type="modalbox" t:additionalClassDialog="modal-lg">
+		<div class="card-body">
+			<form t:id="createForm" t:type="beaneditform"
+				t:object="editorTestCollection" t:exclude="testCollectionId"
+				t:validate="editorTestCollection" t:add="parentCollection"
+				t:cancel="true">
+				<t:errors globalOnly="true" />
+				<p:parentCollection>
+					<div class="form-group">
+						<label t:type="label" t:for="parentCollection"></label> <select
+							t:type="select" t:id="parentCollection" t:model="collectionModel"
+							t:value="editorTestCollection.parentCollection"
+							blankOption="always"></select>
+					</div>
+				</p:parentCollection>
+			</form>
+		</div>
+	</div>
+</div>
+<div t:type="unless" t:test="editorTestCollection">
+	<p>
+		<a href="" t:type="eventlink" t:id="create" class="btn btn-primary"><t:SVGIcon t:path="plus-square" /> ${message:addToList-label}</a>
+	</p>
+</div>
+
+<div t:type="loop" t:source="listTestCollections"
+	t:value="listTestCollection" class="card">
+	<div class="row">
+		<div class="col-8 pl-1 pt-2">
+			<h3 style="padding-left: ${indentLevel}em;">${listTestCollection?.title}</h3>
+		</div>
+		<div class="col-4">
+			<a href="" t:type="eventlink" t:context="listTestCollection"
+				title="message:addToList-label" t:id="addTestInstance"
+				class="btn btn-sm btn-info" role="button"><t:SVGIcon t:path="plus-square" /> ${message:addToList-label}
+				${message:TestInstance-label}</a> <a href="" t:type="eventlink"
+				t:context="listTestCollection" title="message:symbol-edit"
+				t:id="edit" class="btn btn-sm btn-secondary" role="button"><t:SVGIcon t:path="edit" /> ${message:symbol-edit}</a> <a href=""
+				t:type="eventlink" t:context="listTestCollection"
+				title="message:symbol-delete" t:id="delete"
+				class="btn btn-sm btn-danger" role="button"><t:SVGIcon t:path="minus-square" /> ${message:symbol-delete}</a>
+		</div>
+	</div>
+	<div class="card-body m-0 p-0 pl-3 pb-2" t:type="if"
+		t:test="listTestCollection.testInstances">
+		<p class="m-0" style="padding-left: ${indentLevel}em;" t:type="loop"
+			t:source="listTestCollectionTestInstances"
+			t:value="listedTestInstance">
+			${listedTestInstance.title} <a href="" t:type="eventlink"
+				t:context="listedTestInstance" title="message:remove-label"
+				t:id="removeTestInstance" class="btn btn-sm btn-danger"
+				role="button"><t:SVGIcon t:path="minus-square" />
+				${message:remove-label}</a>
+
+		</p>
+	</div>
+</div>
+</html>

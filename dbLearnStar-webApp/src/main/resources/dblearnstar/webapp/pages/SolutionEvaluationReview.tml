@@ -1,0 +1,27 @@
+<html t:type="layout" title="message:comparisonOfSolutions-page"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<form t:type="form" t:zone="studentStartedTestZone">
+	<select t:type="select" t:model="allStudentStartedTests" t:id="select"
+		t:value="selectedStudentStartedTest" t:zone="studentStartedTestZone"></select>
+</form>
+<t:zone t:id="studentStartedTestZone">
+	<t:if t:test="selectedStudentStartedTest">
+		<t:loop t:source="selectedStudentStartedTest.studentSubmitSolutions"
+			t:value="studentSubmitSolution">
+			<div class="row">
+				<div class="col-lg-6">
+					<h2>${studentSubmitSolution.taskInTestInstance.task.title}</h2>
+					<p>${studentSubmitSolution.submittedOn}</p>
+				</div>
+				<div class="col-lg-6">
+					<t:loop t:source="studentSubmitSolution.evaluations"
+						t:value="solutionAssessment">
+						<p>Grade: ${solutionAssessment.grade}</p>
+					</t:loop>
+				</div>
+			</div>
+		</t:loop>
+	</t:if>
+</t:zone>
+</html>

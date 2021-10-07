@@ -1,0 +1,126 @@
+:root {
+    --ck-z-default: 100;
+    --ck-z-modal: calc( var(--ck-z-default) + 999 );
+
+	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
+	--color-incorrect: #c71c2c;
+
+	/* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */
+	--color-correct: #74b979;
+
+	--color-noevaluation: #white;
+	--color-exception: #404040;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: 'Fira Sans', Helvetica, Arial, sans-serif !important;
+}
+
+h1,.h1 {
+	font-size:200%;
+}
+
+h2,.h2 {
+	font-size:160%;
+}
+
+h3,.h3 {
+	font-size:130%;
+}
+
+body {
+	padding-top: 4em;
+}
+
+code {
+	font-family: 'Fira Code', 'Fira Mono', monospace, mono !important;
+}
+
+.color-queryError {
+	background: var(--color-incorrect);
+	color: white;
+}
+
+.color-queryCorrect {
+	background: var(--color-correct);
+	color: black;
+}
+
+.centered-hv {
+	text-align: center;
+	vertical-align: middle;
+}
+
+p.comment {
+	background: #ffff80;
+}
+
+.inlinecomment {
+	background: #ffffa0;
+	margin-left:5rem;
+	border-left: 1px solid black;
+	padding-left:0.5rem;
+}
+
+@keyframes slidein {
+  from { background: white; }
+  50% { background: #ffffa0; }
+  to { background: white; }
+}
+
+.pagination li {
+	margin-left:0.5em;
+}
+
+.maxpoints {
+	background: #c0c0c0;
+	font-weight: bold;
+	border-radius: 0.25em;
+	padding: 0.2em;
+}
+
+#mainnav {
+	background-color: #42119c !important;  /* osnovna boja */
+}
+
+#mainnav .nav-link {
+	/* Paletton Shiny */
+	color: #A074F0 !important; 
+}
+
+a {
+	color: #42119c;
+}
+
+svg {
+	fill: transparent;
+	stroke: currentColor;
+	stroke-width: 0.1em;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.CodeMirror {
+	border: 1px solid grey;
+	line-height: 1.2;
+	height: 25rem !important;
+	min-height: 10em;
+	font-family: 'Fira Code', monospace, mono !important; 
+}
+
+.CodeMirror-linenumbers {
+	padding: 0 0;
+}
+

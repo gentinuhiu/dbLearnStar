@@ -1,0 +1,33 @@
+<html t:type="layout" title="${message:app-title} Student Report Tests"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+
+<div t:type="loop" t:source="testTypes" t:value="testType">
+	<h2>${testType.title}</h2>
+	<div t:type="loop" t:source="testInstances" t:value="testInstance">
+		<h3>${testInstance.title}</h3>
+		<table class="table table-hover table-bordered table-striped">
+			<tr>
+				<th style="width: 6em">${message:task-label}</th>
+				<th>${message:task-short-description-label}</th>
+				<th>${message:task-points-label}</th>
+				<th style="width: 8em">${message:action-label}</th>
+			</tr>
+			<tr t:type="loop" t:source="taskInTestInstances"
+				t:value="taskInTestInstance">
+				<td>${taskInTestInstance.task.title}</td>
+				<td>
+					<p t:type="outputraw" t:value="taskInTestInstance.task.description"></p>
+				</td>
+				<td>
+					<p t:type="loop" t:source="taskInTestInstance.task.taskIsOfTypes"
+						t:value="taskIsOfType">${taskIsOfType.taskType.points}</p>
+				</td>
+				<td><a class="btn btn-warning btn-sm" href="" t:type="pagelink"
+					t:page="QueryTest" t:context="taskInTestInstance">${message:solve-label}</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+</html>

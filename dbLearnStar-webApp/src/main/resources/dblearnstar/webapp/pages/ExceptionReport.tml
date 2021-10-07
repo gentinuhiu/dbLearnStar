@@ -1,0 +1,9 @@
+<html title="Exception"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+
+<div class="card">
+	<div class="card-header bg-danger">Error</div>
+	<div class="card-body">${message}</div>
+</div>
+
+</html>

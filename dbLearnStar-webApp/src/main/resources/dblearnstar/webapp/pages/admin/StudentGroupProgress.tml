@@ -1,0 +1,59 @@
+<html t:type="layout"
+	title="message:admin/StudentGroupProgress-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<h2>${message:admin/StudentGroupProgress-pagelink}</h2>
+<div class="card">
+	<div class="card-body">
+		<form t:type="form" t:id="chooserGroup" class="form-inline">
+			<div class="form-group">
+				<label for="selectGroup">${message:Group-label}</label>&nbsp;<select
+					t:type="select" id="selectGroup" t:id="selectGroup"
+					t:model="allGroups" t:value="selectedGroup" class="form-control"
+					t:zone="groupZone"></select>
+			</div>
+		</form>
+	</div>
+</div>
+<div t:id="groupZone" id="groupZone" t:type="zone">
+	<div t:type="if" t:test="selectedGroup" class="table-responsive">
+		<table class="table table-condensed  table-bordered">
+			<thead>
+				<th></th>
+				<th style="vertical-align: middle;"><p
+						style="text-align: right;">${message:Test-label}</p></th>
+				<th t:type="loop" t:source="selectedGroup.groupFocusOnTests"
+					t:value="groupFocusOnTest" colspan="${numTasks}"
+					style="font-size: 85%;">${groupFocusTestInstanceTitleTranslated}</th>
+				<th></th>
+			</thead>
+			<thead>
+				<th><p>${message:Student-label}</p></th>
+				<th><p>${message:userName-label}</p></th>
+				<t:loop t:source="selectedGroup.groupFocusOnTests"
+					t:value="groupFocusOnTest">
+					<th t:type="loop" t:source="taskInTestInstances"
+						t:value="taskInTestInstance"
+						style="text-orientation: sideways; writing-mode: vertical-lr; font-size: 80%;">${taskInTestInstanceTaskTitleTranslated}</th>
+				</t:loop>
+				<th
+					style="text-orientation: sideways; writing-mode: vertical-lr; font-size: 80%; width: 4em;">Total</th>
+			</thead>
+			<tr t:type="loop" t:source="selectedGroup.groupMembers"
+				t:value="groupMember">
+				<td
+					style="white-space: nowrap; padding: 0em 0.5em; vertical-align: middle;">${groupMemberFullNameWithId}</td>
+				<td>${groupMemberUserName}</td>
+				<t:loop t:source="selectedGroup.groupFocusOnTests"
+					t:value="groupFocusOnTest">
+					<td t:type="loop" t:source="taskInTestInstances"
+						t:value="taskInTestInstance" style="width: 3em;"
+						class="${colorClass} centered-hv ">
+						${assessmentsForTaskForStudent}</td>
+				</t:loop>
+				<td>${groupMemberTotalPoints}</td>
+			</tr>
+		</table>
+	</div>
+</div>
+</html>

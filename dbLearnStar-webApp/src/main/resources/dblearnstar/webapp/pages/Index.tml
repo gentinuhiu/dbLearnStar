@@ -1,0 +1,53 @@
+<html t:type="layout" t:title="message:index-page"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+
+<h1>${message:welcome-label} ${userInfo?.userName}</h1>
+
+<h2>${message:generalInformations-label}</h2>
+
+<div class="row">
+	<div class="col-lg-9">
+		<p t:type="outputRaw" t:value="message:about-text"></p>
+	</div>
+
+	<div class="col-lg-3">
+
+		<div t:type="if" t:test="userInfo?.student">
+			<h4>${message:available-options-label}${message:student-label}</h4>
+			<p>
+				<a href="" t:type="pagelink" t:page="ExamsAndTasksOverview"> <img
+					src="${context:images/t_Tests.png}"
+					style="width: 160px; height: 80px;" /> <br />
+					${message:studenthomepage-page}
+				</a>
+			</p>
+			<p>
+				<a href="" t:type="pagelink" t:page="SolutionComparator"> <img
+					src="${context:images/t_Compare.png}"
+					style="width: 160px; height: 80px;" /> <br />
+					${message:SolutionComparator-pagelink}
+				</a>
+			</p>
+			<p>
+				<a href="" t:type="pagelink" t:page="PersonalAnalytics"> <img
+					src="${context:images/t_Analytics.png}"
+					style="width: 160px; height: 80px;" /> <br />
+					${message:PersonalAnalytics-pagelink}
+				</a>
+			</p>
+			<p:else>
+				<p class="alert alert-danger color-queryError" role="alert">${message:error-unknown-user}</p>
+			</p:else>
+		</div>
+
+		<p>
+			<b>${message:contact-page} - ${message:main-developer-label}:</b><br />
+			<a href="${message:main-developer-address}">${message:main-developer-name}</a>
+		</p>
+
+	</div>
+</div>
+
+</html>

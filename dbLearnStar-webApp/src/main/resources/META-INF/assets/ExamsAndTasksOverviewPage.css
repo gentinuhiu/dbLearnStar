@@ -1,0 +1,40 @@
+td {
+	padding: 0.5em !important;
+	font-size: 90%;
+	line-height: 1.05em !important;
+}
+
+th {
+	padding: 0.2em 0.5em !important;
+}
+
+.popupZone {
+	position: fixed;
+	top: 5em;
+	bottom: 5em;
+	left: 5em;
+	right: 5em;
+	background: white;
+	border: 1px solid black;
+	border-radius: 12px;
+	padding: 2em;
+	overflow: scroll;
+}
+
+#testInstanceEditZone {
+	visible: hidden;
+}
+
+.resultschema {
+	display: none;
+}
+
+td.taskContentCell {
+	max-height: 3em;
+	overflow: hidden;
+	display: block;
+}
+
+td.p {
+	border: none;
+}

@@ -1,0 +1,60 @@
+<html t:type="layout" title="message:admin/ManagePersons-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<h1>${message:admin/ManagePersons-pagelink}</h1>
+
+<p>
+	<span t:type="unless" t:test="personListToImport"> <a href=""
+		t:type="actionlink" t:id="ImportPersons"
+		class="btn btn-sm btn-primary"><t:SVGIcon t:path="file-plus" />
+			${message:import-label}</a>
+	</span> <span t:type="unless" t:test="personToEdit"> <a href=""
+		t:type="actionlink" t:id="NewPerson" t:context="person"
+		class="btn btn-sm btn-primary"><t:SVGIcon t:path="user-plus" />
+			${message:New-label}</a>
+	</span>
+</p>
+
+<div t:type="if" t:test="personListToImport"
+	class="card bg-light p-3 mb-3">
+	<form t:type="form" t:id="frmImport">
+		<div class="form-group">
+			<label t:type="label" t:for="personListToImport"></label><input
+				t:id="personListToImport" t:type="textarea"
+				t:object="personListToImport" />
+		</div>
+		<input t:type="submit" t:value="OK" />
+	</form>
+	<p class="bg-warning p-1 mt-3">${errors}</p>
+</div>
+
+<div t:type="if" t:test="personToEdit" class="card bg-light p-3 mb-3">
+	<form t:type="beaneditform" t:id="frmNewPerson" t:object="personToEdit"
+		t:exclude="personId" t:value="OK" t:cancel="true" t:add="role">
+		<p:role>
+			<div class="form-group">
+				<label t:type="label" for="selectRole" class="col-form-label"></label>
+				<select t:id="selectRole" t:type="select" t:model="selectRoleModel"
+					t:value="selectedRole" class="form-control form-control-sm"></select>
+			</div>
+		</p:role>
+	</form>
+</div>
+
+<table class="table table-sm" t:type="grid" t:source="allPersons"
+	t:row="person" t:exclude="personId,authString" t:add="actions">
+	<p:actionsCell>
+		<a href="" t:type="actionlink" t:id="EditPerson" t:context="person"
+			class="btn btn-sm btn-primary"><t:SVGIcon t:path="edit" />
+			${message:edit-label}</a>
+		<a href="" t:type="actionlink" t:id="TogglePersonStatus"
+			t:context="person" class="btn btn-sm btn-secondary"><t:SVGIcon
+				t:path="toggle-left" /> ${message:toggle-status-label}</a>
+		<a href="" t:type="actionlink" t:id="DeletePerson" t:context="person"
+			class="btn btn-sm btn-secondary" t:mixins="confirm"><t:SVGIcon
+				t:path="user-minus" /> ${message:remove-label}</a>
+	</p:actionsCell>
+</table>
+
+</html>

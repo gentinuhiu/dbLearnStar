@@ -1,0 +1,279 @@
+<html t:type="layout" title="${message:admin/TestAdmin-pagelink}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<h1>${message:testType-label}</h1>
+
+<div class="row">
+	<div class="col-12">
+		<form t:type="form" t:id="chooserFormTestType" class="form-inline">
+			<select t:type="select" id="selectTestType" t:id="selectTestType"
+				t:model="modelTestTypes" t:value="testType" class="form-control"
+				t:zone="testTypeZone"></select>
+		</form>
+	</div>
+</div>
+
+<div t:id="testTypeZone" id="testTypeZone" t:type="zone">
+	<div t:type="if" t:test="testType">
+		<p>
+			<a href="" class="btn btn-warning" t:type="actionlink"
+				t:context="testType" t:id="newTestInstance">${message:symbol-createObjectAndAddToList}</a>
+		</p>
+
+		<div class="row">
+			<div class="col-12">
+				<h2>${message:testInstance-label}</h2>
+
+				<form t:type="form" t:id="chooserFormTestInstance">
+					<div class="form-group">
+						<label for="selectTestInstance">${message:testInstance-label}</label>
+						<select t:type="select" id="selectTestInstance"
+							t:id="selectTestInstance" t:model="modelTestInstances"
+							t:value="testInstance" class="form-control"
+							t:zone="testInstanceZone"></select>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div t:id="testInstanceZone" id="testInstanceZone" t:type="zone">
+			<div t:type="if" t:test="testInstance">
+				<div class="row">
+					<div class="col-4">
+						<p>
+							<a href="" class="btn btn-sm btn-primary" t:type="actionlink"
+								t:context="testInstance" t:id="editTestInstance">${message:symbol-edit}</a>
+							<a href="" class="btn btn-sm btn-danger" t:type="actionlink"
+								t:context="testInstance" t:id="deleteTestInstance">${message:symbol-removeObjectFromList}</a>
+							<a href="" class="btn btn-sm btn-default" t:type="actionlink"
+								t:context="testInstance" t:id="duplicateTestInstance">${message:symbol-duplicate}</a>
+						</p>
+						<p>
+							${message:scheduledFor-label}: <span class="bg-info">${testInstance.scheduledFor}</span>
+							${message:scheduledUntil-label}: <span class="bg-info">${testInstance.scheduledUntil}</span>
+						</p>
+						<p t:type="outputraw" t:value="testInstance.description">Test
+							Instance Description PLACEHOLDER</p>
+						<p>
+							<img src="${testInstance.testTemplate.model.diagramUrl}"
+								style="width: 100%; max-width: 30em; max-height: 15em;" />
+						</p>
+					</div>
+
+					<div class="col-8">
+						<table class="table table-sm table-bordered table-striped">
+							<thead class="thead-dark">
+								<tr class="d-flex">
+									<th class="col-2">${message:task-label}</th>
+									<th class="col-8">${message:task-short-description-label}</th>
+									<th class="col-2">${message:task-actions-label}</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="d-flex" t:type="loop" t:source="taskInTestInstances"
+									t:value="taskInTestInstance">
+									<td class="col-2">
+										<p>${taskInTestInstance.task.title}</p>
+										<p class="maxpoints">${message:task-points-label}:
+											${taskInTestInstance.points}</p>
+									</td>
+									<td class="col-8">
+										<p t:type="outputraw"
+											t:value="taskInTestInstance.task.description">Task
+											description placeholder</p>
+									</td>
+									<td class="col-2"><a href=""
+										class="btn btn-sm btn-info col-12" t:type="actionlink"
+										t:context="taskInTestInstance.task"
+										title="message:symbol-edit" t:id="editTask">${message:symbol-edit}
+											Task</a><br /> <a href=""
+										class="btn btn-sm btn-secondary col-12" t:type="actionlink"
+										t:context="taskInTestInstance" title="message:symbol-edit"
+										t:id="editTaskInTestInstance">${message:symbol-edit} Task
+											in Test Instance</a><br /> <a href=""
+										class="btn btn-sm btn-danger col-12" t:type="actionlink"
+										t:context="taskInTestInstance"
+										title="message:symbol-removeObjectFromList"
+										t:id="deleteTaskFromTestInstance">${message:symbol-removeObjectFromList}</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<a href="" class="btn btn-warning" t:type="actionlink"
+							t:context="testInstance" t:id="newTask">${message:symbol-createObjectAndAddToList}</a>
+						<a href="" class="btn btn-primary" t:type="actionlink"
+							t:context="testInstance" t:id="addTask">${message:symbol-addObjectToList}</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div style="background-color: yellow;" t:id="testInstanceEditZone"
+	id="testInstanceEditZone" t:type="zone">
+
+	<div t:type="if" t:test="editedTestInstance" class="popupZone">
+
+		<div class="row">
+			<div class="col-lg-10">
+				<h3 style="margin-top: 0;">${message:editTestInstance-label}</h3>
+			</div>
+			<div class="col-lg-2">
+				<a class="close" aria-label="Close" href=""
+					t:id="cancelFrmTestInstance" t:type="actionlink"><span
+					aria-hidden="true">&times;</span> ${message:cancel-label}</a>
+			</div>
+		</div>
+
+		<form t:type="beaneditform" t:id="frmTestInstance"
+			t:exclude="testInstanceId" t:submitlabel="message:save-label"
+			t:add="testTemplate"
+			t:reorder="title,openToAllStudents,openForReviewByStudents,description,scheduledFor,scheduledUntil,testTemplate"
+			t:object="editedTestInstance">
+			frmTestInstance PLACEHOLDER
+			<p:title>
+				<div class="form-group col-lg-9">
+					<label t:type="label" t:for="title"></label> <input
+						t:type="textfield" t:id="title" t:value="editedTestInstance.title"></input>
+				</div>
+			</p:title>
+			<p:description>
+				<div class="form-group col-lg-9">
+					<label t:type="label" t:for="instanceDescription"></label>
+					<textarea class="descriptionEditor" t:type="textarea"
+						id="instanceDescription" t:id="instanceDescription"
+						t:value="editedTestInstance.description" t:mixins="WebEditor"
+						t:WebEditor.areaType="CKADMIN" />
+				</div>
+			</p:description>
+			<p:scheduledFor>
+				<div class="form-group col-lg-3">
+					<label t:type="label" t:for="scheduledFor"></label> <input
+						t:type="datefield" t:id="scheduledFor"
+						t:value="editedTestInstance.scheduledFor"
+						t:format="yyyy-MM-dd HH:mm"></input>
+				</div>
+			</p:scheduledFor>
+			<p:scheduledUntil>
+				<div class="form-group col-lg-3">
+					<label t:type="label" t:for="scheduledUntil"></label> <input
+						t:type="datefield" t:id="scheduledUntil"
+						t:value="editedTestInstance.scheduledUntil"
+						t:format="yyyy-MM-dd HH:mm"></input>
+				</div>
+			</p:scheduledUntil>
+			<p:testTemplate>
+				<div class="form-group col-lg-3">
+					<label t:type="label" for="testTemplates"></label> <select
+						t:type="select" t:id="testTemplates" t:model="testTemplates"
+						t:value="editedTestInstance.testTemplate"></select> <a
+						t:id="NewTestTemplate" href="" t:type="actionlink"
+						t:context="testType" class="btn btn.primary">${message:symbol-createObjectAndAddToList}
+						${message:testTemplate-label}</a>
+				</div>
+			</p:testTemplate>
+		</form>
+
+		<div t:type="if" t:test="editedTestTemplate">
+			<p:then>
+				<form t:type="beaneditform" t:id="frmTestTemplate"
+					t:exclude="testTemplateId" t:submitlabel="message:save-label"
+					t:object="editedTestTemplate" t:add="testModel">
+					frmTestTemplate PLACEHOLDER
+					<p:testModel>
+						<t:label for="testmodel"></t:label>
+						<select t:type="select" t:id="testmodel" t:model="allModels"
+							t:value="editedTestTemplate.model" t:blankOption="NEVER"></select>
+					</p:testModel>
+				</form>
+			</p:then>
+			<p:else>${message:testinstanceparameters-empty-message}</p:else>
+		</div>
+
+		<div t:type="if" t:test="editedTestInstanceParameters">
+			<form t:type="beaneditform" t:id="frmTestInstanceParameters"
+				t:exclude="testInstanceParametersId"
+				t:submitlabel="message:save-label"
+				t:object="editedTestInstanceParameters">frmTestInstanceParameters
+				PLACEHOLDER</form>
+			<p:else>${message:testinstanceparameters-empty-message}</p:else>
+		</div>
+
+	</div>
+</div>
+
+<div style="background-color: Lime" t:id="taskInTestInstanceEditZone"
+	id="taskInTestInstanceEditZone" t:type="zone">
+	<div t:type="if" t:test="editedTaskInTestInstance" class="popupZone">
+		<div class="row">
+			<div class="col-lg-10">
+				<h3 style="margin-top: 0;">${message:edit-task-in-test-instance-label}</h3>
+			</div>
+			<div class="col-lg-2">
+				<a class="close" aria-label="Close" href=""
+					t:id="cancelFrmTaskInTestInstance" t:type="actionlink"><span
+					aria-hidden="true">&times;</span> ${message:cancel-label}</a>
+			</div>
+		</div>
+		<form t:type="beaneditform" t:id="frmTaskInTestInstance"
+			t:exclude="taskInTestInstanceId" t:submitlabel="message:save-label"
+			t:add="testTemplate" t:object="editedTaskInTestInstance">
+			frmTaskInTestInstance PLACEHOLDER
+			<p:testTemplate>
+				<t:if t:test="tasksModel">
+					<p:then>
+						<select t:type="select" t:model="tasksModel"
+							t:value="editedTaskInTestInstance.task" t:blankOption="NEVER"></select>
+					</p:then>
+					<p:else>
+						<div>${message:no-available-options-label}</div>
+					</p:else>
+				</t:if>
+			</p:testTemplate>
+		</form>
+	</div>
+</div>
+
+<div style="background-color: yellow;" id="taskZone" t:id="taskZone"
+	t:type="zone">
+	<div t:type="if" t:test="editedTask" class="popupZone">
+		<div class="row">
+			<div class="col-lg-10">
+				<h3 style="margin-top: 0;">${message:edit-task-label}</h3>
+			</div>
+			<div class="col-lg-2">
+				<a class="close" aria-label="Close" href="" t:id="cancelFrmTask"
+					t:type="actionlink"><span aria-hidden="true">&times;</span>
+					${message:cancel-label}</a>
+			</div>
+		</div>
+
+		<form t:type="beaneditform" t:id="frmTask" t:exclude="taskId"
+			t:submitlabel="message:save-label" t:object="editedTask"
+			t:add="taskModel,taskType">
+			frmTask PLACEHOLDER
+			<p:taskModel>
+				<t:label for="model"></t:label>
+				<select t:type="select" t:id="model" t:model="allModels"
+					t:value="editedTask.model" blankOption="NEVER"></select>
+			</p:taskModel>
+			<p:taskType>
+				<t:label for="taskType"></t:label>
+				<select t:type="select" t:id="taskType" t:model="allTaskTypes"
+					t:value="chosentaskType" blankOption="NEVER"></select>
+			</p:taskType>
+			<p:description>
+				<t:label for="taskDescription"></t:label>
+				<textarea class="descriptionEditor" t:type="textarea"
+					id="taskDescription" t:id="taskDescription"
+					t:value="editedTask.description" t:mixins="WebEditor"
+					t:WebEditor.areaType="CKADMIN" />
+			</p:description>
+		</form>
+	</div>
+</div>
+
+
+</html>

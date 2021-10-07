@@ -1,0 +1,159 @@
+.sqlcode {
+	padding: 0.1em !important;
+	font-size: 75%;
+	white-space: pre-wrap;
+	break-word: all;
+	overflow: scroll;
+}
+
+.colSql {
+	
+}
+
+th {
+	font-size: 65% !important;
+	overflow: scroll;
+}
+
+td {
+	font-size: 70% !important;
+	overflow: auto;
+}
+
+td[data-grid-property="submittedOn"] {
+	/* 	width: 10em !important; */
+	
+}
+
+td[data-grid-property="evaluationExam"] {
+	width: 4em !important;
+	max-width: 5em !important;
+	word-break: break-all;
+}
+
+td[data-grid-property="evaluationSimple"] {
+	width: 4em !important;
+	max-width: 5em !important;
+	word-break: break-all;
+}
+
+td[data-grid-property="evaluationComplex"] {
+	width: 4em !important;
+	max-width: 5em !important;
+	word-break: break-all;
+}
+
+td[data-grid-property="notForEvaluation"] {
+	width: 4em !important;
+	max-width: 5em !important;
+	word-break: break-all;
+}
+
+td[data-grid-property="submittedBy"] {
+	width: 9em !important;
+}
+
+td[data-grid-property="task"] {
+	max-width: 10em;
+}
+
+td[data-grid-property="submission"] {
+	
+}
+
+td[data-grid-property="submission"] .code {
+	font-size: 75% !important;
+	line-height: 0.8em !important;
+	height: 23em !important;
+	width: 99% !important;
+	white-space: pre-wrap;
+}
+
+td[data-grid-property="submission"] .code img {
+	max-width: 80% !important;
+}
+
+td[data-grid-property="assessment"] {
+	max-width: 12em !important;
+}
+
+td[data-grid-property="assessment"] pre {
+	font-size: 75% !important;
+	line-height: 0.8em !important;
+	max-height: 10em !important;
+	white-space: pre-wrap;
+}
+
+td a.btn {
+	font-size: 65%;
+}
+
+td[data-grid-property="clientInfo"] {
+	max-width: 10%;
+}
+
+td[data-grid-property="ipAddress"] {
+	max-width: 10%;
+}
+
+code p {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding: 0px;
+}
+
+.modalSubmission {
+	min-height: 13em;
+}
+
+pre#kodot {
+	font-size: 75% !important;
+	line-height: 0.8em !important;
+	height: 25.5em !important;
+	overflow: auto;
+	white-space: pre-wrap !important;
+}
+
+pre#kodot img {
+	max-width: 200%;
+}
+
+.feedback {
+	max-height: 10em !important;
+	background: white !important;
+	padding: 0.25em;
+	/* 	max-width: 15em; */
+	z-index: 5000 !important;
+}
+
+.feedback .comment {
+	background: yellow;
+}
+
+.feedback .inlinecomment {
+	background: yellow;
+}
+
+table tbody tr.correct {
+	background: var(- -color-correct) !important;
+}
+
+table tbody tr.incorrect {
+	background: var(- -color-incorrect) !important;
+}
+
+table tbody tr.noeval {
+	background: var(- -color-noevaluation) !important;
+}
+
+table tbody tr.exception {
+	background: var(- -color-exception) !important;
+}
+
+.modal-dialog {
+	width: 70%;
+}
+
+.card-body {
+	padding: 0.5em;
+}
