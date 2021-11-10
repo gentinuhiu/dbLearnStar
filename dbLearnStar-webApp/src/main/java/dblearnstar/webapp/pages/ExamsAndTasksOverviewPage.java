@@ -20,26 +20,38 @@
 
 package dblearnstar.webapp.pages;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.annotations.Import;
+import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.InjectPage;
+import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.PersistentLocale;
+import org.apache.tapestry5.services.SelectModelFactory;
+import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
 import dblearnstar.model.entities.TaskInTestInstance;
 import dblearnstar.model.entities.TaskIsOfType;
+import dblearnstar.model.entities.TestCollection;
 import dblearnstar.model.entities.TestInstance;
 import dblearnstar.model.entities.TestType;
+import dblearnstar.model.model.ComparatorTestCollection;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.annotations.StudentPage;
+import dblearnstar.webapp.model.StudentSelectModel;
+import dblearnstar.webapp.model.TestCollectionSelectModel;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.PersonManager;
 import dblearnstar.webapp.services.TestManager;
@@ -53,18 +65,24 @@ import dblearnstar.webapp.services.UsefulMethods;
 public class ExamsAndTasksOverviewPage {
 	@Inject
 	private Logger logger;
+	@Inject
+	private JavaScriptSupport javaScriptSupport;
+	@Inject
+	private PersistentLocale persistentLocale;
+	@Inject
+	private SelectModelFactory selectModelFactory;
+	@Inject
+	private AjaxResponseRenderer ajaxResponseRenderer;
+
 	@SessionState
 	private UserInfo userInfo;
+
 	@Inject
 	private PersonManager pm;
 	@Inject
 	private GenericService genericService;
 	@Inject
 	private TestManager testManager;
-	@Inject
-	private JavaScriptSupport javaScriptSupport;
-	@Inject
-	private PersistentLocale persistentLocale;
 	@Inject
 	private TranslationService translationService;
 
@@ -79,10 +97,19 @@ public class ExamsAndTasksOverviewPage {
 	private TaskInTestInstance taskInTestInstance;
 	@Property
 	private TaskIsOfType taskIsOfType;
+	@Persist
+	@Property
+	private TestCollection testCollection;
+
+	@InjectComponent
+	private Zone collectionZone;
+
 	private long studentId;
 
 	public void onActivate() {
 		studentId = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
+		if (testCollection == null)
+			testCollection = getTestCollections().stream().findFirst().orElse(null);
 	}
 
 	public Date getCurrentTime() {
@@ -93,11 +120,54 @@ public class ExamsAndTasksOverviewPage {
 		return UsefulMethods.castList(TestType.class, genericService.getAll(TestType.class));
 	}
 
+	public List<TestCollection> getTestCollections() {
+		List<TestCollection> list = ((List<TestCollection>) genericService.getAll(TestCollection.class)).stream()
+				.filter(p -> (p.getTestInstances() != null && p.getTestInstances().size() > 0)
+						|| (p.getSubCollections() != null && p.getSubCollections().size() > 0))
+				.collect(Collectors.toList());
+		ComparatorTestCollection c = new ComparatorTestCollection();
+		Collections.sort(list, c);
+		return list;
+	}
+
+	public SelectModel getTestCollectionModel2() {
+		return selectModelFactory.create(getTestCollections(), "title");
+	}
+
+	public SelectModel getTestCollectionModel() {
+		List<TestCollection> list = getTestCollections();
+		if (list == null) {
+			return null;
+		} else {
+			ComparatorTestCollection c = new ComparatorTestCollection();
+			Collections.sort(list, c);
+			// return selectModelFactory.create(list, "title");
+			return new TestCollectionSelectModel(list);
+		}
+	}
+
+	public void onValueChanged(TestCollection newTestCollection) {
+		testCollection = newTestCollection;
+		ajaxResponseRenderer.addRender(collectionZone);
+	}
+
 	public List<TestInstance> getTestInstances() {
 		if (userInfo.isAdministrator()) {
-			return testManager.getAllTestInstancesByTestType(testType.getTestTypeId());
+			if (testCollection == null) {
+				return testManager.getAllTestInstancesByTestType(testType.getTestTypeId());
+			} else {
+				return testCollection.getTestInstances().stream()
+						.filter(p -> p.getTestTemplate().getTestType().getTestTypeId() == testType.getTestTypeId())
+						.collect(Collectors.toList());
+			}
 		} else if (userInfo.isStudent()) {
-			return testManager.getTestInstancesForStudentByTestType(studentId, testType.getTestTypeId());
+			if (testCollection == null) {
+				return testManager.getTestInstancesForStudentByTestType(studentId, testType.getTestTypeId());
+			} else {
+				return testCollection.getTestInstances().stream()
+						.filter(p -> p.getTestTemplate().getTestType().getTestTypeId() == testType.getTestTypeId())
+						.collect(Collectors.toList());
+			}
 		} else {
 			return null;
 		}
