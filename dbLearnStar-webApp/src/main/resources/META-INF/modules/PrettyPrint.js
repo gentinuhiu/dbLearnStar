@@ -18,17 +18,20 @@
  * 
  ******************************************************************************/
 
-define(["jquery", "t5/core/dom", "t5/core/events"], function($, dom, events) {
+define(["jquery"], function($) {
 
-	$('*[data-container-type="zone"]').on(events.zone.didUpdate, function() {
-		$(this).css("animation", "0.5s linear slidein");
+	var originalCode = null;
+
+	$("#reformat").click(function() {
+		newsql = '';
+		if (originalCode != null) {
+			newsql = originalCode;
+			originalCode = null;
+		} else {
+			originalCode = $("#solution > code").text();
+			newsql = window.sqlFormatter.format(originalCode);
+		}
+		$("#solution > code").text(newsql);
 	});
 
-	$('*[data-container-type="zone"]').on("animationend", function() {
-		$(this).css("animation", "none");
-		$(this).offsetHeight;
-		$(this).css("animation", "null");
-	});
-
-	//return null;
 });

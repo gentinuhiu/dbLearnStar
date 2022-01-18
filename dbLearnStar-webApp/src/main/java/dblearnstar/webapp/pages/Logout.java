@@ -36,7 +36,7 @@ import dblearnstar.webapp.annotations.PublicPage;
 import dblearnstar.webapp.util.AppConfig;
 
 @PublicPage
-@Import(stylesheet = { "classpath:META-INF/resources/webjars/fontsource-fira-sans/3.0.5/index.css",
+@Import(stylesheet = { "classpath:META-INF/assets/META-INF/resources/webjars/fontsource-fira-sans/3.0.5/index.css",
 		"site-overrides.css" }, module = { "bootstrap/dropdown", "bootstrap/collapse" })
 public class Logout {
 	@Inject

@@ -23,8 +23,8 @@ requirejs.config({
 		'ckeditor-jquery': ['jquery', 'ckeditor-core']
 	},
 	paths: {
-		'ckeditor-core': '../webjars/ckeditor/4.16.1/standard/ckeditor',
-		'ckeditor-jquery': '../webjars/ckeditor/4.16.1/standard/adapters/jquery'
+		'ckeditor-core': '../webjars/ckeditor/4.17.1/standard/ckeditor',
+		'ckeditor-jquery': '../webjars/ckeditor/4.17.1/standard/adapters/jquery'
 	}
 });
 

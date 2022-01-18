@@ -51,7 +51,21 @@ define(["jquery", "t5/core/ajax"], function($, ajax) {
 				"payload": tekst,
 				"issuer": "stillAlive"
 			},
-			method: "POST"
+			method: "POST",
+			success: function(response) {
+				$("#serverStatus").text("");
+				$("#serverStatus").removeClass("mt-2 alert alert-danger");
+			},
+			failure: function(response) {
+				$("#serverStatus").text("Your browser is no longer able to establish a connection to the web-page at the server. Please save your work to a local file, and try to submit it later.");
+				$("#serverStatus").removeClass("mt-2 alert alert-danger");
+				$("#serverStatus").addClass("mt-2 alert alert-danger");
+			},
+			exception: function(response) {
+				$("#serverStatus").text("A problem has occurred. Please save your work to a local file, and try to submit it later.");
+				$("#serverStatus").removeClass("mt-2 alert alert-danger");
+				$("#serverStatus").addClass("mt-2 alert alert-danger");
+			}
 		});
 	}, 10000);
 

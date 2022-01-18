@@ -20,11 +20,6 @@
 	margin-bottom: 0.5rem;
 }
 
-.errorpanel {
-	position: relative;
-	margin: 0.5em 0em 0em 0em;
-}
-
 .resultspanel {
 	position: relative;
 	margin: 1em 0em 0em 0em;
@@ -44,15 +39,13 @@
 	font-weight: bold;
 	font-size: 80%;
 	clear: both;
-	display: block;
+	display: inline;
+	background: #e0e0e0;
+	padding: 0.2em;
 }
 
-.taskname {
+.tas1kname {
 	margin-top: 0;
-}
-
-h3 {
-	margin-top: 0.5rem;
 }
 
 #taskpane {
@@ -62,7 +55,6 @@ h3 {
 
 .code {
 	font-family: 'Fira Code', monospace, mono;
-	font-size: 85%;
 	line-height: 95%;
 	padding: 0.0em !important;
 	white-space: pre-wrap;

@@ -42,7 +42,7 @@ import dblearnstar.webapp.services.GenericService;
 
 @StudentPage
 @AdministratorPage
-@Import(module = { "bootstrap/collapse" })
+@Import(module = { "bootstrap/collapse" }, stylesheet = { "ComplaintsAndDiscussions.css", "feedback-styles.css" })
 public class ComplaintsAndDiscussions {
 
 	@SessionState
@@ -54,12 +54,13 @@ public class ComplaintsAndDiscussions {
 	@Persist
 	@Property
 	SolutionAssessment solutionAssessmentToDiscuss;
-	@Property
-	private AssessmentDiscussion runningAssessmentDiscussion;
 
 	@Persist
 	@Property
 	AssessmentDiscussion newAssessmentDiscussion;
+
+	@Property
+	private AssessmentDiscussion runningAssessmentDiscussion;
 
 	public void onActivate() {
 		if (solutionAssessmentToDiscuss != null) {
@@ -106,6 +107,10 @@ public class ComplaintsAndDiscussions {
 	@CommitAfter
 	public void onSuccessFromNewAssessmentDiscussionForm() {
 		genericService.save(newAssessmentDiscussion);
+		newAssessmentDiscussion = null;
+	}
+
+	void onActionFromCancelNewAssessmentDiscussionForm() {
 		newAssessmentDiscussion = null;
 	}
 

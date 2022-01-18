@@ -20,6 +20,7 @@
 
 package dblearnstar.webapp.pages;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -50,8 +51,8 @@ import dblearnstar.model.model.ComparatorTestCollection;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.annotations.StudentPage;
-import dblearnstar.webapp.model.StudentSelectModel;
 import dblearnstar.webapp.model.TestCollectionSelectModel;
+import dblearnstar.webapp.services.DigestService;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.PersonManager;
 import dblearnstar.webapp.services.TestManager;
@@ -120,18 +121,25 @@ public class ExamsAndTasksOverviewPage {
 		return UsefulMethods.castList(TestType.class, genericService.getAll(TestType.class));
 	}
 
+	@Inject
+	private DigestService digestService;
+
+	public String getHashedTestInstanceId() {
+		return digestService.obfuscate(Long.toString(testInstance.getTestInstanceId()));
+	}
+
+	/* selectTestCollection Form */
+
 	public List<TestCollection> getTestCollections() {
-		List<TestCollection> list = ((List<TestCollection>) genericService.getAll(TestCollection.class)).stream()
-				.filter(p -> (p.getTestInstances() != null && p.getTestInstances().size() > 0)
-						|| (p.getSubCollections() != null && p.getSubCollections().size() > 0))
-				.collect(Collectors.toList());
+		List<TestCollection> list = (UsefulMethods.castList(TestCollection.class,
+				genericService.getAll(TestCollection.class)))
+						.stream()
+						.filter(p -> (p.getTestInstances() != null && p.getTestInstances().size() > 0)
+								|| (p.getSubCollections() != null && p.getSubCollections().size() > 0))
+						.collect(Collectors.toList());
 		ComparatorTestCollection c = new ComparatorTestCollection();
 		Collections.sort(list, c);
 		return list;
-	}
-
-	public SelectModel getTestCollectionModel2() {
-		return selectModelFactory.create(getTestCollections(), "title");
 	}
 
 	public SelectModel getTestCollectionModel() {
@@ -152,24 +160,21 @@ public class ExamsAndTasksOverviewPage {
 	}
 
 	public List<TestInstance> getTestInstances() {
+		List<TestInstance> list;
 		if (userInfo.isAdministrator()) {
-			if (testCollection == null) {
-				return testManager.getAllTestInstancesByTestType(testType.getTestTypeId());
-			} else {
-				return testCollection.getTestInstances().stream()
-						.filter(p -> p.getTestTemplate().getTestType().getTestTypeId() == testType.getTestTypeId())
-						.collect(Collectors.toList());
-			}
+			list = testManager.getAllTestInstancesByTestType(testType.getTestTypeId());
 		} else if (userInfo.isStudent()) {
-			if (testCollection == null) {
-				return testManager.getTestInstancesForStudentByTestType(studentId, testType.getTestTypeId());
-			} else {
-				return testCollection.getTestInstances().stream()
-						.filter(p -> p.getTestTemplate().getTestType().getTestTypeId() == testType.getTestTypeId())
-						.collect(Collectors.toList());
-			}
+			list = testManager.getTestInstancesForStudentByTestType(studentId, testType.getTestTypeId());
 		} else {
-			return null;
+			list = new ArrayList<TestInstance>();
+		}
+		if (testCollection == null) {
+			return list;
+		} else {
+			return list.stream()
+					.filter(ti -> ti.getTestCollection() != null
+							&& ti.getTestCollection().getTestCollectionId() == testCollection.getTestCollectionId())
+					.collect(Collectors.toList());
 		}
 	}
 

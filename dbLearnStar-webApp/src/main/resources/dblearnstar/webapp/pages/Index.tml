@@ -24,13 +24,6 @@
 				</a>
 			</p>
 			<p>
-				<a href="" t:type="pagelink" t:page="SolutionComparator"> <img
-					src="${context:images/t_Compare.png}"
-					style="width: 160px; height: 80px;" /> <br />
-					${message:SolutionComparator-pagelink}
-				</a>
-			</p>
-			<p>
 				<a href="" t:type="pagelink" t:page="PersonalAnalytics"> <img
 					src="${context:images/t_Analytics.png}"
 					style="width: 160px; height: 80px;" /> <br />

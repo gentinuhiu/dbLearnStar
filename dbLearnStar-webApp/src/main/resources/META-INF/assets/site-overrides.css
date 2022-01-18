@@ -41,7 +41,7 @@ h3,.h3 {
 }
 
 body {
-	padding-top: 4em;
+	padding-top: 4.5em;
 }
 
 code {
@@ -124,3 +124,18 @@ svg {
 	padding: 0 0;
 }
 
+.datefield-popup {
+	background: white;
+	padding:0.5em;
+	border-radius:6px;
+	border: 1px solid black;
+}
+
+.glyphicon-calendar {
+	background-color: var(--light);
+	color: var(--dark);
+}
+
+.glyphicon-calendar::before {
+  content: "📅";
+}

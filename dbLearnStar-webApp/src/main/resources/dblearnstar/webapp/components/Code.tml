@@ -3,11 +3,7 @@
 <t:content>
 	<t:if t:test="!nullValue">
 		<t:if t:test="value">
-			<pre id="${id}" class="pre-scrollable code ${allClasses}">
-				<code>
-					<t:outputraw t:value="value"></t:outputraw>
-				</code>
-			</pre>
+			<pre id="${id}" class="pre-scrollable code ${allClasses}"><code><t:outputraw t:value="value"></t:outputraw></code></pre>
 		</t:if>
 	</t:if>
 </t:content>

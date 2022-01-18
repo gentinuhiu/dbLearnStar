@@ -38,6 +38,14 @@ define(["jquery"], function($) {
 					},
 					hintOptions: {
 						tables: {
+							banki: ["banka_id","b_naziv","b_adresa","grad_id"],
+							gradovi: ["grad_id","g_naziv"],
+							vraboteni: ["banka_id","vrab_br","v_embg","v_ime","godina_vrab"],
+							banki: ["banka_id","b_naziv","b_adresa","grad_id"],
+							ekspozituri: ["banka_id","eksp_br","e_naziv","e_adresa","grad_id"],
+							rabotni_mesta: ["rabmesto_id","rm_naziv"],
+							raboti_kako: ["banka_id","vrab_br","rabmesto_id"],
+							odgovorni_lica: ["smetka_br","trans_br","banka_id","vrab_br"],
 							supervizor: ["lid"],
 							recept: ["recid", "datum", "doza", "liddok", "lidpac", "mbroj", "lekid"],
 							uchenici: ["uidentifikator", "uchid"],
@@ -98,12 +106,6 @@ define(["jquery"], function($) {
 						}
 					}
 				});
-		line = window.editor.posFromIndex(queryTestErrorPosition).line;
-		col = window.editor.posFromIndex(queryTestErrorPosition).ch;
-		if (col > 1)
-			line++;
-		realposition = window.editor.posFromIndex(queryTestErrorPosition - line);
-		window.editor.setCursor(realposition);
 
 	});
 

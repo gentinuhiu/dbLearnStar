@@ -1,0 +1,44 @@
+.indentation1 {
+	margin: 0.5rem;
+	padding: 1rem;
+}
+
+.indentation2 {
+	margin: 0.5rem;
+	padding: 1rem;
+	margin-left: 2rem;
+}
+
+.indentation3 {
+	margin: 0.5rem;
+	padding: 1rem;
+	margin-left: 4rem;
+}
+
+.indentation4 {
+	margin: 0.5rem;
+	padding: 1rem;
+	margin-left: 6rem;
+}
+
+.indentation5 {
+	margin: 0.5rem;
+	padding: 1rem;
+	margin-left: 8rem;
+}
+
+.indentation6 {
+	margin: 0.5rem;
+	margin-left: 10rem;
+	padding: 1rem;
+	margin-left: 10rem;
+}
+
+.reshenieto img {
+	width: 100%;
+}
+
+.discussion img {
+	width: 100%;
+}
+

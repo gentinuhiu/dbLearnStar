@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLWarning;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -62,18 +63,19 @@ public class EvaluationServiceImpl implements EvaluationService {
 		return session.getSession();
 	}
 
+	/**
+	 * @return < resultsEval, resultsErrors, evaluation result >
+	 */
 	@Override
-	public Triplet<List<String>, List<String>, Boolean> evalResultsIn(String userName, String queryString,
+	public Triplet<List<String>, List<String>, Boolean> evalResultsIn(String userName, String queryToRun,
 			TaskInTestInstance taskInTestInstance, TestInstanceParameters tip, String schema) {
 		Triplet<List<String>, List<String>, Boolean> rslts = new Triplet<List<String>, List<String>, Boolean>(
 				new ArrayList<String>(), new ArrayList<String>(), Boolean.valueOf(false));
-		// rslts.firstItem will be used for resultsEval
-		// rslts.secondItem will be used for resultsErrors
-		// rslts.thirdItem will be used to pass evaluation result
-		if (queryString != null) {
-			String qtlc = queryString.toLowerCase();
+
+		if (queryToRun != null) {
+			String qtlc = queryToRun.toLowerCase();
 			if (qtlc.contains("delete") || qtlc.contains("update") || qtlc.contains("insert") || qtlc.contains("create")
-					|| qtlc.contains("drop") || qtlc.contains("alter")) {
+					|| qtlc.contains("drop") || qtlc.contains("alter") || qtlc.contains("information_schema")) {
 			} else {
 				Connection connection = null;
 				String evalViewName = tip.getEvaluationViewPrefix() + taskInTestInstance.getTask().getTitle();
@@ -88,7 +90,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 					connection.setSavepoint();
 					connection.setSchema(schema);
 
-					String queryStringManip = queryString.replace("now()", schema + ".now()");
+					String queryStringManip = queryToRun.replace("now()", schema + ".now()");
 					queryStringManip = queryStringManip.replace("current_date", schema + ".now()");
 
 					String evalQueryString = "((" + queryStringManip + ") except (select * from " + evalViewName
@@ -97,7 +99,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 					logger.debug("user {} issued evalQueryString: {}", userName, evalQueryString);
 
 					PreparedStatement pstmt = connection.prepareStatement(evalQueryString);
-					pstmt.setQueryTimeout(30);
+					pstmt.setQueryTimeout(120);
 					ResultSet rs = pstmt.executeQuery();
 					if (rs.next()) {
 						// Output is not correct
@@ -108,13 +110,14 @@ public class EvaluationServiceImpl implements EvaluationService {
 						rslts.setThirdItem(true);
 					}
 					rs.close();
+					pstmt.close();
 					SQLWarning w = connection.getWarnings();
 					if (w != null) {
 						rslts.getSecondItem().add(w.getMessage());
 					}
 					connection.rollback();
 				} catch (Exception e) {
-					logger.error("Error occured {}", e.getMessage());
+					logger.error("Error occured {}", e);
 					if (e.getMessage().contains("ERROR: each EXCEPT query must have the same number of columns")) {
 						rslts.getFirstItem().add(messages.get("sql-outputSchemaFormatError"));
 					} else if (e.getMessage().contains("ERROR: EXCEPT types")) {
@@ -123,6 +126,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 						logger.error("The view: {} with the correct solution for taskInTestInstanceId: {} is missing!",
 								evalViewName, taskInTestInstance.getTaskInTestInstanceId());
 						rslts.getSecondItem().add(messages.get("sql-notPossibleToEvaluate"));
+					} else if (e.getMessage().toLowerCase().contains("DateStyle parameter was changed")) {
+						logger.error("" + e);
 					} else {
 						rslts.getSecondItem().add(e.getMessage());
 					}
@@ -295,14 +300,16 @@ public class EvaluationServiceImpl implements EvaluationService {
 	}
 
 	public void processSolution(String issuedByUserName, StudentSubmitSolution s) {
+		TaskInTestInstance tti = s.getTaskInTestInstance();
+		/*
+		 * TODO: Only supports TestInstances with a single TestInstanceParameter line
+		 */
+		TestInstanceParameters tip = tti.getTestInstance().getTestInstanceParameters().get(0);
+
 		Triplet<List<String>, List<String>, Boolean> rsltsSimple = evalResultsIn(issuedByUserName, s.getSubmission(),
-				s.getTaskInTestInstance(),
-				s.getTaskInTestInstance().getTestInstance().getTestInstanceParameters().get(0),
-				s.getTaskInTestInstance().getTestInstance().getTestInstanceParameters().get(0).getSchemaSimple());
+				tti, tip, tip.getSchemaSimple());
 		Triplet<List<String>, List<String>, Boolean> rsltsComplex = evalResultsIn(issuedByUserName, s.getSubmission(),
-				s.getTaskInTestInstance(),
-				s.getTaskInTestInstance().getTestInstance().getTestInstanceParameters().get(0),
-				s.getTaskInTestInstance().getTestInstance().getTestInstanceParameters().get(0).getSchemaComplex());
+				tti, tip, tip.getSchemaComplex());
 		logger.info("Reevaluation studentSubmitSolutionId Simple: {} reevaluated as {}", s.getStudentSubmitSolutionId(),
 				rsltsSimple.getThirdItem());
 		logger.info("Reevaluation studentSubmitSolutionId Complex: {} reevaluated as {}",
@@ -321,4 +328,227 @@ public class EvaluationServiceImpl implements EvaluationService {
 		getEntityManager().saveOrUpdate(s);
 	}
 
+	/**
+	 * @return <resultsSimple, resultsHeadersSimple, resultsErrors>
+	 */
+	@Override
+	public Triplet<List<Object[]>, List<String>, List<String>> getResultsForPrintingPurposes(String userName,
+			String queryToRun, TestInstanceParameters tip, String schema, String type) {
+		List<Object[]> resultsSimple = new ArrayList<Object[]>();
+		List<String> resultsHeadersSimple = new ArrayList<String>();
+		List<String> resultsErrors = new ArrayList<String>();
+
+		if (queryToRun != null) {
+			String qtlc = queryToRun.toLowerCase();
+			if (qtlc.contains("delete") || qtlc.contains("update") || qtlc.contains("insert") || qtlc.contains("create")
+					|| qtlc.contains("drop") || qtlc.contains("alter") || qtlc.contains("information_schema")) {
+				resultsErrors.add(messages.get("sql-db-modifications"));
+				logger.error("Database modification or catalog or directory query issued by {}", userName);
+			} else {
+				resultsSimple = new ArrayList<Object[]>();
+				resultsHeadersSimple = new ArrayList<String>();
+
+				Connection connection = null;
+				int statusCounter = 0;
+				try {
+					Properties props = new Properties();
+					props.setProperty("user", tip.getDbUser());
+					props.setProperty("password", tip.getDbPass());
+					String url = "jdbc:postgresql://" + tip.getHostname() + ":" + tip.getPort() + "/" + tip.getDbName();
+
+					connection = DriverManager.getConnection(url, props);
+					statusCounter = 1;
+
+					connection.setClientInfo("ApplicationName", "dbLearn*Evaluator");
+					connection.setReadOnly(true);
+					connection.setAutoCommit(false);
+					connection.setSavepoint();
+					connection.setSchema(schema);
+					statusCounter = 2;
+
+					ResultSet rs = connection.prepareStatement(queryToRun).executeQuery();
+					boolean isNextRow = rs.next();
+					int numColumns = rs.getMetaData().getColumnCount();
+					for (int i = 1; i <= numColumns; i++) {
+						resultsHeadersSimple.add(rs.getMetaData().getColumnName(i));
+					}
+					statusCounter = 3;
+
+					int count = 1;
+					while (isNextRow && count < 500) {
+						Object[] o = new Object[numColumns];
+						for (int i = 1; i <= numColumns; i++) {
+							o[i - 1] = rs.getObject(i);
+						}
+						resultsSimple.add(o);
+						isNextRow = rs.next();
+						count++;
+					}
+					statusCounter = 4;
+					rs.close();
+					SQLWarning w = connection.getWarnings();
+					if (w != null) {
+						logger.debug("warning");
+						resultsErrors.add(w.getMessage());
+					}
+					if (count >= 500) {
+						logger.debug("count");
+						resultsErrors.add(messages.get("sql-moreThan500Rows"));
+					}
+					connection.rollback();
+				} catch (Exception e) {
+					if (statusCounter == 0) {
+						logger.error("Error when connecting to evaluation database for testinstance: {}",
+								tip.getTestInstance().getTestInstanceId());
+						logger.debug("Exception: {}", e);
+						resultsErrors.add(messages.get("evalDBNA-label"));
+					} else {
+						logger.error(
+								"Connected to evaluation database for test instance {}, but failed in running query: {} ",
+								tip.getTestInstance().getTestInstanceId(), queryToRun);
+						logger.debug("Exception: {}", e);
+						resultsErrors.add(e.getMessage());
+					}
+				} finally {
+					if (connection != null) {
+						try {
+							connection.close();
+						} catch (Exception e) {
+							logger.error("Connection can't be closed {} {}", userName, e.getMessage());
+						}
+					}
+				}
+			}
+		} else {
+			resultsSimple = new ArrayList<Object[]>();
+			resultsHeadersSimple = new ArrayList<String>();
+		}
+
+		Triplet<List<Object[]>, List<String>, List<String>> results = new Triplet<List<Object[]>, List<String>, List<String>>(
+				resultsSimple, resultsHeadersSimple, resultsErrors);
+		return results;
+	}
+
+	/**
+	 * @return <resultsSimple, resultsHeadersSimple, resultsErrors>
+	 */
+	@Override
+	public Triplet<List<Object[]>, List<String>, List<String>> getEvalResultsForViewing(String userName,
+			String queryToRun, TaskInTestInstance taskInTestInstance, TestInstanceParameters tip, String schema) {
+		List<Object[]> resultsSimple = new ArrayList<Object[]>();
+		List<String> resultsHeadersSimple = new ArrayList<String>();
+		List<String> resultsErrors = new ArrayList<String>();
+
+		if (queryToRun != null) {
+			String qtlc = queryToRun.toLowerCase();
+			if (qtlc.contains("delete") || qtlc.contains("update") || qtlc.contains("insert") || qtlc.contains("create")
+					|| qtlc.contains("drop") || qtlc.contains("alter") || qtlc.contains("information_schema")) {
+				resultsErrors.add(messages.get("sql-db-modifications"));
+				logger.error("Database modification or catalog or directory query issued by {}", userName);
+			} else {
+				resultsSimple = new ArrayList<Object[]>();
+				resultsHeadersSimple = new ArrayList<String>();
+
+				Connection connection = null;
+				String evalViewName = tip.getEvaluationViewPrefix() + taskInTestInstance.getTask().getTitle();
+
+				int statusCounter = 0;
+
+				try {
+					Properties props = new Properties();
+					props.setProperty("user", tip.getDbUser());
+					props.setProperty("password", tip.getDbPass());
+					String url = "jdbc:postgresql://" + tip.getHostname() + ":" + tip.getPort() + "/" + tip.getDbName();
+
+					connection = DriverManager.getConnection(url, props);
+					statusCounter = 1;
+
+					connection.setClientInfo("ApplicationName", "dbLearnStarEvaluator");
+					connection.setReadOnly(true);
+					connection.setAutoCommit(false);
+					connection.setSavepoint();
+					connection.setSchema(schema);
+					statusCounter = 2;
+
+					String queryStringManip = queryToRun.replace("now()", schema + ".now()");
+					queryStringManip = queryStringManip.replace("current_date", schema + ".now()");
+
+					String evalQueryString = "((" + queryStringManip + ") except (select * from " + evalViewName
+							+ ")) union ((select * from " + evalViewName + ") except (" + queryStringManip + "))";
+
+					logger.debug("user {} issued evalQueryString: {}", userName, evalQueryString);
+
+					PreparedStatement pstmt = connection.prepareStatement(evalQueryString);
+					pstmt.setQueryTimeout(120);
+					ResultSet rs = pstmt.executeQuery();
+					boolean isNextRow = rs.next();
+					int numColumns = rs.getMetaData().getColumnCount();
+					for (int i = 1; i <= numColumns; i++) {
+						resultsHeadersSimple.add(rs.getMetaData().getColumnName(i));
+					}
+					statusCounter = 3;
+
+					int count = 1;
+					while (isNextRow && count < 500) {
+						Object[] o = new Object[numColumns];
+						for (int i = 1; i <= numColumns; i++) {
+							o[i - 1] = rs.getObject(i);
+						}
+						resultsSimple.add(o);
+						isNextRow = rs.next();
+						count++;
+					}
+					statusCounter = 4;
+					rs.close();
+					SQLWarning w = connection.getWarnings();
+					if (w != null) {
+						logger.debug("warning");
+						resultsErrors.add(w.getMessage());
+					}
+					if (count >= 500) {
+						logger.debug("count");
+						resultsErrors.add(messages.get("sql-moreThan500Rows"));
+					}
+					connection.rollback();
+				} catch (Exception e) {
+					if (statusCounter == 0) {
+						logger.error("Error when connecting to evaluation database for testinstance: {}",
+								tip.getTestInstance().getTestInstanceId());
+						logger.debug("Exception: {}", e);
+						resultsErrors.add(messages.get("evalDBNA-label"));
+					} else {
+						if (e.getMessage().contains("ERROR: each EXCEPT query must have the same number of columns")) {
+							resultsErrors.add(messages.get("sql-outputSchemaFormatError"));
+						} else if (e.getMessage().contains("ERROR: EXCEPT types")) {
+							resultsErrors.add(messages.get("sql-outputSchemaFormatError"));
+						} else if (e.getMessage().toLowerCase().contains(evalViewName.toLowerCase())) {
+							logger.error(
+									"The view: {} with the correct solution for taskInTestInstanceId: {} is missing!",
+									evalViewName, taskInTestInstance.getTaskInTestInstanceId());
+							resultsErrors.add(messages.get("sql-notPossibleToEvaluate"));
+						} else if (e.getMessage().toLowerCase().contains("DateStyle parameter was changed")) {
+							logger.error("" + e);
+						} else {
+							resultsErrors.add(e.getMessage());
+						}
+					}
+				} finally {
+					if (connection != null) {
+						try {
+							connection.close();
+						} catch (Exception e) {
+							logger.error("Connection can't be closed {} {}", userName, e.getMessage());
+						}
+					}
+				}
+			}
+		} else {
+			resultsSimple = new ArrayList<Object[]>();
+			resultsHeadersSimple = new ArrayList<String>();
+		}
+
+		Triplet<List<Object[]>, List<String>, List<String>> results = new Triplet<List<Object[]>, List<String>, List<String>>(
+				resultsSimple, resultsHeadersSimple, resultsErrors);
+		return results;
+	}
 }

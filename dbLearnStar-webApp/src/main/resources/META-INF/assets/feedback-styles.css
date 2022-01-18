@@ -1,0 +1,11 @@
+.box {
+	padding: 0.5em;
+	background: #e8e8ff;
+	border-left: 3px black solid;
+}
+
+.box::before {
+  content: "";
+  color: black;
+  font-weight: 700;
+}

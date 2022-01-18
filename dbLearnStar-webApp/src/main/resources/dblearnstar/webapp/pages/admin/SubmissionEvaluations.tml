@@ -1,0 +1,322 @@
+<html t:type="layout"
+	title="message:admin/SubmissionEvaluations-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<div t:type="zone" t:id="zModal" id="zModal">
+	<t:if t:test="editedAssessment">
+		<t:ModalBox t:id="assessmentModal" t:additionalClassDialog="">
+
+			<div class="card">
+				<div class="card-header p-1">
+					<h3 class="mt-2 p-2">
+						<a role="button" data-toggle="collapse"
+							href="#collapsedDescription" aria-expanded="false"
+							aria-controls="collapsedDescription">
+							${editedAssessment.studentSubmitSolution?.taskInTestInstance.task.title}
+							<span class="maxpoints">${editedAssessment.studentSubmitSolution?.taskInTestInstance?.points}</span>
+							<t:SVGIcon t:path="chevrons-down" />
+						</a>
+					</h3>
+				</div>
+				<div class="card-body collapse" id="collapsedDescription">
+					<t:outputraw t:value="translateTaskDescription"></t:outputraw>
+				</div>
+			</div>
+
+			<div class="card  mt-2" t:type="if" t:test="editedAssessmentTaskSQL">
+				<div class="card-header">
+					<div class="row m-0 p-0 ">
+						<div class="col-3">
+							<a role="button" href="#" id="reformat"
+								class="btn btn-sm btn-primary">Beautify <t:SVGIcon
+									t:path="align-left" /></a>
+						</div>
+						<div class="col-9 text-right">
+							${message:evaluationSimple-label}:
+							<t:booleanindicator
+								t:value="editedAssessment.studentSubmitSolution.evaluationSimple"
+								showCheckMark="true" showNo="true" />
+							${message:evaluationComplex-label}:
+							<t:booleanindicator
+								t:value="editedAssessment.studentSubmitSolution.evaluationComplex"
+								showCheckMark="true" showNo="true" />
+							${message:evaluationExam-label}:
+							<t:booleanindicator
+								t:value="editedAssessment.studentSubmitSolution.evaluationExam"
+								showCheckMark="true" showNo="true" />
+							<a href="" t:type="actionlink" t:id="reevaluateEditedSubmission"
+								t:context="editedAssessment.studentSubmitSolution"
+								t:zone="zModal" class="btn btn-sm btn-warning">${message:reevaluate-label}
+								<t:SVGIcon t:path="check-square" />
+							</a> <a href="" class="btn btn-sm btn-info" t:type="actionlink"
+								t:id="viewEvaluationResults" t:zone="zSQLEval"
+								t:context="editedAssessment.studentSubmitSolution">${message:sqlEvaluation-label}
+								<t:SVGIcon t:path="eye" />
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="card-body" t:id="zSQLEval" t:type="zone">
+					<div class="row">
+						<div class="col-6 bg-danger" t:type="if" t:test="resultsErrors1">
+							<ul>
+								<li t:type="loop" t:source="resultsErrors1"
+									t:value="resultsError">${resultsError}</li>
+							</ul>
+						</div>
+						<div class="col-6 bg-danger" t:type="if" t:test="resultsErrors2">
+							<ul>
+								<li t:type="loop" t:source="resultsErrors2"
+									t:value="resultsError">${resultsError}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="row" t:type="if" t:test="resultsEvaluation1">
+						<div class="col-sm-12">
+							<div class="alert alert-success resultspanel resultspanel-colors"
+								role="alert" t:type="if" t:test="resultsEvaluation1">
+								<h3>${message:query-results-label}</h3>
+								<table class="table table-hover table-bordered table-striped">
+									<thead>
+										<tr>
+											<th t:type="loop" t:source="resultsHeaders1"
+												t:value="oneHeader">${oneHeader}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr t:type="loop" t:source="resultsEvaluation1"
+											t:value="oneRow">
+											<td t:type="loop" t:source="oneRow" t:value="oneColumn">${oneColumn}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="alert alert-success resultspanel resultspanel-colors"
+								role="alert" t:type="if" t:test="resultsEvaluation2">
+								<h3>${message:query-results-label}</h3>
+								<table class="table table-hover table-bordered table-striped">
+									<thead>
+										<tr>
+											<th t:type="loop" t:source="resultsHeaders2"
+												t:value="oneHeader">${oneHeader}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr t:type="loop" t:source="resultsEvaluation2"
+											t:value="oneRow">
+											<td t:type="loop" t:source="oneRow" t:value="oneColumn">${oneColumn}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+			<form t:type="form" class="form-vertical" t:id="FormEditor"
+				id="FormEditor" t:autofocus="true">
+				<div class="form-row">
+					<div class="form-group col-6  ${classSQLsolution}">
+						<label for="solution">${message:solution-label}</label>
+						<t:code id="solution" t:id="solution"
+							t:value="editedAssessment.studentSubmitSolution.submission"
+							class="modalSubmission form-control col-12"></t:code>
+					</div>
+					<div class="form-group col-6 feedback">
+						<label t:type="label" t:for="feedback"></label>
+						<textarea t:type="textarea" t:id="feedback"
+							t:value="editedAssessment.feedback" t:mixins="WebEditor"
+							t:WebEditor.areaType="CKADMIN" />
+					</div>
+				</div>
+				<t:errors />
+				<div class="form-row   align-items-center">
+					<div class="form-group col-3">
+						<label t:type="label" t:for="passed">Passed <input
+							t:type="checkbox" t:id="passed" t:value="editedAssessment.passed"
+							class="form-control"></input>
+						</label>
+					</div>
+					<div class="form-group col-3">
+						<label t:type="label" t:for="type"></label> <input
+							t:type="textfield" t:id="type" t:value="editedAssessment.type"
+							class="form-control"></input>
+					</div>
+					<div class="form-group col-3">
+						<label t:type="label" t:for="grade"></label> <input
+							t:type="textfield"
+							data-translation-message="You must provide a numeric value for the Grade."
+							data-translation="numeric" data-validation="true" t:id="grade"
+							t:value="editedAssessment.grade" class="form-control numeric"></input>
+					</div>
+					<div class="col-auto">
+						<button type="submit" class="btn btn-primary" value="OK">OK</button>
+						<a type="button" role="button" href="" t:type="actionlink"
+							t:id="cancelFormEditor" class="btn btn-secondary">Cancel </a>
+					</div>
+				</div>
+			</form>
+
+		</t:ModalBox>
+	</t:if>
+</div>
+
+
+<h2>${message:admin/SubmissionEvaluations-pagelink}</h2>
+
+<div class="card bg-light mb-3">
+	<div class="card-body pb-0 pt-0">
+		<form t:type="form" t:id="selectStudentForm" class="form-horizontal">
+			<div class="form-row">
+
+				<div class="form-group col-md-5">
+					<label t:type="label" for="selectTestInstance"
+						class="col-form-label"></label> <select t:id="selectTestInstance"
+						t:type="select" t:model="selectTestInstanceModel"
+						t:value="filterTestInstance" class="form-control form-control-sm"
+						t:zone="zTask"></select>
+				</div>
+
+				<div class="form-group col-md-4" t:type="zone" t:id="zTask"
+					id="zTask">
+					<label t:type="label" for="selectTaskInTestInstance"
+						class="col-form-label"></label> <select
+						t:id="selectTaskInTestInstance" t:type="select"
+						t:model="selectTaskInTestInstanceModel"
+						t:value="filterTaskInTestInstance"
+						class="form-control form-control-sm" t:zone="zSubmissions"></select>
+				</div>
+
+				<div class="form-group col-md-3" t:type="zone" t:id="zStudent"
+					id="zStudent">
+					<label t:type="label" for="selectStudent" class="col-form-label"></label>
+					<select t:id="selectStudent" t:type="select"
+						t:model="SelectStudentsModel" t:value="filterStudent"
+						t:zone="zSubmissions" class="form-control form-control-sm"></select>
+				</div>
+
+			</div>
+			<div class="form-row">
+				<div class="form-group col-md-2">
+					&nbsp;&nbsp;&nbsp;
+					<t:checkbox t:id="onlyEval" onclick="this.form.submit();"
+						class="form-check-input" />
+					<label t:type="label" for="onlyEval" class="form-check-label"></label>
+				</div>
+				<div class="form-group col-md-2">
+					&nbsp;&nbsp;&nbsp;
+					<t:checkbox t:id="onlyCorrect" onclick="this.form.submit();"
+						class="form-check-input" />
+					<label t:type="label" for="onlyCorrect" class="form-check-label"></label><br />
+				</div>
+				<div class="form-group col-md-2">
+					&nbsp;&nbsp;&nbsp;
+					<t:checkbox t:id="onlyLast" onclick="this.form.submit();"
+						class="form-check-input" />
+					<label t:type="label" for="onlyLast" class="form-check-label"></label><br />
+				</div>
+				<div class="form-group col-md-2">
+					&nbsp;&nbsp;&nbsp;
+					<t:checkbox t:id="onlyAssessed" onclick="this.form.submit();"
+						class="form-check-input" />
+					<label t:type="label" for="onlyAssessed" class="form-check-label"></label><br />
+				</div>
+				<div class="form-group col-md-2">
+					&nbsp;
+					<t:checkbox t:id="onlyDateOfExam" onclick="this.form.submit();"
+						class="form-check-input" />
+					<label t:type="label" for="onlyDateOfExam" class="form-check-label"></label><br />
+				</div>
+				<div class="form-group col-md-2">
+					&nbsp;
+					<t:checkbox t:id="hideClientInfo" onclick="this.form.submit();"
+						class="form-check-input" />
+					<label t:type="label" for="hideClientInfo" class="form-check-label"></label><br />
+				</div>
+			</div>
+			<t:errors />
+		</form>
+	</div>
+</div>
+
+<div t:type="zone" t:id="zSubmissions" id="zSubmissions">
+	<t:if t:test="filterTestInstance">
+		<div>
+			<table t:id="recentsubmission" t:type="grid"
+				t:source="allSubmissions" t:row="submission" t:model="modelSSS"
+				t:rowsperpage="50" t:rowClass="${evaluationClass}"
+				class="table table-sm table-hover table-bordered table-striped">
+				<p:submissionCell>
+					<t:code t:value="submission.submission"></t:code>
+				</p:submissionCell>
+				<p:clientInfoCell>
+					<t:code t:value="submission.clientInfo"></t:code>
+				</p:clientInfoCell>
+				<p:submittedByCell>
+				${submittedByNameWithId}<br />
+					<a href="" t:type="actionlink" t:id="ShowUserActivities"
+						t:context="submission" t:zone="zSelectStudents" role="button"
+						class="btn btn-xs btn-secondary">In Focus</a>
+				</p:submittedByCell>
+				<p:notForEvaluationCell>
+					<t:booleanindicator t:value="submission?.notForEvaluation"
+						showCheckMark="true" />
+				</p:notForEvaluationCell>
+				<p:evaluationSimpleCell>
+					<t:booleanindicator t:value="submission?.evaluationSimple"
+						showCheckMark="true" />
+				</p:evaluationSimpleCell>
+				<p:evaluationComplexCell>
+					<t:booleanindicator t:value="submission?.evaluationComplex"
+						showCheckMark="true" />
+				</p:evaluationComplexCell>
+				<p:evaluationExamCell>
+					<t:booleanindicator t:value="submission?.evaluationExam"
+						showCheckMark="true" />
+				</p:evaluationExamCell>
+				<p:submittedOnCell>
+					<t:output format="literal:yyyy-MM-dd HH:mm:ss"
+						value="submission?.submittedOn" />
+				</p:submittedOnCell>
+				<p:assessmentCell>
+					<div t:type="if" t:test="SQL">
+						<a href="" t:type="actionlink" t:id="reevaluateSubmission"
+							t:context="submission" t:zone="zSubmissions"
+							class="btn btn-xs btn-warning">${message:reevaluate-label}</a>
+					</div>
+					<div t:type="if" t:test="UPLOAD"></div>
+					<div t:type="if" t:test="submission.evaluations">
+						${message:grade-label}: <span class="badge badge-dark">${submissionsFirstEvaluation.grade}</span>
+						<br />${message:evaluatedOn-label}:
+						<t:output format="literal:yyyy-MM-dd HH:mm:ss"
+							value="submissionsFirstEvaluation?.evaluatedOn" />
+						<pre class="feedback">
+							<t:outputraw value="submissionsFirstEvaluation.feedback" />
+						</pre>
+						<a href="" t:type="actionlink" t:id="editAssessment"
+							t:async="true" t:context="submissionsFirstEvaluation"
+							class="btn btn-xs btn-primary">${message:editAssessment-label}</a>
+						<p:else>
+							<a href="" t:type="actionlink" t:id="addAssessment"
+								t:async="true" t:context="submission"
+								class="btn btn-xs btn-primary">${message:addAssessment-label}</a>
+						</p:else>
+					</div>
+				</p:assessmentCell>
+				<p:empty>
+					<div>${message:no-data-label}</div>
+				</p:empty>
+			</table>
+		</div>
+		<p:else>
+			<p>${message:please-select-test-instance-label}</p>
+		</p:else>
+	</t:if>
+</div>
+<script
+	src="${asset:classpath:META-INF/assets/sql-formatter/sql-formatter.min.js}"></script>
+</html>

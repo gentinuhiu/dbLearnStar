@@ -10,6 +10,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import dblearnstar.model.entities.Model;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.services.GenericService;
+import dblearnstar.webapp.services.UsefulMethods;
 
 @AdministratorPage
 public class ManageModels {
@@ -25,7 +26,7 @@ public class ManageModels {
 	private Model modelToEdit;
 
 	public List<Model> getAllModels() {
-		return (List<Model>) genericService.getAll(Model.class);
+		return UsefulMethods.castList(Model.class, genericService.getAll(Model.class));
 	}
 
 	public void onActionFromNewModel() {

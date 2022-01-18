@@ -1,13 +1,13 @@
 .correct {
 	/*
 		https://www.w3schools.com/colors/colors_british.asp - Green */
-	background: #9dd29c;
+	background: var(--color-correct);
 }
 
 .incorrect {
 	/*
 		https://www.w3schools.com/colors/colors_british.asp - Carnival red */
-	background: #c71c2c;
+	background: var(--color-incorrect);
 	color: white;
 }
 
@@ -33,10 +33,9 @@ code {
 
 .feedback {
 	overflow-wrap: normal;
-	overflow: scroll;
-	white-space: pre-line;
+	overflow: auto;
 	hyphens: auto;
-	max-height: 25rem;
+	max-height: 20rem;
 }
 
 .img100pct img {
@@ -50,4 +49,10 @@ code {
 
 hr {
 	size: 2;
+}
+
+.solution {
+	overflow-x: auto;
+	overflow-y: auto;
+	max-height: 25rem;
 }

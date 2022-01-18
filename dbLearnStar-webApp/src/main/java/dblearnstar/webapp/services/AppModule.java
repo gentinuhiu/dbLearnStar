@@ -53,11 +53,13 @@ import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.PersonRole;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.model.model.UserInfo.UserRole;
+import dblearnstar.webapp.util.AppConfig;
 
 @ImportModule(Bootstrap4Module.class)
 public class AppModule {
 	public static void bind(ServiceBinder binder) {
 		binder.bind(AccessControllerRequestFilter.class);
+		binder.bind(DigestService.class);
 		binder.bind(GenericDao.class);
 		binder.bind(GenericService.class);
 		binder.bind(GroupManager.class);
@@ -71,13 +73,14 @@ public class AppModule {
 	}
 
 	public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration) {
-		configuration.override(SymbolConstants.APPLICATION_VERSION, "0.8-T5.7.2");
+		configuration.override(SymbolConstants.APPLICATION_VERSION, "0.8.6");
 		configuration.override(SymbolConstants.PRODUCTION_MODE, false);
 	}
 
 	public static void contributeApplicationDefaults(MappedConfiguration<String, Object> configuration) {
 		configuration.add(SymbolConstants.SUPPORTED_LOCALES, "en,mk");
-		configuration.add(SymbolConstants.HMAC_PASSPHRASE, "JxIJa1SIjasihd08as09!W!" + UUID.randomUUID());
+		configuration.add(SymbolConstants.HMAC_PASSPHRASE,
+				AppConfig.getString("tapestry.hmac-passphrase") + UUID.randomUUID());
 		configuration.add(SymbolConstants.ENABLE_HTML5_SUPPORT, true);
 		configuration.add(SymbolConstants.COMPRESS_WHITESPACE, false);
 

@@ -23,6 +23,7 @@ package dblearnstar.webapp.services;
 import java.util.List;
 
 import dblearnstar.model.entities.Person;
+import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentStartedTest;
 import dblearnstar.model.entities.StudentSubmitSolution;
@@ -81,6 +82,11 @@ public interface TestManager {
 	public List<StudentSubmitSolution> getEvaluatedSolutionsForTaskInTestInstance(long studentId,
 			long taskInTestInstanceId);
 
+	public List<SolutionAssessment> getAllEvaluationsOfSolutionsForTaskInTestInstance(long studentId,
+			long taskInTestInstanceId);
+
 	public Float getTotalPoints(long studentId, long testInstanceId);
+
+	public boolean accessToTaskInTestInstanceAllowed(Student student, TaskInTestInstance tti);
 
 }

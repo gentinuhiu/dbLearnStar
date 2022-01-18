@@ -76,6 +76,16 @@ public class OpenDiscussions {
 	@Property
 	SolutionAssessment runningSolutionAssessment;
 
+	public void onActivate() {
+		if (selectedTestInstance != null) {
+			selectedTestInstance = genericService.getByPK(TestInstance.class, selectedTestInstance.getTestInstanceId());
+		}
+	}
+
+	public void onActivate(TestInstance ti) {
+		selectedTestInstance = ti;
+	}
+
 	public List<SolutionAssessment> getSolutionAssessmentsWithDiscussion() {
 		return ((List<SolutionAssessment>) UsefulMethods.castList(SolutionAssessment.class,
 				genericService.getAll(SolutionAssessment.class)))

@@ -50,4 +50,13 @@ public interface EvaluationService {
 
 	public void processSolution(String issuedByUserName, StudentSubmitSolution s);
 
+	public Triplet<List<Object[]>, List<String>, List<String>> getResultsForPrintingPurposes(String userName,
+			String queryToRun, TestInstanceParameters tip, String schema, String type);
+
+	/**
+	 * @return <resultsSimple, resultsHeadersSimple, resultsErrors>
+	 */
+	Triplet<List<Object[]>, List<String>, List<String>> getEvalResultsForViewing(String userName, String queryToRun,
+			TaskInTestInstance taskInTestInstance, TestInstanceParameters tip, String schema);
+
 }

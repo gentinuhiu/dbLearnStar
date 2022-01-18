@@ -6,10 +6,6 @@
 		<div class="modal-dialog ${additionalClassDialog}" role="document">
 			<div class="modal-content">
 				<div class="modal-body">
-					<button type="button" class="close mb-3" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
 					<t:body />
 				</div>
 			</div>

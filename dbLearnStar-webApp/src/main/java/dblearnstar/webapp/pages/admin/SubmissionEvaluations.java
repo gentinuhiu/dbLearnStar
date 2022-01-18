@@ -26,8 +26,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.tapestry5.OptionGroupModel;
-import org.apache.tapestry5.OptionModel;
 import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
@@ -42,12 +40,10 @@ import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.http.services.Request;
-import org.apache.tapestry5.internal.OptionModelImpl;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.PersistentLocale;
 import org.apache.tapestry5.services.SelectModelFactory;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
-import org.apache.tapestry5.util.AbstractSelectModel;
 import org.slf4j.Logger;
 
 import dblearnstar.model.entities.SolutionAssessment;
@@ -56,11 +52,14 @@ import dblearnstar.model.entities.StudentSubmitSolution;
 import dblearnstar.model.entities.TaskInTestInstance;
 import dblearnstar.model.entities.TaskIsOfType;
 import dblearnstar.model.entities.TestInstance;
+import dblearnstar.model.entities.TestInstanceParameters;
 import dblearnstar.model.model.ModelConstants;
 import dblearnstar.model.model.TaskTypeChecker;
+import dblearnstar.model.model.Triplet;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.model.StudentSelectModel;
+import dblearnstar.webapp.model.TaskInTestInstanceSelectModel;
 import dblearnstar.webapp.services.EvaluationService;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.PersonManager;
@@ -69,9 +68,9 @@ import dblearnstar.webapp.services.TranslationService;
 import dblearnstar.webapp.services.UsefulMethods;
 
 @AdministratorPage
-@Import(stylesheet = { "SubmissionLogViewer.css" }, module = { "zoneUpdateEffect", "bootstrap/modal",
-		"bootstrap/collapse" })
-public class SubmissionLogViewer {
+@Import(stylesheet = { "SubmissionEvaluations.css", "feedback-styles.css" }, module = { "zoneUpdateEffect",
+		"bootstrap/modal", "bootstrap/collapse", "PrettyPrint" })
+public class SubmissionEvaluations {
 
 	@SessionState
 	private UserInfo userInfo;
@@ -115,6 +114,8 @@ public class SubmissionLogViewer {
 	private Zone zSubmissions;
 	@InjectComponent
 	private Zone zModal;
+	@InjectComponent
+	private Zone zSQLEval;
 
 	@Property
 	private StudentSubmitSolution submission;
@@ -150,10 +151,29 @@ public class SubmissionLogViewer {
 	@Property
 	SolutionAssessment editedAssessment;
 
-	private Boolean toCancel;
+	@Property
+	@Persist
+	private List<String> resultsHeaders1;
+	@Property
+	@Persist
+	private List<String> resultsHeaders2;
+	@Property
+	@Persist
+	private List<Object[]> resultsEvaluation1;
+	@Property
+	@Persist
+	private List<Object[]> resultsEvaluation2;
+	@Property
+	@Persist
+	private List<String> resultsErrors1;
+	@Property
+	private String resultsError;
+	@Property
+	@Persist
+	private List<String> resultsErrors2;
 
 	public void onActivate() {
-		logger.info("Activated from {} by {} {}", request.getRemoteHost(), userInfo.getUserName(),
+		logger.warn("Activated from {} by {} {}", request.getRemoteHost(), userInfo.getUserName(),
 				request.getHeader("User-Agent"));
 		if (onlyLast == null) {
 			onlyLast = true;
@@ -267,38 +287,11 @@ public class SubmissionLogViewer {
 	}
 
 	public SelectModel getSelectTaskInTestInstanceModel() {
-
-		class TaskInTestInstanceSelectModel extends AbstractSelectModel {
-			private List<TaskInTestInstance> taskInTestInstances;
-
-			public TaskInTestInstanceSelectModel(List<TaskInTestInstance> taskInTestInstances) {
-				if (taskInTestInstances == null) {
-					this.taskInTestInstances = new ArrayList<TaskInTestInstance>();
-				} else {
-					this.taskInTestInstances = taskInTestInstances;
-				}
-			}
-
-			@Override
-			public List<OptionGroupModel> getOptionGroups() {
-				return null;
-			}
-
-			@Override
-			public List<OptionModel> getOptions() {
-				List<OptionModel> options = new ArrayList<OptionModel>();
-				for (TaskInTestInstance taskInTestInstance : taskInTestInstances) {
-					options.add(new OptionModelImpl(taskInTestInstance.getTask().getTitle(), taskInTestInstance));
-				}
-				return options;
-			}
+		List<TaskInTestInstance> list = new ArrayList<TaskInTestInstance>();
+		if (filterTestInstance != null) {
+			list = filterTestInstance.getTaskInTestInstances();
 		}
-
-		if (filterTestInstance == null) {
-			return new TaskInTestInstanceSelectModel(new ArrayList<TaskInTestInstance>());
-		} else {
-			return new TaskInTestInstanceSelectModel(filterTestInstance.getTaskInTestInstances());
-		}
+		return new TaskInTestInstanceSelectModel(list);
 	}
 
 	public void onValueChangedFromSelectStudent(Student newStudent) {
@@ -343,8 +336,16 @@ public class SubmissionLogViewer {
 		}
 	}
 
-	public String getCodeType() {
-		List<TaskIsOfType> listTypes = submission.getTaskInTestInstance().getTask().getTaskIsOfTypes();
+	@CommitAfter
+	public void onActionFromReevaluateEditedSubmission(StudentSubmitSolution s) {
+		evaluationService.processSolution(userInfo.getUserName(), s);
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zModal);
+		}
+	}
+
+	public String getCodeType(StudentSubmitSolution submittedSolution) {
+		List<TaskIsOfType> listTypes = submittedSolution.getTaskInTestInstance().getTask().getTaskIsOfTypes();
 		if (listTypes != null && listTypes.size() > 0) {
 			return listTypes.get(0).getTaskType().getCodetype();
 		} else {
@@ -352,20 +353,30 @@ public class SubmissionLogViewer {
 		}
 	}
 
+	public boolean isEditedAssessmentTaskSQL() {
+		if (editedAssessment != null) {
+			StudentSubmitSolution sss = genericService.getByPK(StudentSubmitSolution.class,
+					editedAssessment.getStudentSubmitSolution().getStudentSubmitSolutionId());
+			return TaskTypeChecker.isSQL(getCodeType(sss));
+		} else {
+			return false;
+		}
+	}
+
 	public boolean isSQL() {
-		return TaskTypeChecker.isSQL(getCodeType());
+		return TaskTypeChecker.isSQL(getCodeType(submission));
 	}
 
 	public boolean isTEXT() {
-		return TaskTypeChecker.isTEXT(getCodeType());
+		return TaskTypeChecker.isTEXT(getCodeType(submission));
 	}
 
 	public boolean isDDL() {
-		return TaskTypeChecker.isDDL(getCodeType());
+		return TaskTypeChecker.isDDL(getCodeType(submission));
 	}
 
 	public boolean isUPLOAD() {
-		return TaskTypeChecker.isUPLOAD(getCodeType());
+		return TaskTypeChecker.isUPLOAD(getCodeType(submission));
 	}
 
 	public SolutionAssessment getSubmissionsFirstEvaluation() {
@@ -387,20 +398,19 @@ public class SubmissionLogViewer {
 		}
 	}
 
-	public void onCanceledFromFormEditor() {
-		toCancel = true;
+	@CommitAfter
+	public void onSuccessFromFormEditor() {
+		if (editedAssessment != null) {
+			editedAssessment.setEvaluatedOn(Calendar.getInstance().getTime());
+			genericService.saveOrUpdate(editedAssessment);
+		}
+		editedAssessment = null;
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zModal).addRender(zSubmissions);
+		}
 	}
 
-	@CommitAfter
-	public void onSubmitFromFormEditor() {
-		if (toCancel != null && toCancel) {
-			toCancel = null;
-		} else {
-			if (editedAssessment != null) {
-				editedAssessment.setEvaluatedOn(Calendar.getInstance().getTime());
-				genericService.saveOrUpdate(editedAssessment);
-			}
-		}
+	public void onActionFromCancelFormEditor() {
 		editedAssessment = null;
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zModal).addRender(zSubmissions);
@@ -433,6 +443,49 @@ public class SubmissionLogViewer {
 			return editedAssessment.getStudentSubmitSolution().getTaskInTestInstance().getTask().getDescription();
 		} else {
 			return trans;
+		}
+	}
+
+	@Property
+	private String oneHeader;
+	@Property
+	private Object[] oneRow;
+	@Property
+	private Object oneColumn;
+
+	void onActionFromViewEvaluationResults(StudentSubmitSolution s) {
+		if (resultsEvaluation1 != null) {
+			resultsEvaluation1 = null;
+		} else {
+			TaskInTestInstance tti = s.getTaskInTestInstance();
+			/*
+			 * TODO: Only supports TestInstances with a single TestInstanceParameter line
+			 */
+			TestInstanceParameters tip = tti.getTestInstance().getTestInstanceParameters().get(0);
+
+			Triplet<List<Object[]>, List<String>, List<String>> rsltsSimple = evaluationService
+					.getEvalResultsForViewing(userInfo.getUserName(), s.getSubmission(), tti, tip,
+							tip.getSchemaSimple());
+			Triplet<List<Object[]>, List<String>, List<String>> rsltsComplex = evaluationService
+					.getEvalResultsForViewing(userInfo.getUserName(), s.getSubmission(), tti, tip,
+							tip.getSchemaComplex());
+			resultsEvaluation1 = rsltsSimple.getFirstItem();
+			resultsEvaluation2 = rsltsComplex.getFirstItem();
+			resultsHeaders1 = rsltsSimple.getSecondItem();
+			resultsHeaders2 = rsltsComplex.getSecondItem();
+			resultsErrors1 = rsltsSimple.getThirdItem();
+			resultsErrors2 = rsltsComplex.getThirdItem();
+		}
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zSQLEval);
+		}
+	}
+
+	public String getClassSQLsolution() {
+		if (isEditedAssessmentTaskSQL()) {
+			return "sqlSolution";
+		} else {
+			return "nonSqlSolution";
 		}
 	}
 

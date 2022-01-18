@@ -23,8 +23,8 @@ requirejs.config({
 		'ckeditor-jquery': ['jquery', 'ckeditor-core']
 	},
 	paths: {
-		'ckeditor-core': '../webjars/ckeditor/4.16.1/standard/ckeditor',
-		'ckeditor-jquery': '../webjars/ckeditor/4.16.1/standard/adapters/jquery'
+		'ckeditor-core': '../webjars/ckeditor/4.17.1/standard/ckeditor',
+		'ckeditor-jquery': '../webjars/ckeditor/4.17.1/standard/adapters/jquery'
 	}
 });
 
@@ -35,7 +35,7 @@ define(["jquery", "ckeditor-jquery"], function($) {
 			{
 				specialChars: ['σ', 'θ', 'π', '⨯', '⋈', 'ρ', '÷', '&cup;', '&cap;',
 					'←', '→', '∨', '∧', '¬', '∀', '∃', '∄', '∈', '∉', '⊂', '⊃',
-					'⊆', '⊇', '≤', '≠', '≥'],
+					'⊆', '⊇', '≤', '≠', '≥', '»' ],
 				toolbarGroups: [
 					{ "name": "basicstyles", "groups": ["basicstyles"] },
 					{ "name": "paragraph", "groups": ["list"] },
@@ -45,7 +45,7 @@ define(["jquery", "ckeditor-jquery"], function($) {
 				],
 				stylesSet: [
 					{
-						name: 'Box',
+						name: 'Quote',
 						element: 'div',
 						attributes: { 'class': 'box' }
 					}, {

@@ -18,17 +18,20 @@
  * 
  ******************************************************************************/
 
-define(["jquery", "t5/core/dom", "t5/core/events"], function($, dom, events) {
+define(["jquery", "bootstrap/modal"], function($) {
 
-	$('*[data-container-type="zone"]').on(events.zone.didUpdate, function() {
-		$(this).css("animation", "0.5s linear slidein");
-	});
+	var positionToError = function(errorPosition) {
+		line = window.editor.posFromIndex(errorPosition).line;
+		col = window.editor.posFromIndex(errorPosition).ch;
+		if (col > 1)
+			line++;
+		realposition = window.editor.posFromIndex(errorPosition - line);
+		window.editor.focus();
+		window.editor.setCursor(realposition);
+	}
 
-	$('*[data-container-type="zone"]').on("animationend", function() {
-		$(this).css("animation", "none");
-		$(this).offsetHeight;
-		$(this).css("animation", "null");
-	});
+	return {
+		positionToError: positionToError
+	}
 
-	//return null;
 });

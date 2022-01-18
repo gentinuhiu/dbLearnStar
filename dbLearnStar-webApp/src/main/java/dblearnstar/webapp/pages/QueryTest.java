@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +47,6 @@ import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
@@ -62,6 +62,7 @@ import org.apache.tapestry5.http.services.RequestGlobals;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.PersistentLocale;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
+import org.apache.tapestry5.services.ajax.JavaScriptCallback;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.apache.tapestry5.upload.services.UploadedFile;
 import org.slf4j.Logger;
@@ -77,6 +78,7 @@ import dblearnstar.model.model.Triplet;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.annotations.StudentPage;
+import dblearnstar.webapp.components.ModalBox;
 import dblearnstar.webapp.services.EvaluationService;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.PersonManager;
@@ -93,6 +95,9 @@ public class QueryTest {
 	@Property
 	@SessionState
 	private UserInfo userInfo;
+
+	@Property
+	private Boolean accessAllowed;
 
 	@Inject
 	private Logger logger;
@@ -122,8 +127,6 @@ public class QueryTest {
 	@Inject
 	private PersonManager pm;
 
-	@InjectPage
-	private ExamsAndTasksOverviewPage examsAndTasksOverviewPage;
 	@InjectComponent
 	private Zone historyZone;
 	@InjectComponent
@@ -132,6 +135,8 @@ public class QueryTest {
 	private Zone errorZone;
 	@InjectComponent
 	private Zone evalZone;
+	@InjectComponent
+	private Zone currentTimeZone;
 
 	@Property
 	@Persist
@@ -151,6 +156,10 @@ public class QueryTest {
 	@Property
 	@Persist(PersistenceConstants.FLASH)
 	private String queryString;
+
+	@Property
+	@Persist
+	private String errorPosition;
 
 	@Property
 	private String codeType;
@@ -197,6 +206,9 @@ public class QueryTest {
 		toUpload = false;
 		toSubmitText = false;
 		recordActivity(ModelConstants.ActivityStillViewing, payload, issuer);
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(currentTimeZone);
+		}
 	}
 
 	@PublishEvent
@@ -246,8 +258,29 @@ public class QueryTest {
 		}
 	}
 
-	public Date getCurrentTime() {
-		return new Date();
+	@InjectComponent
+	private ModalBox errorModal;
+
+	public void onActionFromHideModal() {
+		errorModal.hide();
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(errorZone).addCallback(positionToError());
+		}
+	}
+
+	private JavaScriptCallback positionToError() {
+		return new JavaScriptCallback() {
+			public void run(JavaScriptSupport javascriptSupport) {
+				javaScriptSupport.require("codemirror-error").invoke("positionToError").with(errorPosition);
+			}
+		};
+	}
+
+	public void onActionFromHideEvalModal() {
+		errorModal.hide();
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(evalZone).addCallback(positionToError());
+		}
 	}
 
 	public void onActivate() {
@@ -255,15 +288,13 @@ public class QueryTest {
 		studentId = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
 	}
 
-	public void onActivate(TaskInTestInstance tti) {
+	public Object onActivate(TaskInTestInstance tti) {
 		logger.debug("onActivate: {}", tti.getTaskInTestInstanceId());
+		taskInTestInstance = genericService.getByPK(TaskInTestInstance.class, tti.getTaskInTestInstanceId());
 		Student student = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
-		if (userInfo.isAdministrator() || testManager
-				.getTestInstancesForStudentByTestType(student.getStudentId(),
-						tti.getTestInstance().getTestTemplate().getTestType().getTestTypeId())
-				.stream().anyMatch(ti -> ti.getTestInstanceId() == tti.getTestInstance().getTestInstanceId())) {
+
+		if (userInfo.isAdministrator() || testManager.accessToTaskInTestInstanceAllowed(student, tti)) {
 			studentId = student.getStudentId();
-			taskInTestInstance = genericService.getByPK(TaskInTestInstance.class, tti.getTaskInTestInstanceId());
 			codeType = taskInTestInstance.getTask().getTaskIsOfTypes().get(0).getTaskType().getCodetype();
 
 			resultsErrors = null;
@@ -276,14 +307,17 @@ public class QueryTest {
 			if (filterNotForEvalution == null) {
 				filterNotForEvalution = false;
 			}
+			recordActivity(ModelConstants.ActivityViewTask, "", "onActivity");
 			toUpload = false;
+			logger.debug("access allowed");
+			accessAllowed = true;
+			return null;
 		} else {
+			accessAllowed = false;
 			logger.error("Task not allowed: ttiId:{} username:{}", tti.getTaskInTestInstanceId(),
 					student.getPerson().getUserName());
-			throw new RuntimeException(student.getPerson().getUserName()
-					+ " tried to access a task that is not allowed. Access was logged.");
+			return ExamsAndTasksOverviewPage.class;
 		}
-		recordActivity(ModelConstants.ActivityViewTask, "", "onActivity");
 	}
 
 	public TaskInTestInstance onPassivate() {
@@ -294,6 +328,7 @@ public class QueryTest {
 		if (codeType != null) {
 			if (isSQL()) {
 				javaScriptSupport.require("codemirror-run");
+				javaScriptSupport.require("codemirror-error");
 			}
 		}
 	}
@@ -305,7 +340,7 @@ public class QueryTest {
 		testManager.recordActivityInTask(student.getPerson(), taskInTestInstance, type, payload);
 	}
 
-	public String getErrorPosition() {
+	public String getQueryErrorPosition() {
 		if (resultsErrors != null && resultsErrors.size() > 0) {
 			try {
 				List<String> lines = resultsErrors.stream().filter(p -> p.toLowerCase().contains("position"))
@@ -324,104 +359,15 @@ public class QueryTest {
 		}
 	}
 
-	public void getResultsFrom(String queryToRun, TestInstanceParameters tip, String schema, String type) {
-		if (queryToRun != null) {
-			String qtlc = queryToRun.toLowerCase();
-			if (qtlc.contains("delete") || qtlc.contains("update") || qtlc.contains("insert") || qtlc.contains("create")
-					|| qtlc.contains("drop") || qtlc.contains("alter") || qtlc.contains("information_schema")) {
-				resultsErrors.add(messages.get("sql-db-modifications"));
-				logger.error("Database modification or catalog or directory query issued by {}",
-						userInfo.getUserName());
-			} else {
-				resultsSimple = new ArrayList<Object[]>();
-				resultsHeadersSimple = new ArrayList<String>();
-
-				Connection connection = null;
-				int statusCounter = 0;
-				try {
-					Properties props = new Properties();
-					props.setProperty("user", tip.getDbUser());
-					props.setProperty("password", tip.getDbPass());
-					String url = "jdbc:postgresql://" + tip.getHostname() + ":" + tip.getPort() + "/" + tip.getDbName();
-
-					connection = DriverManager.getConnection(url, props);
-					statusCounter = 1;
-
-					connection.setClientInfo("ApplicationName", "dbLearn*Evaluator");
-					connection.setReadOnly(true);
-					connection.setAutoCommit(false);
-					connection.setSavepoint();
-					connection.setSchema(schema);
-					statusCounter = 2;
-
-					ResultSet rs = connection.prepareStatement(queryToRun).executeQuery();
-					boolean isNextRow = rs.next();
-					int numColumns = rs.getMetaData().getColumnCount();
-					for (int i = 1; i <= numColumns; i++) {
-						resultsHeadersSimple.add(rs.getMetaData().getColumnName(i));
-					}
-					statusCounter = 3;
-
-					int count = 1;
-					while (isNextRow && count < 500) {
-						Object[] o = new Object[numColumns];
-						for (int i = 1; i <= numColumns; i++) {
-							o[i - 1] = rs.getObject(i);
-						}
-						resultsSimple.add(o);
-						isNextRow = rs.next();
-						count++;
-					}
-					statusCounter = 4;
-					rs.close();
-					SQLWarning w = connection.getWarnings();
-					if (w != null) {
-						logger.debug("warning");
-						resultsErrors.add(w.getMessage());
-					}
-					if (count >= 500) {
-						logger.debug("count");
-						resultsErrors.add(messages.get("sql-moreThan500Rows"));
-					}
-					connection.rollback();
-				} catch (Exception e) {
-					if (statusCounter == 0) {
-						logger.error("Error when connecting to evaluation database for testinstance: {}",
-								tip.getTestInstance().getTestInstanceId());
-						logger.debug("Exception: {}", e);
-						resultsErrors.add(messages.get("evalDBNA-label"));
-					} else {
-						logger.error(
-								"Connected to evaluation database for test instance {}, but failed in running query: {} ",
-								tip.getTestInstance().getTestInstanceId(), queryToRun);
-						logger.debug("Exception: {}", e);
-						resultsErrors.add(e.getMessage());
-					}
-				} finally {
-					if (connection != null) {
-						try {
-							connection.close();
-						} catch (Exception e) {
-							logger.error("Connection can't be closed {} {}", userInfo.getUserName(), e.getMessage());
-						}
-					}
-				}
-			}
-		} else {
-			resultsSimple = new ArrayList<Object[]>();
-			resultsHeadersSimple = new ArrayList<String>();
-		}
-	}
-
 	private void startTestIfNotStarted() {
 		studentStartedTest = testManager.studentStartTest(studentId,
 				taskInTestInstance.getTestInstance().getTestInstanceId());
 	}
 
-	private StudentSubmitSolution recordQueryInLog(Boolean notForEvaluation, String query) {
+	private StudentSubmitSolution recordQueryAsStudentSubmitSolution(Boolean notForEvaluation, String query) {
 		if (query != null) {
 			StudentSubmitSolution solution = new StudentSubmitSolution();
-			solution.setSubmittedOn(new Date());
+			solution.setSubmittedOn(getCurrentTime());
 			solution.setStudentStartedTest(studentStartedTest);
 			solution.setSubmission(query);
 			solution.setTaskInTestInstance(taskInTestInstance);
@@ -472,7 +418,14 @@ public class QueryTest {
 		evalResultsExam = false;
 
 		// For printing purposes
-		getResultsFrom(queryToRun, testInstanceParameters, testInstanceParameters.getSchemaSimple(), "simple");
+		Triplet<List<Object[]>, List<String>, List<String>> rezultatiteZaListanje = evaluationService
+				.getResultsForPrintingPurposes(userInfo.getUserName(), queryToRun, testInstanceParameters,
+						testInstanceParameters.getSchemaSimple(), "simple");
+		resultsSimple = rezultatiteZaListanje.getFirstItem();
+		resultsHeadersSimple = rezultatiteZaListanje.getSecondItem();
+		resultsErrors = rezultatiteZaListanje.getThirdItem();
+
+		errorPosition = getQueryErrorPosition();
 
 		// For evaluation
 		if (!notForEvaluation) {
@@ -492,7 +445,7 @@ public class QueryTest {
 			}
 		}
 		startTestIfNotStarted();
-		recordQueryInLog(notForEvaluation, queryToRun);
+		recordQueryAsStudentSubmitSolution(notForEvaluation, queryToRun);
 	}
 
 	public void onSelectedFromEvaluate() {
@@ -550,7 +503,7 @@ public class QueryTest {
 		}
 	}
 
-	private StreamResponse onActionFromDownloadFile(StudentSubmitSolution sss) {
+	public StreamResponse onActionFromDownloadFile(StudentSubmitSolution sss) {
 		logger.info("Start Download of {}", sss.getStudentSubmitSolutionId());
 		if (sss.getStudentStartedTest().getStudent().getPerson().getPersonId() == userInfo.getPersonId()) {
 			queryString = "";
@@ -603,7 +556,7 @@ public class QueryTest {
 	}
 
 	Object onActionFromBackToExamsOverview() {
-		return examsAndTasksOverviewPage;
+		return ExamsAndTasksOverviewPage.class;
 	}
 
 	public String getStyleClassForEvaluation() {
@@ -686,8 +639,9 @@ public class QueryTest {
 			evalResultsComplex = false;
 			evalResultsExam = false;
 			queryString = "FILE:" + file.getFileName();
-			StudentSubmitSolution solution = recordQueryInLog(false, queryString);
-			SimpleDateFormat sdf = new SimpleDateFormat(AppConfig.getString("date.upload.submission.format"));
+			StudentSubmitSolution solution = recordQueryAsStudentSubmitSolution(false, queryString);
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+					AppConfig.getString("date.upload.submission.format"));
 			String emde5 = "";
 			try {
 				MessageDigest md = MessageDigest.getInstance("MD5");
@@ -706,7 +660,7 @@ public class QueryTest {
 						AppConfig.getString("additionalFiles.path") + AppConfig.getString("upload.path.submissions")
 								+ "/STUDENT_" + solution.getStudentStartedTest().getStudent().getPerson().getUserName()
 								+ "_SUBMISSION_" + solution.getStudentSubmitSolutionId() + "_"
-								+ sdf.format(solution.getSubmittedOn()) + "_MD5_" + emde5);
+								+ simpleDateFormat.format(solution.getSubmittedOn()) + "_MD5_" + emde5);
 				file.write(copied);
 
 				solution.setSubmission(
@@ -714,7 +668,8 @@ public class QueryTest {
 
 				genericService.saveOrUpdate(solution);
 			} catch (Exception e) {
-				logger.error("Error uploading: {} {} {}", userInfo.getUserName(), file.getFileName(), e.getMessage());
+				logger.error("Error uploading: {} {} {}", userInfo.getUserName(), file.getFileName(), e);
+				e.printStackTrace();
 			}
 			toUpload = false;
 		}
@@ -723,7 +678,7 @@ public class QueryTest {
 			evalResultsSimple = false;
 			evalResultsComplex = false;
 			evalResultsExam = false;
-			recordQueryInLog(false, queryString);
+			recordQueryAsStudentSubmitSolution(false, queryString);
 		}
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(historyZone).addRender(evalZone).addRender(errorZone).addRender(resultsZone);
@@ -795,6 +750,82 @@ public class QueryTest {
 			return "CK";
 		} else {
 			return "";
+		}
+	}
+
+	public Date getCurrentTime() {
+		return new Date();
+	}
+
+	public String getDisplayCurrentTime() {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(AppConfig.getString("datetime.gui.format"));
+		return simpleDateFormat.format(getCurrentTime());
+	}
+
+	public String getDisplayEndTime() {
+		Date dateFrom = taskInTestInstance.getTestInstance().getScheduledFor();
+		Date dateUntil = taskInTestInstance.getTestInstance().getScheduledUntil();
+		if (dateFrom != null && dateUntil != null) {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(AppConfig.getString("datetime.gui.format"));
+			if (dateFrom.before(getCurrentTime()) && dateUntil.after(getCurrentTime())) {
+				if ((new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))).after(dateUntil)) {
+					return simpleDateFormat.format(dateUntil);
+				} else {
+					return simpleDateFormat.format(dateUntil);
+				}
+			} else {
+				if ((new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5))).before(dateUntil)) {
+					return simpleDateFormat.format(dateUntil);
+				} else {
+					return null;
+				}
+			}
+		} else {
+			return null;
+		}
+	}
+
+	public String getClassTestIsNow() {
+		Date dateFrom = taskInTestInstance.getTestInstance().getScheduledFor();
+		Date dateUntil = taskInTestInstance.getTestInstance().getScheduledUntil();
+		if (dateFrom != null && dateUntil != null) {
+			if (dateFrom.before(getCurrentTime()) && dateUntil.after(getCurrentTime())) {
+				if ((new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))).after(dateUntil)) {
+					return "alert alert-danger";
+				} else {
+					return "alert alert-success";
+				}
+			} else {
+				if ((new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5))).before(dateUntil)) {
+					return "alert alert-dark";
+				} else {
+					return "";
+				}
+			}
+		} else {
+			return "";
+		}
+	}
+
+	public String getTestIsNow() {
+		Date dateFrom = taskInTestInstance.getTestInstance().getScheduledFor();
+		Date dateUntil = taskInTestInstance.getTestInstance().getScheduledUntil();
+		if (dateFrom != null && dateUntil != null) {
+			if (dateFrom.before(getCurrentTime()) && dateUntil.after(getCurrentTime())) {
+				if ((new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))).after(dateUntil)) {
+					return messages.get("timeIsRunningOut-label");
+				} else {
+					return messages.get("timeTestIsActive-label");
+				}
+			} else {
+				if ((new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5))).before(dateUntil)) {
+					return messages.get("timehasRunOut-label");
+				} else {
+					return null;
+				}
+			}
+		} else {
+			return null;
 		}
 	}
 

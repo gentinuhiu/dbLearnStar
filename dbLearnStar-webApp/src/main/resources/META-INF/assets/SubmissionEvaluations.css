@@ -1,8 +1,8 @@
 .sqlcode {
 	padding: 0.1em !important;
 	font-size: 75%;
-	white-space: pre-wrap;
-	break-word: all;
+	/*white-space: pre-wrap;
+	break-word: all;*/
 	overflow: scroll;
 }
 
@@ -64,7 +64,7 @@ td[data-grid-property="submission"] {
 td[data-grid-property="submission"] .code {
 	font-size: 75% !important;
 	line-height: 0.8em !important;
-	height: 23em !important;
+	height: 19em !important;
 	width: 99% !important;
 	white-space: pre-wrap;
 }
@@ -74,13 +74,14 @@ td[data-grid-property="submission"] .code img {
 }
 
 td[data-grid-property="assessment"] {
-	max-width: 12em !important;
+	max-width: 23em !important;
+	min-width: 15em !important;
 }
 
 td[data-grid-property="assessment"] pre {
 	font-size: 75% !important;
 	line-height: 0.8em !important;
-	max-height: 10em !important;
+	max-height: 12em !important;
 	white-space: pre-wrap;
 }
 
@@ -134,26 +135,42 @@ pre#kodot img {
 	background: yellow;
 }
 
+.feedback img {
+	width:120%;
+}
+
 table tbody tr.correct {
-	background: var(- -color-correct) !important;
+	background: var(--color-correct) !important;
 }
 
 table tbody tr.incorrect {
-	background: var(- -color-incorrect) !important;
+	background: var(--color-incorrect) !important;
 }
 
 table tbody tr.noeval {
-	background: var(- -color-noevaluation) !important;
+	background: var(--color-noevaluation) !important;
 }
 
 table tbody tr.exception {
-	background: var(- -color-exception) !important;
+	background: var(--color-exception) !important;
 }
 
 .modal-dialog {
-	width: 70%;
+	width: 95%;
+	max-width: 95%;
 }
 
-.card-body {
-	padding: 0.5em;
+#solution {
+	min-height: 20em;
+}
+
+.nonSqlSolution .code {
+	white-space: pre-wrap;
+	break-word: all;
+	line-height:1.2em;
+}
+
+.sqlSolution .code {
+	font-size:80%;
+	line-height:1em;
 }

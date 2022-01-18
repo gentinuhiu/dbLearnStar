@@ -30,7 +30,7 @@
 						<label for="selectTestInstance">${message:testInstance-label}</label>
 						<select t:type="select" id="selectTestInstance"
 							t:id="selectTestInstance" t:model="modelTestInstances"
-							t:value="testInstance" class="form-control"
+							t:value="selectedTestInstance" class="form-control"
 							t:zone="testInstanceZone"></select>
 					</div>
 				</form>
@@ -38,25 +38,25 @@
 		</div>
 
 		<div t:id="testInstanceZone" id="testInstanceZone" t:type="zone">
-			<div t:type="if" t:test="testInstance">
+			<div t:type="if" t:test="selectedTestInstance">
 				<div class="row">
 					<div class="col-4">
 						<p>
 							<a href="" class="btn btn-sm btn-primary" t:type="actionlink"
-								t:context="testInstance" t:id="editTestInstance">${message:symbol-edit}</a>
+								t:context="selectedTestInstance" t:id="editTestInstance">${message:symbol-edit}</a>
 							<a href="" class="btn btn-sm btn-danger" t:type="actionlink"
-								t:context="testInstance" t:id="deleteTestInstance">${message:symbol-removeObjectFromList}</a>
+								t:context="selectedTestInstance" t:id="deleteTestInstance">${message:symbol-removeObjectFromList}</a>
 							<a href="" class="btn btn-sm btn-default" t:type="actionlink"
-								t:context="testInstance" t:id="duplicateTestInstance">${message:symbol-duplicate}</a>
+								t:context="selectedTestInstance" t:id="duplicateTestInstance">${message:symbol-duplicate}</a>
 						</p>
 						<p>
-							${message:scheduledFor-label}: <span class="bg-info">${testInstance.scheduledFor}</span>
-							${message:scheduledUntil-label}: <span class="bg-info">${testInstance.scheduledUntil}</span>
+							${message:scheduledFor-label}: <span class="bg-info">${selectedTestInstance.scheduledFor}</span>
+							${message:scheduledUntil-label}: <span class="bg-info">${selectedTestInstance.scheduledUntil}</span>
 						</p>
-						<p t:type="outputraw" t:value="testInstance.description">Test
+						<p t:type="outputraw" t:value="selectedTestInstance.description">Test
 							Instance Description PLACEHOLDER</p>
 						<p>
-							<img src="${testInstance.testTemplate.model.diagramUrl}"
+							<img src="${selectedTestInstance.testTemplate.model.diagramUrl}"
 								style="width: 100%; max-width: 30em; max-height: 15em;" />
 						</p>
 					</div>
@@ -101,9 +101,9 @@
 							</tbody>
 						</table>
 						<a href="" class="btn btn-warning" t:type="actionlink"
-							t:context="testInstance" t:id="newTask">${message:symbol-createObjectAndAddToList}</a>
+							t:context="selectedTestInstance" t:id="newTask">${message:symbol-createObjectAndAddToList}</a>
 						<a href="" class="btn btn-primary" t:type="actionlink"
-							t:context="testInstance" t:id="addTask">${message:symbol-addObjectToList}</a>
+							t:context="selectedTestInstance" t:id="addTask">${message:symbol-addObjectToList}</a>
 					</div>
 				</div>
 			</div>
@@ -117,64 +117,15 @@
 	<div t:type="if" t:test="editedTestInstance" class="popupZone">
 
 		<div class="row">
-			<div class="col-lg-10">
-				<h3 style="margin-top: 0;">${message:editTestInstance-label}</h3>
+			<div class="col-10">
+				<h3 class="mt-0">${message:editTestInstance-label}</h3>
 			</div>
-			<div class="col-lg-2">
+			<div class="col-2">
 				<a class="close" aria-label="Close" href=""
 					t:id="cancelFrmTestInstance" t:type="actionlink"><span
 					aria-hidden="true">&times;</span> ${message:cancel-label}</a>
 			</div>
 		</div>
-
-		<form t:type="beaneditform" t:id="frmTestInstance"
-			t:exclude="testInstanceId" t:submitlabel="message:save-label"
-			t:add="testTemplate"
-			t:reorder="title,openToAllStudents,openForReviewByStudents,description,scheduledFor,scheduledUntil,testTemplate"
-			t:object="editedTestInstance">
-			frmTestInstance PLACEHOLDER
-			<p:title>
-				<div class="form-group col-lg-9">
-					<label t:type="label" t:for="title"></label> <input
-						t:type="textfield" t:id="title" t:value="editedTestInstance.title"></input>
-				</div>
-			</p:title>
-			<p:description>
-				<div class="form-group col-lg-9">
-					<label t:type="label" t:for="instanceDescription"></label>
-					<textarea class="descriptionEditor" t:type="textarea"
-						id="instanceDescription" t:id="instanceDescription"
-						t:value="editedTestInstance.description" t:mixins="WebEditor"
-						t:WebEditor.areaType="CKADMIN" />
-				</div>
-			</p:description>
-			<p:scheduledFor>
-				<div class="form-group col-lg-3">
-					<label t:type="label" t:for="scheduledFor"></label> <input
-						t:type="datefield" t:id="scheduledFor"
-						t:value="editedTestInstance.scheduledFor"
-						t:format="yyyy-MM-dd HH:mm"></input>
-				</div>
-			</p:scheduledFor>
-			<p:scheduledUntil>
-				<div class="form-group col-lg-3">
-					<label t:type="label" t:for="scheduledUntil"></label> <input
-						t:type="datefield" t:id="scheduledUntil"
-						t:value="editedTestInstance.scheduledUntil"
-						t:format="yyyy-MM-dd HH:mm"></input>
-				</div>
-			</p:scheduledUntil>
-			<p:testTemplate>
-				<div class="form-group col-lg-3">
-					<label t:type="label" for="testTemplates"></label> <select
-						t:type="select" t:id="testTemplates" t:model="testTemplates"
-						t:value="editedTestInstance.testTemplate"></select> <a
-						t:id="NewTestTemplate" href="" t:type="actionlink"
-						t:context="testType" class="btn btn.primary">${message:symbol-createObjectAndAddToList}
-						${message:testTemplate-label}</a>
-				</div>
-			</p:testTemplate>
-		</form>
 
 		<div t:type="if" t:test="editedTestTemplate">
 			<p:then>
@@ -192,12 +143,85 @@
 			<p:else>${message:testinstanceparameters-empty-message}</p:else>
 		</div>
 
+		<form t:type="beaneditform" t:id="frmTestInstance"
+			class="form-horizontal mt-3 mb-3" t:exclude="testInstanceId"
+			t:submitlabel="message:save-label" t:add="testTemplate"
+			t:reorder="testTemplate, title,ordering,openToAllStudents,openForReviewByStudents,scheduledFor,scheduledUntil,description"
+			t:object="editedTestInstance">
+			frmTestInstance PLACEHOLDER
+			<p:testTemplate>
+				<div class="form-row">
+					<div class="form-group col-10">
+						<label t:type="label" for="testTemplates"></label> <select
+							t:type="select" t:id="testTemplates" t:model="testTemplates"
+							t:value="editedTestInstance.testTemplate"></select>
+					</div>
+					<div class="form-group col-2 align-bottom">
+						<label>&nbsp;</label> <a t:id="NewTestTemplate" href=""
+							t:type="actionlink" t:context="testType"
+							class="col-12 btn btn-primary"><t:svgicon
+								t:path="plus-square" /> ${message:testTemplate-label}</a>
+					</div>
+				</div>
+				<hr/>
+			</p:testTemplate>
+			<p:title>
+				<div class="form-row">
+					<div class="form-group col-10">
+						<label t:type="label" t:for="title"></label> <input
+							t:type="textfield" t:id="title"
+							t:value="editedTestInstance.title"></input>
+					</div>
+					<div class="form-group col-2">
+						<label t:type="label" t:for="ordering"></label> <input
+							t:type="textfield" t:id="ordering"
+							t:value="editedTestInstance.ordering"></input>
+					</div>
+				</div>
+			</p:title>
+			<p:ordering>
+			</p:ordering>
+			<p:scheduledFor>
+				<div class="form-row">
+					<div class="form-group col-3">
+						<label t:type="label" t:for="scheduledFor"></label> <input
+							t:type="datefield" t:id="scheduledFor"
+							t:value="editedTestInstance.scheduledFor"
+							t:format="yyyy-MM-dd HH:mm"></input>
+					</div>
+					<div class="form-group col-3">
+						<label t:type="label" t:for="scheduledUntil"></label> <input
+							t:type="datefield" t:id="scheduledUntil"
+							t:value="editedTestInstance.scheduledUntil"
+							t:format="yyyy-MM-dd HH:mm"></input>
+					</div>
+				</div>
+			</p:scheduledFor>
+			<p:scheduledUntil>
+			</p:scheduledUntil>
+			<p:description>
+				<div class="form-row">
+					<div class="form-group col-12">
+						<label t:type="label" t:for="instanceDescription"></label>
+						<textarea class="descriptionEditor" t:type="textarea"
+							id="instanceDescription" t:id="instanceDescription"
+							t:value="editedTestInstance.description" t:mixins="WebEditor"
+							t:WebEditor.areaType="CKADMIN" />
+					</div>
+				</div>
+			</p:description>
+		</form>
+
+		<hr />
+
 		<div t:type="if" t:test="editedTestInstanceParameters">
+			<h4>${message:TestInstanceParameters-label}</h4>
 			<form t:type="beaneditform" t:id="frmTestInstanceParameters"
 				t:exclude="testInstanceParametersId"
 				t:submitlabel="message:save-label"
 				t:object="editedTestInstanceParameters">frmTestInstanceParameters
 				PLACEHOLDER</form>
+
 			<p:else>${message:testinstanceparameters-empty-message}</p:else>
 		</div>
 

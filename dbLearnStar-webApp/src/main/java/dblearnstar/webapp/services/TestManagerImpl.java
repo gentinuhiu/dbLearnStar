@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -35,6 +34,7 @@ import org.slf4j.Logger;
 
 import dblearnstar.model.entities.ActivityInTask;
 import dblearnstar.model.entities.Person;
+import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentStartedTest;
 import dblearnstar.model.entities.StudentSubmitSolution;
@@ -398,6 +398,28 @@ public class TestManagerImpl implements TestManager {
 	}
 
 	@Override
+	public List<SolutionAssessment> getAllEvaluationsOfSolutionsForTaskInTestInstance(long studentId,
+			long taskInTestInstanceId) {
+		try {
+			Query q = getEntityManager().createQuery("""
+					select sa
+					from SolutionAssessment sa
+					where
+						sa.studentSubmitSolution.studentStartedTest.student.studentId = :studentId and
+					    sa.studentSubmitSolution.taskInTestInstance.taskInTestInstanceId = :taskInTestInstanceId
+					order by sa.evaluatedOn desc, sa.studentSubmitSolution.submittedOn desc
+					""");
+			q.setParameter("studentId", studentId);
+			q.setParameter("taskInTestInstanceId", taskInTestInstanceId);
+			List<SolutionAssessment> output = UsefulMethods.castList(SolutionAssessment.class, q.getResultList());
+			return output;
+		} catch (Exception e) {
+			logger.error("getAllEvaluationsOfSolutionsForTaskInTestInstance failed {}", e);
+			return null;
+		}
+	}
+
+	@Override
 	public Float getTotalPoints(long studentId, long testInstanceId) {
 		try {
 			Query q = getEntityManager().createQuery("""
@@ -421,6 +443,13 @@ public class TestManagerImpl implements TestManager {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	@Override
+	public boolean accessToTaskInTestInstanceAllowed(Student student, TaskInTestInstance tti) {
+		return getTestInstancesForStudentByTestType(student.getStudentId(),
+				tti.getTestInstance().getTestTemplate().getTestType().getTestTypeId()).stream()
+						.anyMatch(ti -> ti.getTestInstanceId() == tti.getTestInstance().getTestInstanceId());
 	}
 
 }

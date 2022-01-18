@@ -43,10 +43,10 @@ import dblearnstar.webapp.annotations.PublicPage;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.PersonManager;
 
-@Import(stylesheet = { "classpath:META-INF/resources/webjars/fontsource-fira-sans/3.0.5/index.css",
-		"classpath:META-INF/resources/webjars/fontsource-fira-sans/3.0.5/500.css",
-		"classpath:META-INF/resources/webjars/fontsource-fira-sans/3.0.5/700.css",
-		"classpath:META-INF/resources/webjars/firacode/1.205.0/distr/fira_code.css",
+@Import(stylesheet = { "classpath:META-INF/assets/META-INF/resources/webjars/fontsource-fira-sans/3.0.5/index.css",
+		"classpath:META-INF/assets/META-INF/resources/webjars/fontsource-fira-sans/3.0.5/500.css",
+		"classpath:META-INF/assets/META-INF/resources/webjars/fontsource-fira-sans/3.0.5/700.css",
+		"classpath:META-INF/assets/META-INF/resources/webjars/firacode/1.205.0/distr/fira_code.css",
 		"site-overrides.css" }, module = { "bootstrap/dropdown", "bootstrap/collapse", "zoneUpdateEffect" })
 @PublicPage
 public class Layout {
@@ -91,14 +91,14 @@ public class Layout {
 	}
 
 	public String[] getStudentPageNames() {
-		return new String[] { "ExamsAndTasksOverview", "SolutionComparator", "OpenDiscussions", "PersonalAnalytics" };
+		return new String[] { "ExamsAndTasksOverview", "OpenDiscussions", "PersonalAnalytics" };
 	}
 
 	public String[] getAdminPageNames() {
 		if (userInfo.isAdministrator()) {
-			return new String[] { "admin/ManagePersons", "admin/GroupManagement", "admin/StudentGroupProgress",
-					"admin/ManageModels", "admin/TestAdmin", "admin/Reevaluation", "admin/SubmissionLogViewer",
-					"admin/TestCollectionManagement", "admin/ActiveUsers" };
+			return new String[] { "admin/ManagePersons", "admin/GroupManagement", "admin/ManageModels",
+					"admin/TestAdmin", "admin/TestCollectionManagement", "admin/StudentGroupProgress",
+					"admin/SubmissionEvaluations", "admin/Reevaluation", "admin/ActiveUsers" };
 		} else {
 			return null;
 		}

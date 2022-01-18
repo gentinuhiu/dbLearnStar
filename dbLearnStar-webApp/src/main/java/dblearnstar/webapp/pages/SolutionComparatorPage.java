@@ -27,20 +27,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
-import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.SelectModelFactory;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
@@ -49,6 +45,7 @@ import org.slf4j.Logger;
 import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.StudentSubmitSolution;
 import dblearnstar.model.entities.TaskInTestInstance;
+import dblearnstar.model.entities.TestCollection;
 import dblearnstar.model.entities.TestInstance;
 import dblearnstar.model.model.ModelConstants;
 import dblearnstar.model.model.TaskTypeChecker;
@@ -80,13 +77,16 @@ public class SolutionComparatorPage {
 	@Inject
 	private GenericService genericService;
 
-	@InjectComponent
-	private Zone zTestInstance;
-
 	@Persist
 	@Property
 	private TestInstance selectedTestInstance;
 
+	@Persist
+	@Property
+	private TestCollection testCollection;
+
+	@Property
+	private SolutionAssessment oneOfTheEvaluatedSolutions;
 	@Property
 	private StudentSubmitSolution otherStudentSubmitSolution;
 	@Property
@@ -96,38 +96,9 @@ public class SolutionComparatorPage {
 	@Property
 	private float totalPoints;
 	@Property
-	Map<TaskInTestInstance, SolutionAssessment> mapTTItoSA;
+	Map<TaskInTestInstance, List<SolutionAssessment>> mapTTItoSA;
 
 	private long studentId;
-
-	public void prepareMapOfEvaluationsAndTotal() {
-		totalPoints = 0;
-		mapTTItoSA = new HashMap<TaskInTestInstance, SolutionAssessment>();
-		for (TaskInTestInstance tti : taskInTestInstances) {
-			List<StudentSubmitSolution> lista = testManager.getEvaluatedSolutionsForTaskInTestInstance(studentId,
-					tti.getTaskInTestInstanceId());
-			if (lista != null && lista.size() > 0) {
-				SolutionAssessment sa;
-				List<StudentSubmitSolution> podlista = lista.stream().filter(p -> p.getEvaluations().size() > 0)
-						.collect(Collectors.toList());
-				if (podlista != null && podlista.size() > 0) {
-					sa = podlista.get(0).getEvaluations().get(0);
-				} else {
-					if (lista.get(0).getEvaluations() != null && lista.get(0).getEvaluations().size() > 0) {
-						sa = lista.get(0).getEvaluations().get(0);
-					} else {
-						sa = null;
-					}
-				}
-				mapTTItoSA.put(tti, sa);
-				if (sa != null && sa.getGrade() != null) {
-					totalPoints += sa.getGrade();
-				}
-			} else {
-				mapTTItoSA.put(tti, null);
-			}
-		}
-	}
 
 	public void onActivate() {
 		studentId = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
@@ -138,33 +109,40 @@ public class SolutionComparatorPage {
 		}
 	}
 
-	public StudentSubmitSolution getLastSolutionForTaskInTestInstance() {
-		// if there are correct solutions, return the last correct, and if there
-		// are not return the last evaluated solution
-		List<StudentSubmitSolution> sss = testManager.getCorrectSolutionsByStudentAndTaskInTestInstance(studentId,
-				taskInTestInstance.getTaskInTestInstanceId());
-		if (sss == null || sss.isEmpty()) {
-			sss = testManager.getIncorrectSolutionsByStudentAndTaskInTestInstance(studentId,
-					taskInTestInstance.getTaskInTestInstanceId());
-		}
-		if (sss.isEmpty()) {
-			return null;
-		} else {
-			return sss.get(0);
+	public void onActivate(TestInstance ti) {
+		selectedTestInstance = ti;
+	}
+
+	public void prepareMapOfEvaluationsAndTotal() {
+		totalPoints = 0;
+		mapTTItoSA = new HashMap<TaskInTestInstance, List<SolutionAssessment>>();
+		for (TaskInTestInstance tti : taskInTestInstances) {
+			List<SolutionAssessment> lista = testManager.getAllEvaluationsOfSolutionsForTaskInTestInstance(studentId,
+					tti.getTaskInTestInstanceId());
+			if (lista != null && lista.size() > 0) {
+				mapTTItoSA.put(tti, lista);
+			} else {
+				mapTTItoSA.put(tti, null);
+			}
 		}
 	}
 
-	public StudentSubmitSolution getLastEvaluatedSolutionForTaskInTestInstance() {
-		SolutionAssessment sa = mapTTItoSA.get(taskInTestInstance);
-		if (sa != null) {
-			return sa.getStudentSubmitSolution();
+	public Boolean getHasManySolutions() {
+		List<SolutionAssessment> list = mapTTItoSA.get(taskInTestInstance);
+		if (list != null && list.size() > 0) {
+			return true;
 		} else {
-			return null;
+			return false;
 		}
+	}
+
+	public List<SolutionAssessment> getListEvaluatedSolutionsForTaskInTestInstance() {
+		List<SolutionAssessment> sa = mapTTItoSA.get(taskInTestInstance);
+		return sa;
 	}
 
 	public boolean isLastSolutionCorrect() {
-		StudentSubmitSolution sss = getLastEvaluatedSolutionForTaskInTestInstance();
+		StudentSubmitSolution sss = oneOfTheEvaluatedSolutions.getStudentSubmitSolution();
 		if (sss.getTaskInTestInstance().getTask().getTaskIsOfTypes().get(0).getTaskType().getCodetype()
 				.equals(ModelConstants.TaskCodeSQL)) {
 			return sss.getEvaluationSimple() && sss.getEvaluationComplex();
@@ -174,7 +152,7 @@ public class SolutionComparatorPage {
 	}
 
 	public String getClassLastSolutionForTaskInTestInstance() {
-		StudentSubmitSolution sss = getLastEvaluatedSolutionForTaskInTestInstance();
+		StudentSubmitSolution sss = oneOfTheEvaluatedSolutions.getStudentSubmitSolution();
 		if (sss != null) {
 			if (isLastSolutionCorrect()) {
 				return "correct";
@@ -187,7 +165,7 @@ public class SolutionComparatorPage {
 	}
 
 	public List<StudentSubmitSolution> getOtherSolutions() {
-		StudentSubmitSolution sss = getLastEvaluatedSolutionForTaskInTestInstance();
+		StudentSubmitSolution sss = oneOfTheEvaluatedSolutions.getStudentSubmitSolution();
 		if (sss.getTaskInTestInstance().getTask().getTaskIsOfTypes().get(0).getTaskType().getCodetype()
 				.equals(ModelConstants.TaskCodeSQL)) {
 			if (sss.getEvaluationSimple() && sss.getEvaluationComplex()) {
@@ -203,32 +181,6 @@ public class SolutionComparatorPage {
 							&& p.getStudentSubmitSolutionId() != sss.getStudentSubmitSolutionId()))
 					.collect(Collectors.toList());
 		}
-	}
-
-	public List<TestInstance> getTestInstances() {
-		if (userInfo.isAdministrator()) {
-			return testManager.getAllTestInstances();
-		} else if (userInfo.isStudent()) {
-			long studentId = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
-			return testManager.getTestInstancesForStudent(studentId);
-		} else {
-			return null;
-		}
-	}
-
-	public SelectModel getTestInstanceSelectModel() {
-		return selectModelFactory.create(getTestInstances(), "title");
-	}
-
-	public void onValueChanged(TestInstance newTestInstance) {
-		selectedTestInstance = newTestInstance;
-		if (selectedTestInstance != null) {
-			taskInTestInstances = testManager.getTasksInTestInstance(selectedTestInstance.getTestInstanceId());
-		} else {
-			taskInTestInstances = new ArrayList<>();
-		}
-		prepareMapOfEvaluationsAndTotal();
-		ajaxResponseRenderer.addRender(zTestInstance);
 	}
 
 	private StreamResponse onActionFromDownloadFile(StudentSubmitSolution sss) throws FileNotFoundException {
@@ -293,7 +245,7 @@ public class SolutionComparatorPage {
 	}
 
 	public String getFileFromSubmission() {
-		return processFileNameFromSubmission(getLastEvaluatedSolutionForTaskInTestInstance());
+		return processFileNameFromSubmission(oneOfTheEvaluatedSolutions.getStudentSubmitSolution());
 	}
 
 	public String getFileFromOtherStudentSubmission() {
@@ -321,9 +273,9 @@ public class SolutionComparatorPage {
 	}
 
 	public SolutionAssessment getSubmissionsFirstEvaluation() {
-		StudentSubmitSolution ssa = getLastEvaluatedSolutionForTaskInTestInstance();
-		if (ssa != null && ssa.getEvaluations() != null && ssa.getEvaluations().size() > 0) {
-			return ssa.getEvaluations().get(0);
+		StudentSubmitSolution sss = oneOfTheEvaluatedSolutions.getStudentSubmitSolution();
+		if (sss != null && sss.getEvaluations() != null && sss.getEvaluations().size() > 0) {
+			return sss.getEvaluations().get(0);
 		} else {
 			return null;
 		}

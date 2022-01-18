@@ -1,66 +1,27 @@
 <html t:type="layout" title="message:ComplaintsAndDiscussions-page"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
-<style>
-.indentation1 {
-	margin: 0.5rem;
-	padding: 1rem;
-}
-
-.indentation2 {
-	margin: 0.5rem;
-	padding: 1rem;
-	margin-left: 2rem;
-}
-
-.indentation3 {
-	margin: 0.5rem;
-	padding: 1rem;
-	margin-left: 4rem;
-}
-
-.indentation4 {
-	margin: 0.5rem;
-	padding: 1rem;
-	margin-left: 6rem;
-}
-
-.indentation5 {
-	margin: 0.5rem;
-	padding: 1rem;
-	margin-left: 8rem;
-}
-
-.indentation6 {
-	margin: 0.5rem;
-	margin-left: 10rem;
-	padding: 1rem;
-	margin-left: 10rem;
-}
-
-.reshenieto img {
-	width: 100%;
-}
-
-.discussion img {
-	width: 100%;
-}
-</style>
 
 <h1>${message:ComplaintsAndDiscussionForSolution-label}</h1>
 
 <div t:type="if" t:test="solutionAssessmentToDiscuss">
 	<p:then>
 		<h2>${solutionAssessmentToDiscuss.studentSubmitSolution.taskInTestInstance.testInstance.title}</h2>
-		<p>
-			<a class="btn btn-sm btn-info" role="button" data-toggle="collapse"
+		<h3>${solutionAssessmentToDiscuss.studentSubmitSolution.taskInTestInstance.task.title}
+
+		</h3>
+		
+		<P>
+			<a class="btn btn-sm btn-outline-info" role="button"
+				data-toggle="collapse"
 				href="#collapse${solutionAssessmentToDiscuss.solutionAssessmentId}"
 				aria-expanded="false"
 				aria-controls="collapse${solutionAssessmentToDiscuss.solutionAssessmentId}">
-				${solutionAssessmentToDiscuss.studentSubmitSolution.taskInTestInstance.task.title}
-				- ${message:Description-label} <span class="caret"></span>
+				${message:Description-label} <img t:type="svgicon"
+				t:path="chevrons-down" />
 			</a>
-		</p>
+		</P>
+		
 		<div class="collapse"
 			id="collapse${solutionAssessmentToDiscuss.solutionAssessmentId}">
 			<t:outputRaw
@@ -74,8 +35,8 @@
 					${solutionAssessmentToDiscuss.studentSubmitSolution.studentStartedTest.student.person.firstName}
 				</h4>
 				<div class="reshenieto">
-					<t:outputRaw
-						t:value="solutionAssessmentToDiscuss.studentSubmitSolution.submission" />
+					<pre><t:outputRaw
+							t:value="solutionAssessmentToDiscuss.studentSubmitSolution.submission" /></pre>
 				</div>
 			</div>
 			<div class="col-sm-5">
@@ -93,16 +54,18 @@
 						<t:outputRaw t:value="solutionAssessmentToDiscuss.feedback" />
 					</div>
 				</div>
+
 				<div t:type="if" t:test="newAssessmentDiscussion">
 					<p:then>
-						<t:ModalBox t:id="assessmentModal">
-							<div class="alert alert-warning" role="alert">
+						<t:ModalBox t:id="assessmentModal"
+							t:additionalClassDialog="modal-lg">
+							<div class="alert alert-warning col-11" role="alert">
 								<t:SVGIcon t:path="alert-triangle" />
 								${message:discussionForm-description}
 							</div>
 							<form t:type="beaneditform" t:id="newAssessmentDiscussionForm"
 								t:exclude="assessmentDiscussionId, replyTo,type, postedOn, person, solutionEvaluation"
-								t:object="newAssessmentDiscussion">
+								t:object="newAssessmentDiscussion" class="form-vertical">
 								<p:message>
 									<t:label t:for="message" />
 									<t:textarea t:id="message"
@@ -110,9 +73,13 @@
 										t:WebEditor.areaType="CK" />
 								</p:message>
 							</form>
+							<a href="" t:type="actionlink"
+								t:id="cancelNewAssessmentDiscussionForm"
+								class="btn btn-secondary ml-2">Cancel</a>
 						</t:ModalBox>
 					</p:then>
 				</div>
+
 				<div t:type="if"
 					t:test="solutionAssessmentToDiscuss.assessmentDiscussions">
 					<p:then>
@@ -145,7 +112,10 @@
 						<div t:type="if" t:test="YourSolution">
 							<p:then>
 								<button href="" role="button" class="btn btn-primary"
-									t:type="actionlink" t:id="fileAComplaint">${message:fileAComplaint-label}</button>
+									t:type="actionlink" t:id="fileAComplaint">
+									<img t:type="svgicon" t:path="file-text" />
+									${message:fileAComplaint-label}
+								</button>
 
 							</p:then>
 							<p:else>

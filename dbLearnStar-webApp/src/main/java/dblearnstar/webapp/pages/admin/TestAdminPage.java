@@ -21,6 +21,7 @@
 package dblearnstar.webapp.pages.admin;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +49,7 @@ import dblearnstar.model.entities.TestInstance;
 import dblearnstar.model.entities.TestInstanceParameters;
 import dblearnstar.model.entities.TestTemplate;
 import dblearnstar.model.entities.TestType;
+import dblearnstar.model.model.ComparatorTaskInTestInstance;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.pages.QueryTest;
@@ -57,7 +59,7 @@ import dblearnstar.webapp.services.TestManager;
 import dblearnstar.webapp.services.UsefulMethods;
 
 @AdministratorPage
-@Import(stylesheet = { "TestAdmin.css" })
+@Import(stylesheet = { "TestAdmin.css" }, module = { "zoneUpdateEffect", "bootstrap/modal", "bootstrap/collapse" })
 public class TestAdminPage {
 
 	@Inject
@@ -94,47 +96,53 @@ public class TestAdminPage {
 	@InjectPage
 	private QueryTest queryTest;
 
-	@Property
 	@Persist
+	@Property
 	private TestTemplate editedTestTemplate;
-	@Property
 	@Persist
+	@Property
 	private TaskType chosentaskType;
-	@Property
 	@Persist
+	@Property
 	private TestType testType;
-	@Property
 	@Persist
-	private TestInstance testInstance;
+	@Property
+	private TestInstance editedTestInstance;
+	@Persist
+	@Property
+	private TestInstanceParameters editedTestInstanceParameters;
+	@Persist
+	@Property
+	private Boolean creatingANewTask;
+	@Persist
+	@Property
+	private TaskInTestInstance editedTaskInTestInstance;
+	@Persist
+	@Property
+	private Boolean isNewTaskInTestInstance;
+	@Persist
+	@Property
+	private Task editedTask;
+	@Persist
+	@Property
+	private TestInstance whereToPutNewTask;
+	@Persist
+	@Property
+	private TestInstance selectedTestInstance;
 	@Property
 	private TaskInTestInstance taskInTestInstance;
 	@Property
 	private TaskIsOfType taskIsOfType;
-	@Property
-	@Persist
-	private TestInstance editedTestInstance;
-	@Property
-	@Persist
-	private TestInstanceParameters editedTestInstanceParameters;
-	@Property
-	@Persist
-	private Boolean creatingANewTask;
-	@Property
-	@Persist
-	private TaskInTestInstance editedTaskInTestInstance;
-	@Property
-	@Persist
-	private Boolean isNewTaskInTestInstance;
-	@Property
-	@Persist
-	private Task editedTask;
-	@Property
-	@Persist
-	private TestInstance whereToPutNewTask;
 
 	public void onActivate() {
 		logger.info("activated from {} by {} {}", request.getRemoteHost(), userInfo.getUserName(),
 				request.getHeader("User-Agent"));
+		if (selectedTestInstance != null) {
+			selectedTestInstance = genericService.getByPK(TestInstance.class, selectedTestInstance.getTestInstanceId());
+		}
+		if (editedTestInstance != null) {
+			editedTestInstance = genericService.getByPK(TestInstance.class, editedTestInstance.getTestInstanceId());
+		}
 	}
 
 	public Date getCurrentTime() {
@@ -155,28 +163,34 @@ public class TestAdminPage {
 		return selectModelFactory.create(testManager.getTestInstancesByTestType(testType.getTestTypeId()), "title");
 	}
 
-	public Object onValueChangedFromSelectTestInstance(TestInstance selectedTestInstance) {
-		testInstance = selectedTestInstance;
+	public Object onValueChangedFromSelectTestInstance(TestInstance ti) {
+		selectedTestInstance = ti;
 		return testInstanceZone.getBody();
 	}
 
 	public List<TaskInTestInstance> getTaskInTestInstances() {
-		return testInstance.getTaskInTestInstances();
+		List<TaskInTestInstance> list = selectedTestInstance.getTaskInTestInstances();
+		ComparatorTaskInTestInstance ctti = new ComparatorTaskInTestInstance();
+		Collections.sort(list, ctti);
+		return list;
 	}
 
-	void onActionFromEditTestInstance(TestInstance testInstance) {
-		editedTestInstance = testInstance;
-		if (testInstance.getTestInstanceParameters().isEmpty()) {
+	void onActionFromEditTestInstance(TestInstance ti) {
+		editedTestInstance = ti;
+		if (ti.getTestInstanceParameters().isEmpty()) {
 			editedTestInstanceParameters = new TestInstanceParameters();
 			editedTestInstanceParameters.setTestInstance(editedTestInstance);
 		} else {
-			editedTestInstanceParameters = testInstance.getTestInstanceParameters().get(0);
+			editedTestInstanceParameters = ti.getTestInstanceParameters().get(0);
 		}
 		ajaxResponseRenderer.addRender(testInstanceEditZone);
 	}
 
-	void onActionFromNewTestInstance(TestType testType) {
+	void onActionFromNewTestInstance(TestType tt) {
 		editedTestInstance = new TestInstance();
+		if (editedTestTemplate != null) {
+			editedTestInstance.setTestTemplate(editedTestTemplate);
+		}
 		editedTestInstanceParameters = null;
 		ajaxResponseRenderer.addRender(testInstanceEditZone);
 	}
@@ -194,6 +208,7 @@ public class TestAdminPage {
 			genericService.saveOrUpdate(editedTestInstanceParameters);
 			editedTestInstance = null;
 			editedTestInstanceParameters = null;
+			editedTestTemplate = null;
 		} else {
 			editedTestInstanceParameters = new TestInstanceParameters();
 			editedTestInstanceParameters.setTestInstance(editedTestInstance);
@@ -206,6 +221,7 @@ public class TestAdminPage {
 		genericService.saveOrUpdate(editedTestInstanceParameters);
 		editedTestInstance = null;
 		editedTestInstanceParameters = null;
+		editedTestTemplate = null;
 	}
 
 	void onActionFromCancelFrmTestInstance() {
@@ -317,6 +333,7 @@ public class TestAdminPage {
 
 	void onActionFromCancelFrmTask() {
 		editedTask = null;
+		ajaxResponseRenderer.addRender(testInstanceZone);
 	}
 
 	@CommitAfter
@@ -340,6 +357,7 @@ public class TestAdminPage {
 		}
 
 		editedTask = null;
+		ajaxResponseRenderer.addRender(testInstanceZone);
 	}
 
 	void onActionFromNewTask(TestInstance testInstance) {
