@@ -26,11 +26,10 @@ public class Triplet<T1, T2, T3> {
 	private T2 secondItem;
 	private T3 thirdItem;
 
-	public T3 getThirdItem() {
-		return thirdItem;
-	}
-
-	public void setThirdItem(T3 thirdItem) {
+	public Triplet(T1 firstItem, T2 secondItem, T3 thirdItem) {
+		super();
+		this.firstItem = firstItem;
+		this.secondItem = secondItem;
 		this.thirdItem = thirdItem;
 	}
 
@@ -46,15 +45,16 @@ public class Triplet<T1, T2, T3> {
 		return secondItem;
 	}
 
-	public Triplet(T1 firstItem, T2 secondItem, T3 thirdItem) {
-		super();
-		this.firstItem = firstItem;
-		this.secondItem = secondItem;
-		this.thirdItem = thirdItem;
-	}
-
 	public void setSecondItem(T2 secondItem) {
 		this.secondItem = secondItem;
+	}
+
+	public T3 getThirdItem() {
+		return thirdItem;
+	}
+
+	public void setThirdItem(T3 thirdItem) {
+		this.thirdItem = thirdItem;
 	}
 
 }
