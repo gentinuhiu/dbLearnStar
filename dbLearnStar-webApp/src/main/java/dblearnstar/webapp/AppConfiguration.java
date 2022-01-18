@@ -57,7 +57,7 @@ public class AppConfiguration {
 				servletContext.setInitParameter("tapestry.app-package", "dblearnstar.webapp");
 				servletContext.setInitParameter("tapestry.development-modules",
 						"dblearnstar.webapp.services.DevelopmentModule");
-				servletContext.setInitParameter("tapestry.qa-modules", "dblearnstar.webapp.services");
+				servletContext.setInitParameter("tapestry.qa-modules", "dblearnstar.webapp.services.QaModule");
 
 				servletContext.setInitParameter("artifactParameterName", "ticket");
 
