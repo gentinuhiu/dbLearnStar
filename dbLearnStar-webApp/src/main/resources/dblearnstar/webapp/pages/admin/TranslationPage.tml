@@ -1,0 +1,56 @@
+<html t:type="layout" title="message:admin/TranslationPage-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<h1>${message:admin/TranslationPage-pagelink}</h1>
+
+<div t:type="if" t:test="editedTranslation">
+	<t:modalbox t:additionalclassdialog="modal-lg">
+		<form t:type="beaneditform" t:id="frmTranslation"
+			t:object="editedTranslation" t:exclude="translationId"
+			t:add="cancelLink">
+			<p:cancelLink>
+				<a class="float-right btn btn-secondary mr-3" href=""
+					t:type="actionLink" t:id="cancelTranslation">${message:Cancel-label}</a>
+			</p:cancelLink>
+		</form>
+	</t:modalbox>
+</div>
+
+<div class="row">
+	<div class="col-9">
+		<div class="card">
+			<div class="card-header">Filter</div>
+			<div class="card-body">
+				<form t:type="form">
+					<input t:type="textfield" t:value="filter" />
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="col-3">
+		<a href="" t:type="actionlink" t:id="newTranslation"
+			class="btn btn-primary"><img t:type="svgicon" t:path="plus" />
+			${message:translation-label}</a>
+	</div>
+</div>
+
+<table class="table table-sm" t:type="grid" t:source="listTranslations"
+	t:row="translationRow" t:add="actions">
+	<p:translatedTextCell>
+		<div class="translation">
+			<t:outputraw t:value="translationRow.translatedText" />
+		</div>
+	</p:translatedTextCell>
+	<p:actionsCell>
+		<a href="" t:type="actionlink" t:id="EditTranslation"
+			t:context="translationRow" class="btn btn-sm btn-primary"><t:SVGIcon
+				t:path="edit" /> ${message:edit-label}</a>
+		<a href="" t:type="actionlink" t:id="DeleteTranslation"
+			t:context="translationRow" class="btn btn-sm btn-secondary"
+			t:mixins="confirm"><t:SVGIcon t:path="user-minus" />
+			${message:remove-label}</a>
+	</p:actionsCell>
+</table>
+
+</html>

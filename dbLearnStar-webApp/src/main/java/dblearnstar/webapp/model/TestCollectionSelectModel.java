@@ -26,19 +26,27 @@ import java.util.List;
 import org.apache.tapestry5.OptionGroupModel;
 import org.apache.tapestry5.OptionModel;
 import org.apache.tapestry5.internal.OptionModelImpl;
+import org.apache.tapestry5.services.PersistentLocale;
 import org.apache.tapestry5.util.AbstractSelectModel;
 
 import dblearnstar.model.entities.TestCollection;
+import dblearnstar.webapp.services.TranslationService;
 
 public class TestCollectionSelectModel extends AbstractSelectModel {
 	private List<TestCollection> testCollections;
 
-	public TestCollectionSelectModel(List<TestCollection> testCollections) {
+	private TranslationService translationService;
+	private PersistentLocale persistentLocale;
+
+	public TestCollectionSelectModel(List<TestCollection> testCollections, TranslationService translationService,
+			PersistentLocale persistentLocale) {
 		if (testCollections == null) {
 			this.testCollections = new ArrayList<TestCollection>();
 		} else {
 			this.testCollections = testCollections;
 		}
+		this.persistentLocale = persistentLocale;
+		this.translationService = translationService;
 	}
 
 	@Override
@@ -58,7 +66,12 @@ public class TestCollectionSelectModel extends AbstractSelectModel {
 	public List<OptionModel> getOptions() {
 		List<OptionModel> options = new ArrayList<OptionModel>();
 		for (TestCollection tc : testCollections) {
-			String name = getPrefix(tc) + tc.getTitle();
+			String title = translationService.getTranslation(TestCollection.class.getSimpleName(), "title",
+					tc.getTestCollectionId(), persistentLocale.get().getLanguage().toLowerCase());
+			if (title == null) {
+				title = tc.getTitle();
+			}
+			String name = getPrefix(tc) + title;
 			options.add(new OptionModelImpl(name, tc));
 		}
 		return options;

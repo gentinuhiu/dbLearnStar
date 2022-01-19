@@ -49,7 +49,7 @@
 							<div class="col-6">${solutionAssessmentToDiscuss.evaluatedOn}</div>
 						</div>
 					</div>
-					<div class="card-body"
+					<div class="card-body feedback"
 						style="font-size: 80% !important; line-height: 0.8em !important;">
 						<t:outputRaw t:value="solutionAssessmentToDiscuss.feedback" />
 					</div>

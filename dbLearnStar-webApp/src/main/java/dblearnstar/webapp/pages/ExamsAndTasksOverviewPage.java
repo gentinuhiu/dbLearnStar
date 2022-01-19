@@ -150,7 +150,7 @@ public class ExamsAndTasksOverviewPage {
 			ComparatorTestCollection c = new ComparatorTestCollection();
 			Collections.sort(list, c);
 			// return selectModelFactory.create(list, "title");
-			return new TestCollectionSelectModel(list);
+			return new TestCollectionSelectModel(list, translationService, persistentLocale);
 		}
 	}
 
@@ -209,10 +209,22 @@ public class ExamsAndTasksOverviewPage {
 		return (translated != null ? translated : testInstance.getTitle());
 	}
 
+	public String getTranslatedTestInstanceDescription() {
+		String translated = translationService.getTranslation("TestInstance", "description",
+				testInstance.getTestInstanceId(), persistentLocale.get().getLanguage().toLowerCase());
+		return (translated != null ? translated : testInstance.getDescription());
+	}
+
 	public String getTranslateTestTypeTitle() {
 		String translated = translationService.getTranslation("TestType", "title", testType.getTestTypeId(),
 				persistentLocale.get().getLanguage().toLowerCase());
 		return (translated != null ? translated : testType.getTitle());
+	}
+
+	public String getTranslatedTaskInTestInstanceTaskTitle() {
+		String translated = translationService.getTranslation("Task", "title", taskInTestInstance.getTask().getTaskId(),
+				persistentLocale.get().getLanguage().toLowerCase());
+		return (translated != null ? translated : taskInTestInstance.getTask().getTitle());
 	}
 
 	public String getTranslateTaskDescription() {

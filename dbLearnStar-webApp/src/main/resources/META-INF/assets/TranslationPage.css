@@ -1,0 +1,4 @@
+.translation {
+	max-height: 10em !important;
+	overflow: auto;
+}
