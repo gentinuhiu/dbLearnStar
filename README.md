@@ -11,7 +11,13 @@ Features
   * Test groups who are allowed to take each tests can be defined
   * Tests can be graded and reviewed
   * Support for transparency in grading - students can be allowed to view 
-- Support for automatic and semi-automatic evaluation of SQL tasks against two background test sample database instances
+- Support for automatic and semi-automatic evaluation of SQL tasks based on correct solutions test samples implemented as database views
+
+The system was presented at the ACM SIGITE 21:
+- Vangel Ajanovski. 2021. DbLearn*: Open-Source System and a Set of Practices for Conducting Iterative Exercises and Exams in a Databases Course. In Proceedings of the 22st Annual Conference on Information Technology Education (SIGITE '21). Association for Computing Machinery, New York, NY, USA, 61–62. DOI:https://doi.org/10.1145/3450329.3478317
+
+The system is used in production:
+- Database courses taught by the main author since 2019 at the Faculty of Computer Science and Engineering, Ss. Cyril and Methodius University in Skopje.
 
 Screenshots
 
