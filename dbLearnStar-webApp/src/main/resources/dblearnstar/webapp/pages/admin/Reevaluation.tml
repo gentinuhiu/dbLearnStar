@@ -7,11 +7,11 @@
 <div class="row">
 	<div class="col-lg-12">
 		<table t:type="grid" t:source="allTestInstances" t:row="testInstance"
-			t:add="select" t:exclude="testInstanceId, scheduledFor,description">
-			<p:selectCell>
+			t:add="actions" t:exclude="testInstanceId, scheduledFor,description">
+			<p:actionsCell>
 				<a href="" t:type="actionLink" t:id="reEvalTest"
 					t:context="testInstance">${message:reevaluate-label}</a>
-			</p:selectCell>
+			</p:actionsCell>
 		</table>
 		<a href="" t:type="actionLink" t:id="reEvalAll"
 			class="btn btn-primary">${message:reevaluateAll-label}</a>

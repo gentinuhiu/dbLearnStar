@@ -1,6 +1,6 @@
 <html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
 <t:content>
-	<div class="modal fade ${additionalClass}" id="${clientId}"
+	<div class="modal ${additionalClass}" id="${clientId}"
 		tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog ${additionalClassDialog}" role="document">

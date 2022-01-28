@@ -5,12 +5,15 @@
 <div t:type="if" t:test="editGroup">
 	<p:then>
 		<h3>Group Info</h3>
+		
 		<div class="col-sm-12">
 			<form t:id="NewGroupForm" t:type="BeanEditForm" t:object="editGroup"
 				class="form-horizontal" t:exclude="groupId" t:cancel="true">
 			</form>
 		</div>
+		
 		<h3>Group members</h3>
+		
 		<div class="col-sm-12">
 			<ol style="columns: 3;">
 				<li t:type="loop" t:id="groupMembers"
@@ -37,7 +40,9 @@
 				</form>
 			</div>
 		</div>
+		
 		<h3>Group Focus On Tests</h3>
+		
 		<div class="col-sm-12">
 			<ol>
 				<li t:type="loop" t:id="groupFocusOnTests"
@@ -69,9 +74,9 @@
 				t:path="plus-square" /> New group</a>
 	</p:else>
 </div>
-<table t:type="grid" t:source="allGroups" t:row="group" t:add="edit">
+<table t:type="grid" t:source="allGroups" t:row="group" t:add="actions">
 	<p:titleCell>${group.title}</p:titleCell>
-	<p:editCell>
+	<p:actionsCell>
 		<a href="" t:type="actionlink" t:context="group"
 			title="message:symbol-edit" t:id="edit"
 			class="btn btn-sm btn-primary" role="button"><t:SVGIcon
@@ -80,6 +85,6 @@
 			title="message:symbol-delete" t:id="delete"
 			class="btn btn-sm btn-danger" role="button"><t:SVGIcon
 				t:path="minus-square" /> ${message:symbol-delete}</a>
-	</p:editCell>
+	</p:actionsCell>
 </table>
 </html>

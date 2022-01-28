@@ -24,13 +24,16 @@
 				</div>
 			</div>
 
-			<div class="card  mt-2" t:type="if" t:test="editedAssessmentTaskSQL">
+
+			<div class="card mt-2" t:type="if" t:test="editedAssessmentTaskSQL">
 				<div class="card-header">
 					<div class="row m-0 p-0 ">
 						<div class="col-3">
-							<a role="button" href="#" id="reformat"
-								class="btn btn-sm btn-primary">Beautify <t:SVGIcon
-									t:path="align-left" /></a>
+							<a role="button" href="#" t:type="eventlink"
+								t:id="prettyFormatToggle"
+								class="btn btn-sm btn-primary ${classPrettyFormat}"
+								t:zone="zSolution">Format SQL <t:SVGIcon t:path="align-left" />
+							</a>
 						</div>
 						<div class="col-9 text-right">
 							${message:evaluationSimple-label}:
@@ -112,18 +115,16 @@
 							</div>
 						</div>
 					</div>
-
 				</div>
-
 			</div>
 
 			<form t:type="form" class="form-vertical" t:id="FormEditor"
 				id="FormEditor" t:autofocus="true">
 				<div class="form-row">
-					<div class="form-group col-6  ${classSQLsolution}">
+					<div class="form-group col-6  ${classSQLsolution}" t:type="zone"
+						t:id="zSolution" id="zSolution">
 						<label for="solution">${message:solution-label}</label>
-						<t:code id="solution" t:id="solution"
-							t:value="editedAssessment.studentSubmitSolution.submission"
+						<t:code id="solution" t:id="solution" t:value="formattedSolution"
 							class="modalSubmission form-control col-12"></t:code>
 					</div>
 					<div class="form-group col-6 feedback">
@@ -317,6 +318,5 @@
 		</p:else>
 	</t:if>
 </div>
-<script
-	src="${asset:classpath:META-INF/assets/sql-formatter/sql-formatter.min.js}"></script>
+
 </html>

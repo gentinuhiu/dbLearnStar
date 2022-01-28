@@ -46,6 +46,10 @@ import org.apache.tapestry5.services.SelectModelFactory;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.slf4j.Logger;
 
+import com.github.vertical_blank.sqlformatter.SqlFormatter;
+import com.github.vertical_blank.sqlformatter.core.FormatConfig;
+import com.github.vertical_blank.sqlformatter.languages.Dialect;
+
 import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentSubmitSolution;
@@ -69,7 +73,7 @@ import dblearnstar.webapp.services.UsefulMethods;
 
 @AdministratorPage
 @Import(stylesheet = { "SubmissionEvaluations.css", "feedback-styles.css" }, module = { "zoneUpdateEffect",
-		"bootstrap/modal", "bootstrap/collapse", "PrettyPrint" })
+		"bootstrap/modal", "bootstrap/collapse" })
 public class SubmissionEvaluations {
 
 	@SessionState
@@ -84,9 +88,9 @@ public class SubmissionEvaluations {
 	private BeanModelSource beanModelSource;
 	@Inject
 	private Messages messages;
-
 	@Inject
 	private PropertyConduitSource pcs;
+
 	@Inject
 	private SelectModelFactory selectModelFactory;
 	@Inject
@@ -109,16 +113,14 @@ public class SubmissionEvaluations {
 	private Zone zTask;
 	@InjectComponent
 	private Zone zStudent;
-
 	@InjectComponent
 	private Zone zSubmissions;
 	@InjectComponent
 	private Zone zModal;
 	@InjectComponent
 	private Zone zSQLEval;
-
-	@Property
-	private StudentSubmitSolution submission;
+	@InjectComponent
+	private Zone zSolution;
 
 	@Persist
 	@Property
@@ -150,7 +152,9 @@ public class SubmissionEvaluations {
 	@Persist
 	@Property
 	SolutionAssessment editedAssessment;
-
+	@Persist
+	@Property
+	private Boolean prettyFormat;
 	@Property
 	@Persist
 	private List<String> resultsHeaders1;
@@ -167,10 +171,19 @@ public class SubmissionEvaluations {
 	@Persist
 	private List<String> resultsErrors1;
 	@Property
-	private String resultsError;
-	@Property
 	@Persist
 	private List<String> resultsErrors2;
+
+	@Property
+	private StudentSubmitSolution submission;
+	@Property
+	private String resultsError;
+	@Property
+	private String oneHeader;
+	@Property
+	private Object[] oneRow;
+	@Property
+	private Object oneColumn;
 
 	public void onActivate() {
 		logger.warn("Activated from {} by {} {}", request.getRemoteHost(), userInfo.getUserName(),
@@ -193,6 +206,9 @@ public class SubmissionEvaluations {
 		if (filterTaskInTestInstance != null) {
 			filterTaskInTestInstance = genericService.getByPK(TaskInTestInstance.class,
 					filterTaskInTestInstance.getTaskInTestInstanceId());
+		}
+		if (prettyFormat == null) {
+			prettyFormat = false;
 		}
 	}
 
@@ -386,6 +402,7 @@ public class SubmissionEvaluations {
 	void onActionFromAddAssessment(StudentSubmitSolution s) {
 		editedAssessment = new SolutionAssessment();
 		editedAssessment.setStudentSubmitSolution(s);
+		prettyFormat = false;
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zModal);
 		}
@@ -393,6 +410,7 @@ public class SubmissionEvaluations {
 
 	void onActionFromEditAssessment(SolutionAssessment sa) {
 		editedAssessment = sa;
+		prettyFormat = false;
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zModal);
 		}
@@ -446,13 +464,6 @@ public class SubmissionEvaluations {
 		}
 	}
 
-	@Property
-	private String oneHeader;
-	@Property
-	private Object[] oneRow;
-	@Property
-	private Object oneColumn;
-
 	void onActionFromViewEvaluationResults(StudentSubmitSolution s) {
 		if (resultsEvaluation1 != null) {
 			resultsEvaluation1 = null;
@@ -486,6 +497,31 @@ public class SubmissionEvaluations {
 			return "sqlSolution";
 		} else {
 			return "nonSqlSolution";
+		}
+	}
+
+	public void onPrettyFormatToggle() {
+		prettyFormat = !prettyFormat;
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zSolution);
+		}
+	}
+
+	public String getClassPrettyFormat() {
+		if (prettyFormat) {
+			return "btn-info";
+		} else {
+			return " ";
+		}
+	}
+
+	public String getFormattedSolution() {
+		if (isEditedAssessmentTaskSQL() && prettyFormat) {
+			return SqlFormatter.of(Dialect.PostgreSql)
+					.format(editedAssessment.getStudentSubmitSolution().getSubmission(), FormatConfig.builder()
+							.indent("  ").uppercase(true).linesBetweenQueries(2).maxColumnLength(100).build());
+		} else {
+			return editedAssessment.getStudentSubmitSolution().getSubmission();
 		}
 	}
 

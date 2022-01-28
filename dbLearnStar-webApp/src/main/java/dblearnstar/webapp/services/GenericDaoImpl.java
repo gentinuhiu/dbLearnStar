@@ -93,7 +93,8 @@ public class GenericDaoImpl implements GenericDao {
 
 	@Override
 	public List<?> getAll(Class<?> classToLoad) {
-		return getEntityManager().createQuery("from " + classToLoad.getName()).getResultList();
+		return UsefulMethods.castList(classToLoad,
+				getEntityManager().createQuery("from " + classToLoad.getName()).getResultList());
 	}
 
 	@Override

@@ -2,57 +2,61 @@
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<h1>${message:testType-label}</h1>
+<h1>${message:admin/TestAdmin-pagelink}</h1>
 
-<div class="row">
-	<div class="col-12">
-		<form t:type="form" t:id="chooserFormTestType" class="form-inline">
-			<select t:type="select" id="selectTestType" t:id="selectTestType"
-				t:model="modelTestTypes" t:value="testType" class="form-control"
-				t:zone="testTypeZone"></select>
-		</form>
-	</div>
-</div>
+<h2>${message:testType-label}</h2>
+
+<form t:type="form" t:id="chooserFormTestType" class="form-inline">
+	<select t:type="select" id="selectTestType" t:id="selectTestType"
+		t:model="modelTestTypes" t:value="testType" class="form-control"
+		t:zone="testTypeZone"></select>
+</form>
+
+<hr />
 
 <div t:id="testTypeZone" id="testTypeZone" t:type="zone">
 	<div t:type="if" t:test="testType">
+
+		<h2>${message:testInstance-label}</h2>
+
 		<p>
 			<a href="" class="btn btn-warning" t:type="actionlink"
-				t:context="testType" t:id="newTestInstance">${message:symbol-createObjectAndAddToList}</a>
+				t:context="testType" t:id="newTestInstance"><svg
+					t:type="svgicon" t:path="plus" />
+				${message:symbol-createObjectAndAddToList}</a>
 		</p>
 
-		<div class="row">
-			<div class="col-12">
-				<h2>${message:testInstance-label}</h2>
-
-				<form t:type="form" t:id="chooserFormTestInstance">
-					<div class="form-group">
-						<label for="selectTestInstance">${message:testInstance-label}</label>
-						<select t:type="select" id="selectTestInstance"
-							t:id="selectTestInstance" t:model="modelTestInstances"
-							t:value="selectedTestInstance" class="form-control"
-							t:zone="testInstanceZone"></select>
-					</div>
-				</form>
+		<form t:type="form" t:id="chooserFormTestInstance">
+			<div class="form-group">
+				<select t:type="select" id="selectTestInstance"
+					t:id="selectTestInstance" t:model="modelTestInstances"
+					t:value="selectedTestInstance" class="form-control"
+					t:zone="testInstanceZone"></select>
 			</div>
-		</div>
+		</form>
 
 		<div t:id="testInstanceZone" id="testInstanceZone" t:type="zone">
 			<div t:type="if" t:test="selectedTestInstance">
 				<div class="row">
-					<div class="col-4">
+					<div class="col-3">
 						<p>
 							<a href="" class="btn btn-sm btn-primary" t:type="actionlink"
-								t:context="selectedTestInstance" t:id="editTestInstance">${message:symbol-edit}</a>
-							<a href="" class="btn btn-sm btn-danger" t:type="actionlink"
-								t:context="selectedTestInstance" t:id="deleteTestInstance">${message:symbol-removeObjectFromList}</a>
-							<a href="" class="btn btn-sm btn-default" t:type="actionlink"
-								t:context="selectedTestInstance" t:id="duplicateTestInstance">${message:symbol-duplicate}</a>
+								t:context="selectedTestInstance" t:id="editTestInstance"><svg
+									t:type="svgicon" t:path="edit" /> ${message:symbol-edit}</a> <a
+								href="" class="btn btn-sm btn-danger" t:type="actionlink"
+								t:context="selectedTestInstance" t:id="deleteTestInstance"><svg
+									t:type="svgicon" t:path="trash" />
+								${message:symbol-removeObjectFromList}</a> <a href=""
+								class="btn btn-sm btn-default" t:type="actionlink"
+								t:context="selectedTestInstance" t:id="duplicateTestInstance"><svg
+									t:type="svgicon" t:path="copy" /> ${message:symbol-duplicate}</a>
 						</p>
-						<p>
-							${message:scheduledFor-label}: <span class="bg-info">${selectedTestInstance.scheduledFor}</span>
-							${message:scheduledUntil-label}: <span class="bg-info">${selectedTestInstance.scheduledUntil}</span>
-						</p>
+						<div class="row pb-3">
+							<div class="col-3">${message:scheduledFor-label}:</div>
+							<div class="col-9 bg-light">${selectedTestInstance.scheduledFor}</div>
+							<div class="col-3">${message:scheduledUntil-label}:</div>
+							<div class="col-9 bg-light">${selectedTestInstance.scheduledUntil}</div>
+						</div>
 						<p t:type="outputraw" t:value="selectedTestInstance.description">Test
 							Instance Description PLACEHOLDER</p>
 						<p>
@@ -61,13 +65,12 @@
 						</p>
 					</div>
 
-					<div class="col-8">
+					<div class="col-9">
 						<table class="table table-sm table-bordered table-striped">
 							<thead class="thead-dark">
 								<tr class="d-flex">
 									<th class="col-2">${message:task-label}</th>
-									<th class="col-8">${message:task-short-description-label}</th>
-									<th class="col-2">${message:task-actions-label}</th>
+									<th class="col">${message:task-short-description-label}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -76,26 +79,28 @@
 									<td class="col-2">
 										<p>${taskInTestInstance.task.title}</p>
 										<p class="maxpoints">${message:task-points-label}:
-											${taskInTestInstance.points}</p>
+											${taskInTestInstance.points}</p> <a href=""
+										class="btn btn-sm btn-secondary col-12" t:type="actionlink"
+										t:context="taskInTestInstance.task"
+										title="message:symbol-edit" t:id="editTask"><svg
+												t:type="svgicon" t:path="edit" /> ${message:symbol-edit}
+											${message:task-label}</a><br /> <a href=""
+										class="btn btn-sm btn-info col-12" t:type="actionlink"
+										t:context="taskInTestInstance" title="message:symbol-edit"
+										t:id="editTaskInTestInstance"><svg t:type="svgicon"
+												t:path="edit" /> ${message:symbol-edit}
+											${message:taskInTestInstance-label}</a> <br />
+									<a href="" class="btn btn-sm btn-danger col-12"
+										t:type="actionlink" t:context="taskInTestInstance"
+										title="message:symbol-removeObjectFromList"
+										t:id="deleteTaskFromTestInstance"><svg t:type="svgicon"
+												t:path="trash" /> ${message:symbol-removeObjectFromList}
+											${message:taskInTestInstance-label}</a>
 									</td>
-									<td class="col-8">
+									<td class="col">
 										<p t:type="outputraw"
 											t:value="taskInTestInstance.task.description">Task
 											description placeholder</p>
-									</td>
-									<td class="col-2"><a href=""
-										class="btn btn-sm btn-info col-12" t:type="actionlink"
-										t:context="taskInTestInstance.task"
-										title="message:symbol-edit" t:id="editTask">${message:symbol-edit}
-											Task</a><br /> <a href=""
-										class="btn btn-sm btn-secondary col-12" t:type="actionlink"
-										t:context="taskInTestInstance" title="message:symbol-edit"
-										t:id="editTaskInTestInstance">${message:symbol-edit} Task
-											in Test Instance</a><br /> <a href=""
-										class="btn btn-sm btn-danger col-12" t:type="actionlink"
-										t:context="taskInTestInstance"
-										title="message:symbol-removeObjectFromList"
-										t:id="deleteTaskFromTestInstance">${message:symbol-removeObjectFromList}</a>
 									</td>
 								</tr>
 							</tbody>
@@ -108,6 +113,7 @@
 				</div>
 			</div>
 		</div>
+
 	</div>
 </div>
 
@@ -159,11 +165,11 @@
 					<div class="form-group col-2 align-bottom">
 						<label>&nbsp;</label> <a t:id="NewTestTemplate" href=""
 							t:type="actionlink" t:context="testType"
-							class="col-12 btn btn-primary"><t:svgicon
-								t:path="plus-square" /> ${message:testTemplate-label}</a>
+							class="col-12 btn btn-primary"><svg t:type="svgicon"
+								t:path="plus" /> ${message:testTemplate-label}</a>
 					</div>
 				</div>
-				<hr/>
+				<hr />
 			</p:testTemplate>
 			<p:title>
 				<div class="form-row">
