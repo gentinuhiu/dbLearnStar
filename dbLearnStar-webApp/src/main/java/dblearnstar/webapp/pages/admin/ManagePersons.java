@@ -38,6 +38,7 @@ import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.PersonRole;
 import dblearnstar.model.entities.Role;
 import dblearnstar.model.entities.Student;
+import dblearnstar.model.model.ModelConstants;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.services.GenericService;
@@ -178,6 +179,15 @@ public class ManagePersons {
 
 	public void onSuccessFromFrmNewPerson() {
 		personToEdit = null;
+	}
+
+	@CommitAfter
+	public void onTogglePersonStatus(Person p) {
+		if (p.getUserName().contains(ModelConstants.PersonDeactivatedSuffix)) {
+			p.setUserName(p.getUserName().replace(ModelConstants.PersonDeactivatedSuffix, ""));
+		} else {
+			p.setUserName(p.getUserName() + ModelConstants.PersonDeactivatedSuffix);
+		}
 	}
 
 }

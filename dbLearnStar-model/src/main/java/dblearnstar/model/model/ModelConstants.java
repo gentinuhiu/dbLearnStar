@@ -22,24 +22,25 @@ package dblearnstar.model.model;
 
 public class ModelConstants {
 
-	public final static String	TaskCodeSQL		= "SQL";
-	public final static String	TaskCodeDDL		= "DDL";
-	public final static String	TaskCodeTEXT	= "TEXT";
-	public final static String	TaskCodeUPLOAD	= "UPLOAD";
+	public final static String TaskCodeSQL = "SQL";
+	public final static String TaskCodeDDL = "DDL";
+	public final static String TaskCodeTEXT = "TEXT";
+	public final static String TaskCodeUPLOAD = "UPLOAD";
 
-   public static final String ActivityEval = "TASK_EVAL";
-   public static final String ActivityExecAll = "TASK_RUNONLY";
-   public static final String ActivityExecSelection = "TASK_RUNONLY_SELECTION";
-   public static final String ActivityPlan = "TASK_PLANONLY";
-   public static final String ActivityViewTask = "VIEW_TASK";
-   public static final String ActivityStillViewing = "TASK_STILL_VIEWING";
-   public static final String ActivitySubmitText = "TASK_SUBMIT_TEXT";
-   public static final String ActivityTryUpload = "TRIED TASK_UPLOAD";
+	public static final String ActivityEval = "TASK_EVAL";
+	public static final String ActivityExecAll = "TASK_RUNONLY";
+	public static final String ActivityExecSelection = "TASK_RUNONLY_SELECTION";
+	public static final String ActivityPlan = "TASK_PLANONLY";
+	public static final String ActivityViewTask = "VIEW_TASK";
+	public static final String ActivityStillViewing = "TASK_STILL_VIEWING";
+	public static final String ActivitySubmitText = "TASK_SUBMIT_TEXT";
+	public static final String ActivityTryUpload = "TRIED TASK_UPLOAD";
 
-	
+	public static final String PersonDeactivatedSuffix = "---";
+
 	/**
 	 * Pages
 	 */
-	public final static String	PageIndex		= "Index";
+	public final static String PageIndex = "Index";
 
 }

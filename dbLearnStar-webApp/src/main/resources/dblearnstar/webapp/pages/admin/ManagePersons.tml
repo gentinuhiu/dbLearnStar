@@ -48,7 +48,7 @@
 		<a href="" t:type="actionlink" t:id="EditPerson" t:context="person"
 			class="btn btn-sm btn-primary"><t:SVGIcon t:path="edit" />
 			${message:edit-label}</a>
-		<a href="" t:type="actionlink" t:id="TogglePersonStatus"
+		<a href="" t:type="eventLink" t:id="togglePersonStatus"
 			t:context="person" class="btn btn-sm btn-secondary"><t:SVGIcon
 				t:path="toggle-left" /> ${message:toggle-status-label}</a>
 		<a href="" t:type="actionlink" t:id="DeletePerson" t:context="person"
