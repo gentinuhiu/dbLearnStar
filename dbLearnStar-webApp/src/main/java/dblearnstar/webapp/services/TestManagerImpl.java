@@ -40,6 +40,7 @@ import dblearnstar.model.entities.StudentStartedTest;
 import dblearnstar.model.entities.StudentSubmitSolution;
 import dblearnstar.model.entities.Task;
 import dblearnstar.model.entities.TaskInTestInstance;
+import dblearnstar.model.entities.TaskIsOfType;
 import dblearnstar.model.entities.TestInstance;
 
 public class TestManagerImpl implements TestManager {
@@ -450,6 +451,16 @@ public class TestManagerImpl implements TestManager {
 		return getTestInstancesForStudentByTestType(student.getStudentId(),
 				tti.getTestInstance().getTestTemplate().getTestType().getTestTypeId()).stream()
 						.anyMatch(ti -> ti.getTestInstanceId() == tti.getTestInstance().getTestInstanceId());
+	}
+
+	@Override
+	public String getCodeType(StudentSubmitSolution submittedSolution) {
+		List<TaskIsOfType> listTypes = submittedSolution.getTaskInTestInstance().getTask().getTaskIsOfTypes();
+		if (listTypes != null && listTypes.size() > 0) {
+			return listTypes.get(0).getTaskType().getCodetype();
+		} else {
+			return "/";
+		}
 	}
 
 }

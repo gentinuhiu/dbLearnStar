@@ -89,4 +89,5 @@ public interface TestManager {
 
 	public boolean accessToTaskInTestInstanceAllowed(Student student, TaskInTestInstance tti);
 
+	public String getCodeType(StudentSubmitSolution submittedSolution);
 }

@@ -44,4 +44,6 @@ public interface PersonManager {
 
 	public List<Student> getAllStudents();
 
+	public boolean isInstructor(Person person);
+
 }

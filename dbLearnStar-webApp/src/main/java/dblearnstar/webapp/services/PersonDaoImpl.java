@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.PersonRole;
 import dblearnstar.model.entities.Student;
+import dblearnstar.model.model.ModelConstants;
 
 public class PersonDaoImpl implements PersonDao {
 	@Inject
@@ -135,8 +136,27 @@ public class PersonDaoImpl implements PersonDao {
 			return UsefulMethods.castList(Student.class,
 					getEntityManager().createQuery("from Student s order by s.person.lastName").getResultList());
 		} catch (Exception e) {
-			logger.error("getAllStudents{}", e);
+			logger.error("getAllStudents {}", e);
 			return null;
+		}
+	}
+
+	@Override
+	public boolean isInstructor(Person person) {
+		try {
+			List list = getEntityManager()
+					.createQuery(
+							"from PersonRole pr where pr.person.personId=:personId and pr.role.name=:instructorRole")
+					.setParameter("personId", person.getPersonId())
+					.setParameter("instructorRole", ModelConstants.InstructorRole).getResultList();
+			if (list != null && list.size() > 0) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			logger.error("isInstructor {}", e);
+			return false;
 		}
 	}
 

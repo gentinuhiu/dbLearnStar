@@ -30,15 +30,19 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
 import dblearnstar.model.entities.AssessmentDiscussion;
 import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.model.ComparatorAssessmentDiscussionByReplyTo;
+import dblearnstar.model.model.TaskTypeChecker;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.annotations.StudentPage;
 import dblearnstar.webapp.services.GenericService;
+import dblearnstar.webapp.services.PersonManager;
+import dblearnstar.webapp.services.TestManager;
 
 @StudentPage
 @AdministratorPage
@@ -50,6 +54,12 @@ public class ComplaintsAndDiscussions {
 
 	@Inject
 	private GenericService genericService;
+	@Inject
+	private Logger logger;
+	@Inject
+	private PersonManager personManager;
+	@Inject
+	private TestManager testManager;
 
 	@Persist
 	@Property
@@ -67,7 +77,6 @@ public class ComplaintsAndDiscussions {
 			solutionAssessmentToDiscuss = genericService.getByPK(SolutionAssessment.class,
 					solutionAssessmentToDiscuss.getSolutionAssessmentId());
 		}
-
 	}
 
 	public void onActivate(long solutionAssessmentToDiscussId) {
@@ -101,6 +110,9 @@ public class ComplaintsAndDiscussions {
 		newAssessmentDiscussion.setPerson(p);
 		newAssessmentDiscussion.setPostedOn(new Date());
 		newAssessmentDiscussion.setReplyTo(replyTo);
+		if (userInfo.isAdministrator() || userInfo.isInstructor()) {
+			newAssessmentDiscussion.setMessage("<div class=\"box\">" + replyTo.getMessage() + "</div>\n<p></p>");
+		}
 		newAssessmentDiscussion.setSolutionEvaluation(solutionAssessmentToDiscuss);
 	}
 
@@ -110,7 +122,7 @@ public class ComplaintsAndDiscussions {
 		newAssessmentDiscussion = null;
 	}
 
-	void onActionFromCancelNewAssessmentDiscussionForm() {
+	void onCancelNewAssessmentDiscussionForm() {
 		newAssessmentDiscussion = null;
 	}
 
@@ -138,9 +150,16 @@ public class ComplaintsAndDiscussions {
 		return userInfo.isAdministrator();
 	}
 
+	public boolean isPostedByInstructor() {
+		return personManager.isInstructor(runningAssessmentDiscussion.getPerson());
+	}
+
 	@CommitAfter
 	public void onActionFromDeleteDiscussion(long assessmentDiscussionId) {
 		genericService.deleteByPK(AssessmentDiscussion.class, assessmentDiscussionId);
 	}
 
+	public boolean isSQL() {
+		return TaskTypeChecker.isSQL(testManager.getCodeType(solutionAssessmentToDiscuss.getStudentSubmitSolution()));
+	}
 }

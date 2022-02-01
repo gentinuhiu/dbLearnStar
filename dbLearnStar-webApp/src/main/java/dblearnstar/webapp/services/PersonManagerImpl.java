@@ -83,4 +83,9 @@ public class PersonManagerImpl implements PersonManager {
 		// TODO Auto-generated method stub
 		return personDao.getAllStudents();
 	}
+
+	@Override
+	public boolean isInstructor(Person person) {
+		return personDao.isInstructor(person);
+	}
 }

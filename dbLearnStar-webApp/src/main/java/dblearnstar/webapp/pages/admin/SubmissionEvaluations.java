@@ -360,39 +360,30 @@ public class SubmissionEvaluations {
 		}
 	}
 
-	public String getCodeType(StudentSubmitSolution submittedSolution) {
-		List<TaskIsOfType> listTypes = submittedSolution.getTaskInTestInstance().getTask().getTaskIsOfTypes();
-		if (listTypes != null && listTypes.size() > 0) {
-			return listTypes.get(0).getTaskType().getCodetype();
-		} else {
-			return "/";
-		}
-	}
-
 	public boolean isEditedAssessmentTaskSQL() {
 		if (editedAssessment != null) {
 			StudentSubmitSolution sss = genericService.getByPK(StudentSubmitSolution.class,
 					editedAssessment.getStudentSubmitSolution().getStudentSubmitSolutionId());
-			return TaskTypeChecker.isSQL(getCodeType(sss));
+			return TaskTypeChecker.isSQL(testManager.getCodeType(sss));
 		} else {
 			return false;
 		}
 	}
 
 	public boolean isSQL() {
-		return TaskTypeChecker.isSQL(getCodeType(submission));
+		return TaskTypeChecker.isSQL(testManager.getCodeType(submission));
 	}
 
 	public boolean isTEXT() {
-		return TaskTypeChecker.isTEXT(getCodeType(submission));
+		return TaskTypeChecker.isTEXT(testManager.getCodeType(submission));
 	}
 
 	public boolean isDDL() {
-		return TaskTypeChecker.isDDL(getCodeType(submission));
+		return TaskTypeChecker.isDDL(testManager.getCodeType(submission));
 	}
 
 	public boolean isUPLOAD() {
-		return TaskTypeChecker.isUPLOAD(getCodeType(submission));
+		return TaskTypeChecker.isUPLOAD(testManager.getCodeType(submission));
 	}
 
 	public SolutionAssessment getSubmissionsFirstEvaluation() {

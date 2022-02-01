@@ -1,8 +1,10 @@
 <html t:type="layout" title="message:ComplaintsAndDiscussions-page"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
+
 <h1>${message:OpenDiscussions-pagelink}</h1>
-<div class="card bg-light p-0">
+
+<div class="card bg-light mb-3">
 	<div class="card-body p-3 pb-0">
 		<form t:type="form" t:id="selectTestForm">
 			<div class="form-group">
@@ -19,12 +21,16 @@
 
 <t:zone t:id="zTestInstance" id="zTestInstance">
 	<t:if t:test="selectedTestInstance">
-		<h2 class="mt-3">Discussions</h2>
 		<t:loop t:source="solutionAssessmentsWithDiscussion"
 			t:value="runningSolutionAssessment">
 			<p>
-				<a href="" t:type="pagelink" t:page="complaintsanddiscussions"
-					t:context="runningSolutionAssessment">${runningSolutionAssessment.studentSubmitSolution.taskInTestInstance.task.title}</a>
+				<a href="" class="btn btn-outline-info mr-3" t:type="pagelink"
+					t:page="complaintsanddiscussions"
+					t:context="runningSolutionAssessment">${runningSolutionAssessment.studentSubmitSolution.taskInTestInstance.task.title}
+					- ${message:solutionBy-label} -
+					${runningSolutionAssessment.studentSubmitSolution.studentStartedTest.student.person.userName}
+				</a>
+				<t:if t:test="answeredByInstructor">${message:answeredByInstructor-label}</t:if>
 			</p>
 			<p:empty>
 				<p class="bg-danger">No discussions</p>

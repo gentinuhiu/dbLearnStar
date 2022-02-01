@@ -22,10 +22,10 @@ package dblearnstar.model.model;
 
 public class ModelConstants {
 
-	public final static String TaskCodeSQL = "SQL";
-	public final static String TaskCodeDDL = "DDL";
-	public final static String TaskCodeTEXT = "TEXT";
-	public final static String TaskCodeUPLOAD = "UPLOAD";
+	public static final String TaskCodeSQL = "SQL";
+	public static final String TaskCodeDDL = "DDL";
+	public static final String TaskCodeTEXT = "TEXT";
+	public static final String TaskCodeUPLOAD = "UPLOAD";
 
 	public static final String ActivityEval = "TASK_EVAL";
 	public static final String ActivityExecAll = "TASK_RUNONLY";
@@ -41,6 +41,9 @@ public class ModelConstants {
 	/**
 	 * Pages
 	 */
-	public final static String PageIndex = "Index";
+	public static final String PageIndex = "Index";
+
+	public static final Object InstructorRole = "INSTRUCTOR";
+	public static final Object AdministratorRole = "ADMINISTRATOR";
 
 }

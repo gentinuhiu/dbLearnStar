@@ -45,4 +45,6 @@ public interface PersonDao {
 
 	public List<Student> getAllStudents();
 
+	public boolean isInstructor(Person person);
+
 }

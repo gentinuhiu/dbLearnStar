@@ -132,4 +132,17 @@ public class OpenDiscussions {
 		ajaxResponseRenderer.addRender(zTestInstance);
 	}
 
+	@Inject
+	private PersonManager personManager;
+
+	public boolean isAnsweredByInstructor() {
+		boolean answer = false;
+		for (AssessmentDiscussion ad : runningSolutionAssessment.getAssessmentDiscussions()) {
+			if (personManager.isInstructor(ad.getPerson())) {
+				answer = true;
+			}
+		}
+		return answer;
+	}
+
 }
