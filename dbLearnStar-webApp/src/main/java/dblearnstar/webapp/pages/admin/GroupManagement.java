@@ -37,6 +37,7 @@ import dblearnstar.model.entities.Group;
 import dblearnstar.model.entities.GroupFocusOnTest;
 import dblearnstar.model.entities.GroupMember;
 import dblearnstar.model.entities.Person;
+import dblearnstar.model.entities.Student;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.model.StudentSelectModel;
 import dblearnstar.webapp.services.GenericService;
@@ -61,12 +62,12 @@ public class GroupManagement {
 	@Inject
 	private SelectModelFactory selectModelFactory;
 
+	@Persist
 	@Property
-	private Group group;
+	private String errors;
 	@Property
 	@Persist
 	private Group selectedGroup;
-
 	@Property
 	@Persist
 	private Group editGroup;
@@ -76,12 +77,17 @@ public class GroupManagement {
 	@Property
 	@Persist
 	private GroupFocusOnTest editGroupFocusOnTest;
+
+	@Property
+	private Group group;
 	@Property
 	private GroupMember groupMember;
 	@Property
 	private GroupFocusOnTest groupFocusOnTest;
 	@Property
 	private Person personToAdd;
+	@Property
+	private String studentsToImport;
 
 	public void onActivate() {
 		if (editGroup != null) {
@@ -112,12 +118,36 @@ public class GroupManagement {
 	@CommitAfter
 	public void onSuccessFromNewGroupForm() {
 		logger.info("Submitting new group");
+		errors = "";
+		genericService.saveOrUpdate(editGroup);
 		if (editGroupMember != null) {
 			genericService.saveOrUpdate(editGroupMember);
 		}
-		genericService.saveOrUpdate(editGroup);
-		editGroupMember = null;
-		editGroup = null;
+		if (studentsToImport != null) {
+			for (String line : studentsToImport.split("\\r?\\n")) {
+				logger.info(">>> Importing {} <<<", line);
+				for (String lineField : line.split("[,\t]")) {
+					try {
+						Student s = personManager
+								.getStudentsByPersonId(personManager.getPersonByUsername(lineField).getPersonId())
+								.get(0);
+						GroupMember gm = new GroupMember();
+						gm.setGroup(editGroup);
+						gm.setStudent(s);
+						genericService.save(gm);
+					} catch (Exception e) {
+						errors += ">>> Student " + line + " can not be imported due to: " + e.getLocalizedMessage();
+					}
+				}
+			}
+			if (!(errors.length() > 0)) {
+				errors = "";
+				studentsToImport = null;
+				editGroupMember = null;
+			}
+		} else {
+			editGroup = null;
+		}
 	}
 
 	@CommitAfter
@@ -196,5 +226,17 @@ public class GroupManagement {
 				&& (g.getGroupFocusOnTests().size() == 0 || g.getGroupFocusOnTests() == null)) {
 			genericService.delete(g);
 		}
+	}
+
+	void onCancelEditGroup() {
+		editGroup = null;
+	}
+
+	void onCancelNewMemberForm() {
+		editGroupMember = null;
+	}
+
+	void onCancelNewFocusOnTestForm() {
+		editGroupFocusOnTest = null;
 	}
 }
