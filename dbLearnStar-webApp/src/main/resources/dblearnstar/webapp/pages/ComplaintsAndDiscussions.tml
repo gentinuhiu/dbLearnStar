@@ -7,33 +7,34 @@
 <div t:type="if" t:test="solutionAssessmentToDiscuss">
 	<p:then>
 		<h2>${solutionAssessmentToDiscuss.studentSubmitSolution.taskInTestInstance.testInstance.title}</h2>
-		<h3>${solutionAssessmentToDiscuss.studentSubmitSolution.taskInTestInstance.task.title}</h3>
 
-		<P>
-			<a class="btn btn-sm btn-outline-info" role="button"
-				data-toggle="collapse"
-				href="#collapse${solutionAssessmentToDiscuss.solutionAssessmentId}"
-				aria-expanded="false"
-				aria-controls="collapse${solutionAssessmentToDiscuss.solutionAssessmentId}">
-				${message:Description-label} <img t:type="svgicon"
-				t:path="chevrons-down" />
-			</a>
-		</P>
-
-		<div class="collapse"
-			id="collapse${solutionAssessmentToDiscuss.solutionAssessmentId}">
-			<t:outputRaw
-				t:value="solutionAssessmentToDiscuss.studentSubmitSolution.taskInTestInstance.task.description" />
-		</div>
 
 		<div class="row">
 			<div class="col-sm-7">
+				<h3>${solutionAssessmentToDiscuss.studentSubmitSolution.taskInTestInstance.task.title}
+					<a class="btn btn-sm btn-outline-info" role="button"
+						data-toggle="collapse"
+						href="#collapse${solutionAssessmentToDiscuss.solutionAssessmentId}"
+						aria-expanded="false"
+						aria-controls="collapse${solutionAssessmentToDiscuss.solutionAssessmentId}">
+						<img t:type="svgicon" t:path="chevrons-down" />
+					</a>
+				</h3>
+
+				<div class="collapse"
+					id="collapse${solutionAssessmentToDiscuss.solutionAssessmentId}">
+					<t:outputRaw
+						t:value="solutionAssessmentToDiscuss.studentSubmitSolution.taskInTestInstance.task.description" />
+				</div>
+
+
 				<h4>${message:Discussed-Solution-by-label}
 					${solutionAssessmentToDiscuss.studentSubmitSolution.studentStartedTest.student.person.userName}
 				</h4>
 				<div class="reshenieto">
 					<t:if t:test="sql">
-						<pre><t:outputRaw
+						<pre>
+							<t:outputRaw
 								t:value="solutionAssessmentToDiscuss.studentSubmitSolution.submission" />
 						</pre>
 						<p:else>
@@ -96,33 +97,52 @@
 					t:test="solutionAssessmentToDiscuss.assessmentDiscussions">
 					<p:then>
 						<h3 class="mt-3">${message:discussions-label}</h3>
+						<div class="card">
+							<div class="card-body  p-1 bg-light">
+								<t:loop t:source="reorderedAssessmentDiscussions"
+									t:value="runningAssessmentDiscussion">
+									<div class=" ${indentation}">
+										<a role="button" class="btn btn-sm"
+											href="#disc${runningAssessmentDiscussion.assessmentDiscussionId}">
+											<svg t:type="svgicon" t:path="file" />
+											${runningAssessmentDiscussion.postedOn} -
+											${runningAssessmentDiscussion.person.userName}
+										</a>
+									</div>
+								</t:loop>
+							</div>
+						</div>
 						<t:loop t:source="reorderedAssessmentDiscussions"
 							t:value="runningAssessmentDiscussion">
-							<div class="card mt-3 discussion ${indentation}">
+							<div class="card mt-3 discussion ${indentation}"
+								id="disc${runningAssessmentDiscussion.assessmentDiscussionId}">
 								<div class="card-header">${runningAssessmentDiscussion.postedOn}
 									-
 									<t:if t:test="postedByInstructor">${runningAssessmentDiscussion.person.userName}<p:else>${runningAssessmentDiscussion.person.userName}</p:else>
 									</t:if>
 								</div>
-								<div class="card-body">
-									<t:outputRaw t:value="runningAssessmentDiscussion.message" />
-									<p>
-										<button href="" role="button" class="btn btn-sm btn-primary"
-											t:type="actionlink" t:id="replyTo"
-											t:context="runningAssessmentDiscussion">
-											<svg t:type="svgicon" t:path="file-text" />
-											${message:replyTo-label}
-										</button>
-										<t:if t:test="administrator">
-											<button href="" role="button" class="btn btn-sm btn-danger"
-												t:type="actionlink" t:id="deleteDiscussion"
-												t:context="runningAssessmentDiscussion" t:mixins="confirm"
-												t:message="brishenje">
-												<svg t:type="svgicon" t:path="trash" />
-												${message:delete-label}
+								<div class="card-body"
+									id="discbody${runningAssessmentDiscussion.assessmentDiscussionId}">
+									<div>
+										<t:outputRaw t:value="runningAssessmentDiscussion.message" />
+										<p>
+											<button href="" role="button" class="btn btn-sm btn-primary"
+												t:type="actionlink" t:id="replyTo"
+												t:context="runningAssessmentDiscussion">
+												<svg t:type="svgicon" t:path="file-text" />
+												${message:replyTo-label}
 											</button>
-										</t:if>
-									</p>
+											<t:if t:test="administrator">
+												<button href="" role="button" class="btn btn-sm btn-danger"
+													t:type="actionlink" t:id="deleteDiscussion"
+													t:context="runningAssessmentDiscussion" t:mixins="confirm"
+													t:message="brishenje">
+													<svg t:type="svgicon" t:path="trash" />
+													${message:delete-label}
+												</button>
+											</t:if>
+										</p>
+									</div>
 								</div>
 							</div>
 						</t:loop>
