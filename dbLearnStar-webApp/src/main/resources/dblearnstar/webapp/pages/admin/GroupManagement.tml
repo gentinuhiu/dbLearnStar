@@ -5,80 +5,89 @@
 <div t:type="if" t:test="editGroup">
 	<p:then>
 		<h3>Group Info</h3>
+		<div class="row">
+			<div class="col-6">
+				<form t:id="NewGroupForm" t:type="form" class="form-horizontal">
+					<t:beaneditor t:object="editGroup" t:exclude="groupId"></t:beaneditor>
+					<div class="form-group">
+						<t:label t:for="userNamesToImport" />
+						<t:textarea t:rows="10" t:id="userNamesToImport" t:value="studentsToImport" />
+					</div>
+					<p class="incorrect">${errors}</p>
+					<t:submit t:value="OK" />
+					<a href="" t:type="eventlink" t:id="cancelEditGroup">Cancel</a>
+				</form>
 
-		<div class="col-sm-12">
-			<form t:id="NewGroupForm" t:type="form" class="form-horizontal">
-				<t:beaneditor t:object="editGroup" t:exclude="groupId"></t:beaneditor>
-				<t:textarea t:value="studentsToImport" />
-				<p class="incorrect">${errors}</p>
-				<t:submit t:value="OK" />
-				<a href="" t:type="eventlink" t:id="cancelEditGroup">Cancel</a>
-			</form>
-		</div>
+				<h3 class="mt-3">Group Focus On Tests</h3>
 
-		<h3>Group members</h3>
-
-		<div class="col-sm-12">
-			<ol>
-				<li t:type="loop" t:id="groupMembers"
-					t:source="editGroup.groupMembers" t:value="groupMember">
-					${groupMember.student.person.lastName}
-					${groupMember.student.person.firstName}
-					[${groupMember.student.person.userName}]<a href=""
-					t:type="actionlink" t:id="DeleteGroupMember"
-					t:context="groupMember" class="btn btn-sm btn-default"><t:SVGIcon
-							t:path="user-minus" /></a>
-				</li>
-				<li><a href="" t:type="actionlink" t:id="newMember"
-					t:context="editGroup" class="btn btn-sm btn-info" role="button"><t:SVGIcon
-							t:path="user-plus" /> New member</a></li>
-			</ol>
-			<div t:type="if" t:test="editGroupMember">
-				<div t:type="modalbox">
-					<form t:id="NewMemberForm" t:type="form">
-						<t:beaneditor t:object="editGroupMember"
-							t:model="modelGroupMember" t:add="student">
-							<p:student>
-								<select t:type="select" t:model="AllStudentsModel"
-									t:value="editGroupMember.student"></select>
-							</p:student>
-						</t:beaneditor>
-						<t:submit t:value="OK" />
-						<a href="" t:type="eventlink" t:id="cancelNewMemberForm">Cancel</a>
-					</form>
+				<div class="col-sm-12">
+					<ol>
+						<li t:type="loop" t:id="groupFocusOnTests"
+							t:source="editGroup.groupFocusOnTests" t:value="groupFocusOnTest">
+							${groupFocusOnTest.testInstance.title}<a href=""
+							t:type="actionlink" t:id="DeleteGroupFocusOnTest"
+							t:context="groupFocusOnTest" class="btn btn-sm btn-default"><t:SVGIcon
+									t:path="minus-square" /></a>
+						</li>
+						<li><a href="" t:type="actionlink" t:id="newFocusOnTest"
+							t:context="editGroup" class="btn btn-sm btn-info" role="button"><span
+								class="plus-square"></span> New Focus On Test</a></li>
+					</ol>
+					
+					<div t:type="if" t:test="editGroupFocusOnTest">
+						<div t:type="modalbox">
+							<form t:id="NewFocusOnTestForm" t:type="form">
+								<t:beaneditor t:object="editGroupFocusOnTest"
+									t:model="modelGroupFocusOnTest" t:add="testInstance">
+									<p:testInstance>
+										<select t:type="select" t:model="AllTestInstancesModel"
+											t:value="editGroupFocusOnTest.testInstance"></select>
+									</p:testInstance>
+								</t:beaneditor>
+								<t:submit t:value="OK" />
+								<a href="" t:type="eventlink" t:id="cancelNewFocusOnTestForm">Cancel</a>
+							</form>
+						</div>
+					</div>
 				</div>
+
+
 			</div>
-		</div>
 
-		<h3>Group Focus On Tests</h3>
+			<div class="col-6">
+				<h3>Group members</h3>
 
-		<div class="col-sm-12">
-			<ol>
-				<li t:type="loop" t:id="groupFocusOnTests"
-					t:source="editGroup.groupFocusOnTests" t:value="groupFocusOnTest">
-					${groupFocusOnTest.testInstance.title}<a href=""
-					t:type="actionlink" t:id="DeleteGroupFocusOnTest"
-					t:context="groupFocusOnTest" class="btn btn-sm btn-default"><t:SVGIcon
-							t:path="minus-square" /></a>
-				</li>
-				<li><a href="" t:type="actionlink" t:id="newFocusOnTest"
-					t:context="editGroup" class="btn btn-sm btn-info" role="button"><span
-						class="plus-square"></span> New Focus On Test</a></li>
-			</ol>
-			<div t:type="if" t:test="editGroupFocusOnTest">
-				<div t:type="modalbox">
-					<form t:id="NewFocusOnTestForm" t:type="form">
-						<t:beaneditor t:object="editGroupFocusOnTest"
-							t:model="modelGroupFocusOnTest" t:add="testInstance">
-							<p:testInstance>
-								<select t:type="select" t:model="AllTestInstancesModel"
-									t:value="editGroupFocusOnTest.testInstance"></select>
-							</p:testInstance>
-						</t:beaneditor>
-						<t:submit t:value="OK" />
-						<a href="" t:type="eventlink" t:id="cancelNewFocusOnTestForm">Cancel</a>
-					</form>
+				<div class="col-sm-12">
+					<table class="table table-sm table-hover table-bordered table-striped" t:type="grid" t:id="groupMembers"
+						t:model="groupMemberGridModel" t:source="editGroup.groupMembers"
+						t:row="groupMember" t:rowsperpage="50">
+						<p:actionsCell>
+							<a href="" t:type="actionlink" t:id="DeleteGroupMember"
+								t:context="groupMember" class="btn btn-sm btn-default"><t:SVGIcon
+									t:path="user-minus" /></a>
+						</p:actionsCell>
+					</table>
+
+					<a href="" t:type="actionlink" t:id="newMember"
+						t:context="editGroup" class="btn btn-sm btn-info" role="button"><t:SVGIcon
+							t:path="user-plus" /> New member</a>
+					<div t:type="if" t:test="editGroupMember">
+						<div t:type="modalbox">
+							<form t:id="NewMemberForm" t:type="form">
+								<t:beaneditor t:object="editGroupMember"
+									t:model="modelGroupMember" t:add="student">
+									<p:student>
+										<select t:type="select" t:model="AllStudentsModel"
+											t:value="editGroupMember.student"></select>
+									</p:student>
+								</t:beaneditor>
+								<t:submit t:value="OK" />
+								<a href="" t:type="eventlink" t:id="cancelNewMemberForm">Cancel</a>
+							</form>
+						</div>
+					</div>
 				</div>
+
 			</div>
 		</div>
 	</p:then>

@@ -25,11 +25,14 @@ import java.util.List;
 import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.beaneditor.RelativePosition;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
+import org.apache.tapestry5.beanmodel.services.PropertyConduitSource;
 import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.ComponentSource;
 import org.apache.tapestry5.services.SelectModelFactory;
 import org.slf4j.Logger;
 
@@ -38,6 +41,8 @@ import dblearnstar.model.entities.GroupFocusOnTest;
 import dblearnstar.model.entities.GroupMember;
 import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.Student;
+import dblearnstar.model.entities.StudentSubmitSolution;
+import dblearnstar.model.model.ModelConstants;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.model.StudentSelectModel;
 import dblearnstar.webapp.services.GenericService;
@@ -61,6 +66,13 @@ public class GroupManagement {
 	private TestManager testManager;
 	@Inject
 	private SelectModelFactory selectModelFactory;
+
+	@Inject
+	private BeanModelSource beanModelSource;
+	@Inject
+	private Messages messages;
+	@Inject
+	private PropertyConduitSource pcs;
 
 	@Persist
 	@Property
@@ -183,12 +195,6 @@ public class GroupManagement {
 		genericService.delete(groupMember);
 	}
 
-	@Inject
-	private BeanModelSource beanModelSource;
-
-	@Inject
-	private Messages messages;
-
 	@Property
 	@Persist
 	private BeanModel<GroupMember> modelGroupMember;
@@ -204,6 +210,16 @@ public class GroupManagement {
 		modelGroupFocusOnTest = beanModelSource.createEditModel(GroupFocusOnTest.class, messages);
 		modelGroupFocusOnTest.add("testInstance");
 		modelGroupFocusOnTest.exclude("groupFocusOnTestId");
+	}
+
+	public BeanModel<GroupMember> getGroupMemberGridModel() {
+		BeanModel<GroupMember> model = beanModelSource.createDisplayModel(GroupMember.class, messages);
+		model.exclude("groupMemberId");
+		model.add("userName", pcs.create(GroupMember.class, "student.person.userName"));
+		model.add("firstName", pcs.create(GroupMember.class, "student.person.firstName"));
+		model.add("lastName", pcs.create(GroupMember.class, "student.person.lastName"));
+		model.addEmpty("actions");
+		return model;
 	}
 
 	public SelectModel getAllTestInstancesModel() {
