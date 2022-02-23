@@ -51,7 +51,7 @@
 							<a href="" t:type="actionlink" t:id="reevaluateEditedSubmission"
 								t:context="editedAssessment.studentSubmitSolution"
 								t:zone="zModal" class="btn btn-sm btn-warning">${message:reevaluate-label}
-								<t:SVGIcon t:path="check-square" />
+								<t:SVGIcon t:path="repeat" />
 							</a> <a href="" class="btn btn-sm btn-info" t:type="actionlink"
 								t:id="viewEvaluationResults" t:zone="zSQLEval"
 								t:context="editedAssessment.studentSubmitSolution">${message:sqlEvaluation-label}
@@ -261,7 +261,7 @@
 				${submittedByNameWithId}<br />
 					<a href="" t:type="actionlink" t:id="ShowUserActivities"
 						t:context="submission" t:zone="zSelectStudents" role="button"
-						class="btn btn-xs btn-secondary">In Focus</a>
+						class="btn btn-sm btn-secondary">In Focus</a>
 				</p:submittedByCell>
 				<p:notForEvaluationCell>
 					<t:booleanindicator t:value="submission?.notForEvaluation"
@@ -287,9 +287,10 @@
 					<div t:type="if" t:test="SQL">
 						<a href="" t:type="actionlink" t:id="reevaluateSubmission"
 							t:context="submission" t:zone="zSubmissions"
-							class="btn btn-xs btn-warning">${message:reevaluate-label}</a>
+							class="btn btn-sm btn-warning"><img t:type="svgicon"
+							t:path="repeat" />${message:reevaluate-label}</a>
 					</div>
-					<div t:type="if" t:test="UPLOAD"></div>
+					<div t:type="if" t:test="UPLOAD">Upload is not supported.</div>
 					<div t:type="if" t:test="submission.evaluations">
 						${message:grade-label}: <span class="badge badge-dark">${submissionsFirstEvaluation.grade}</span>
 						<br />${message:evaluatedOn-label}:
@@ -300,11 +301,21 @@
 						</pre>
 						<a href="" t:type="actionlink" t:id="editAssessment"
 							t:async="true" t:context="submissionsFirstEvaluation"
-							class="btn btn-xs btn-primary">${message:editAssessment-label}</a>
+							class="btn btn-sm btn-primary"><img t:type="svgicon"
+							t:path="edit" />${message:editAssessment-label}</a>
 						<p:else>
 							<a href="" t:type="actionlink" t:id="addAssessment"
 								t:async="true" t:context="submission"
-								class="btn btn-xs btn-primary">${message:addAssessment-label}</a>
+								class="btn btn-sm btn-primary"><img t:type="svgicon"
+								t:path="edit" />${message:addAssessment-label}</a>
+							<a href="" t:type="eventlink" t:id="assessAsCorrectSubmission"
+								t:async="true" t:context="submission"
+								class="btn btn-sm btn-success correct"><img t:type="svgicon"
+								t:path="check" />${message:assessmentComment-correct}</a>
+							<a href="" t:type="eventlink" t:id="assessAsIncorrectSubmission"
+								t:async="true" t:context="submission"
+								class="btn btn-sm btn-warning incorrect"><img
+								t:type="svgicon" t:path="x" />${message:assessmentComment-incorrect}</a>
 						</p:else>
 					</div>
 				</p:assessmentCell>

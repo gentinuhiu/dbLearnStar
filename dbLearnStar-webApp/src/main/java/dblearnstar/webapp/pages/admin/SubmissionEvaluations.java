@@ -23,6 +23,7 @@ package dblearnstar.webapp.pages.admin;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,6 @@ import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentSubmitSolution;
 import dblearnstar.model.entities.TaskInTestInstance;
-import dblearnstar.model.entities.TaskIsOfType;
 import dblearnstar.model.entities.TestInstance;
 import dblearnstar.model.entities.TestInstanceParameters;
 import dblearnstar.model.model.ModelConstants;
@@ -513,6 +513,34 @@ public class SubmissionEvaluations {
 							.indent("  ").uppercase(true).linesBetweenQueries(2).maxColumnLength(100).build());
 		} else {
 			return editedAssessment.getStudentSubmitSolution().getSubmission();
+		}
+	}
+
+	@CommitAfter
+	void onAssessAsCorrectSubmission(StudentSubmitSolution submission) {
+		SolutionAssessment sa = new SolutionAssessment();
+		sa.setStudentSubmitSolution(submission);
+		sa.setFeedback(messages.get("assessmentComment-correct"));
+		sa.setEvaluatedOn(new Date());
+		sa.setGrade(submission.getTaskInTestInstance().getPoints());
+		sa.setPassed(true);
+		genericService.save(sa);
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zSubmissions);
+		}
+	}
+
+	@CommitAfter
+	void onAssessAsIncorrectSubmission(StudentSubmitSolution submission) {
+		SolutionAssessment sa = new SolutionAssessment();
+		sa.setStudentSubmitSolution(submission);
+		sa.setFeedback(messages.get("assessmentComment-incorrect"));
+		sa.setEvaluatedOn(new Date());
+		sa.setGrade(0.0F);
+		sa.setPassed(false);
+		genericService.save(sa);
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zSubmissions);
 		}
 	}
 

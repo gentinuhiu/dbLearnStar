@@ -174,3 +174,13 @@ table tbody tr.exception {
 	font-size:80%;
 	line-height:1em;
 }
+
+.correct svg {
+	stroke: black !important; 
+	stroke-width: 2px !important;
+}
+
+.incorrect svg {
+	stroke: black !important; 
+	stroke-width: 2px !important;
+}
