@@ -177,7 +177,7 @@ public class SolutionComparatorPage {
 		} else {
 			return sss.getTaskInTestInstance().getStudentSubmitSolutions().stream()
 					.filter(p -> (p.getEvaluations() != null && p.getEvaluations().size() > 0
-							&& p.getEvaluations().get(0).getPassed()
+							&& p.getEvaluations().get(0).getPassed()!=null && p.getEvaluations().get(0).getPassed()
 							&& p.getStudentSubmitSolutionId() != sss.getStudentSubmitSolutionId()))
 					.collect(Collectors.toList());
 		}

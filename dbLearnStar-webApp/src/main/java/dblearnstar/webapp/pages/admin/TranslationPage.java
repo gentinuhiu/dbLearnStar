@@ -14,6 +14,7 @@ import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.annotations.InstructorPage;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.TranslationService;
+import dblearnstar.webapp.services.UsefulMethods;
 
 @AdministratorPage
 @InstructorPage
@@ -37,7 +38,7 @@ public class TranslationPage {
 	private Translation translationRow;
 
 	public List<Translation> getListTranslations() {
-		List<Translation> l = (List<Translation>) genericService.getAll(Translation.class);
+		List<Translation> l = UsefulMethods.castList(Translation.class, genericService.getAll(Translation.class));
 		if (filter != null && filter.length() > 0) {
 			for (String filterWord : filter.split(" ")) {
 				l = l.stream().filter(
