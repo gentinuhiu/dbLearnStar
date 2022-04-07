@@ -98,7 +98,8 @@ public class Layout {
 		if (userInfo.isAdministrator()) {
 			return new String[] { "admin/ManagePersons", "admin/GroupManagement", "admin/ManageModels",
 					"admin/TestAdmin", "admin/TestCollectionManagement", "admin/StudentGroupProgress",
-					"admin/SubmissionEvaluations", "admin/Reevaluation", "admin/ActiveUsers", "admin/TranslationPage" };
+					"admin/SubmissionEvaluations", "admin/Reevaluation", "admin/ActiveUsers", "admin/TranslationPage",
+					"admin/SystemParameters" };
 		} else {
 			return null;
 		}

@@ -12,6 +12,7 @@
   * Tests can be graded and reviewed
   * Support for transparency in grading - students can be allowed to view 
 - Support for automatic and semi-automatic evaluation of SQL tasks based on correct solutions test samples implemented as database views
+- Support for rapid and semi-automated evaluation of database and schema design DDL tasks
 
 The system was presented at the ACM SIGITE 21:
 - Vangel Ajanovski. 2021. DbLearn*: Open-Source System and a Set of Practices for Conducting Iterative Exercises and Exams in a Databases Course. In Proceedings of the 22st Annual Conference on Information Technology Education (SIGITE '21). Association for Computing Machinery, New York, NY, USA, 61–62. DOI: https://doi.org/10.1145/3450329.3478317

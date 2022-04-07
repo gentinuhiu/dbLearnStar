@@ -727,7 +727,7 @@ public class QueryTest {
 	}
 
 	public boolean isTEXT() {
-		return TaskTypeChecker.isTEXT(codeType);
+		return TaskTypeChecker.isTEXT(codeType) || TaskTypeChecker.isDDL(codeType);
 	}
 
 	public boolean isDDL() {

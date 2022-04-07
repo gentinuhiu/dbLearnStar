@@ -24,7 +24,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -47,6 +49,8 @@ import dblearnstar.model.entities.TaskInTestInstance;
 import dblearnstar.model.entities.TestInstance;
 import dblearnstar.model.entities.TestInstanceParameters;
 import dblearnstar.model.model.Triplet;
+import dblearnstar.webapp.model.ApplicationConstants;
+import dblearnstar.webapp.util.AppConfig;
 
 public class EvaluationServiceImpl implements EvaluationService {
 
@@ -276,8 +280,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 				queryStringMiddle += " and sssL.notForEvaluation=false ";
 			}
 			String queryStringOutro = """
-					and sssL.submittedOn>=all (
-					    select sssR.submittedOn from StudentSubmitSolution sssR
+					and sssL.submittedOn in (
+					    select max(sssR.submittedOn) from StudentSubmitSolution sssR
 					    where
 					    	sssL.studentStartedTest.student.studentId=sssR.studentStartedTest.student.studentId and
 					    	sssL.taskInTestInstance.taskInTestInstanceId=sssR.taskInTestInstance.taskInTestInstanceId
@@ -329,7 +333,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 	}
 
 	/**
-	 * @return <resultsSimple, resultsHeadersSimple, resultsErrors>
+	 * @return <evaluationData, resultsHeadersSimple, resultsErrors>
 	 */
 	@Override
 	public Triplet<List<Object[]>, List<String>, List<String>> getResultsForPrintingPurposes(String userName,
@@ -430,7 +434,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 	}
 
 	/**
-	 * @return <resultsSimple, resultsHeadersSimple, resultsErrors>
+	 * @return <evaluationData, resultsHeadersSimple, resultsErrors>
 	 */
 	@Override
 	public Triplet<List<Object[]>, List<String>, List<String>> getEvalResultsForViewing(String userName,
@@ -547,8 +551,312 @@ public class EvaluationServiceImpl implements EvaluationService {
 			resultsHeadersSimple = new ArrayList<String>();
 		}
 
-		Triplet<List<Object[]>, List<String>, List<String>> results = new Triplet<List<Object[]>, List<String>, List<String>>(
-				resultsSimple, resultsHeadersSimple, resultsErrors);
-		return results;
+		return new Triplet<List<Object[]>, List<String>, List<String>>(resultsSimple, resultsHeadersSimple,
+				resultsErrors);
 	}
+
+	@Override
+	public List<String[]> execQuery(StudentSubmitSolution submission, Connection connection, String gradingSchema,
+			String queryToRun) throws SQLException {
+		List<String[]> resultData = new ArrayList<String[]>();
+
+		PreparedStatement stat = connection.prepareStatement(queryToRun);
+		if (gradingSchema != null) {
+			stat.setString(1, gradingSchema);
+		}
+		ResultSet rs = stat.executeQuery();
+		boolean isNextRow = rs.next();
+		int numColumns = rs.getMetaData().getColumnCount();
+
+		while (isNextRow) {
+			String[] o = new String[numColumns + 2];
+			o[0] = Long.toString(submission.getStudentSubmitSolutionId());
+			o[1] = null; // grade
+			for (int i = 1; i <= numColumns; i++) {
+				Object ofromq = rs.getObject(i);
+				if (ofromq == null) {
+					o[i + 1] = null;
+				} else {
+					o[i + 1] = ofromq.toString();
+				}
+			}
+			resultData.add(o);
+			isNextRow = rs.next();
+		}
+		rs.close();
+
+		return resultData;
+	}
+
+	@Override
+	public Triplet<List<String[]>, List<String>, List<String>> getDDLEvaluationDataFromStudentDatabases(
+			List<StudentSubmitSolution> submissions) {
+		List<String[]> ddlEvaluationData = new ArrayList<String[]>();
+		List<String> resultsHeadersSimple = new ArrayList<String>();
+		List<String> resultsErrors = new ArrayList<String>();
+
+		String[] queryToRun = {
+				"""
+						select 'TABLE' type,
+						table_catalog, table_name,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=1) col1,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=2) col2,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=3) col3,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=4) col4,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=5) col5,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=6) col6,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=7) col7,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=8) col8,
+							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and ordinal_position=9) col9
+						from information_schema.tables ist
+						where table_schema=?
+						order by table_catalog, table_name
+						""",
+				"""
+						select 'PK',
+							table_catalog, table_name,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=1) col1,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=2) col2,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=3) col3,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=4) col4,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=5) col5,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=6) col6,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=7) col7,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=8) col8,
+							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
+								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=9) col9
+							from information_schema.table_constraints ist
+						where table_schema =? and ist.constraint_type='PRIMARY KEY'
+							order by table_catalog, table_schema, table_name
+						""",
+				"""
+						select 'FK', tco.table_catalog, kcu.table_name as foreign_table,
+						       rel_tco.table_name as primary_table,
+						       string_agg(kcu.column_name, ', ') as fk_columns,
+						       string_agg(kcu2.column_name, ', ') as pk_columns
+						from information_schema.table_constraints tco
+						join information_schema.key_column_usage kcu
+							on (tco.constraint_schema,tco.constraint_name) = (kcu.constraint_schema,kcu.constraint_name)
+						join information_schema.key_column_usage kcu2
+							on (kcu.constraint_schema,kcu.constraint_name,kcu.ordinal_position) = (kcu2.constraint_schema,kcu2.constraint_name,kcu2.ordinal_position)
+						join information_schema.referential_constraints rco
+							on (tco.constraint_schema,tco.constraint_name) = (rco.constraint_schema,rco.constraint_name)
+						join information_schema.table_constraints rel_tco
+							on (rco.unique_constraint_schema,rco.unique_constraint_name) = (rel_tco.constraint_schema,rel_tco.constraint_name)
+						where tco.constraint_type = 'FOREIGN KEY' and tco.table_schema=?
+						group by tco.table_catalog, kcu.table_schema, kcu.table_name, kcu2.table_schema, kcu2.table_name,
+						         rel_tco.table_name, rel_tco.table_schema, kcu.constraint_name, kcu2.constraint_name
+						order by kcu.table_schema, kcu.table_name
+						""",
+				"""
+						select 'NN',table_catalog, table_name,   column_name
+						from information_schema.columns where is_nullable='NO' and table_schema=?
+						order by table_catalog, table_name;
+						""",
+				"""
+						SELECT 'CHECK',
+						       current_database(),
+						       source_table::regclass,
+						       source_attr1.attname AS source_col1,
+						       source_attr2.attname AS source_col2,
+						       source_attr3.attname AS source_col3,
+						       source_attr4.attname AS source_col4,
+						       source_attr5.attname AS source_col5,
+						       consrc
+						FROM
+						  (SELECT consrc, connamespace, conname,
+						          source_table,
+						          target_table,
+						          source_constraints[1] AS source_cons1,
+						          source_constraints[2] AS source_cons2,
+						          source_constraints[3] AS source_cons3,
+						          source_constraints[4] AS source_cons4,
+						          source_constraints[5] AS source_cons5
+						   FROM
+						     (SELECT pg_get_constraintdef(oid) consrc, conname, connamespace, conrelid as source_table,
+						             confrelid AS target_table, conkey AS source_constraints, confkey AS target_constraints
+						      FROM pg_constraint
+						      WHERE contype = 'c'
+						     ) query1
+						  ) query2
+						  left outer join pg_attribute source_attr1 on source_attr1.attnum = source_cons1 AND source_attr1.attrelid = source_table
+						  left outer join pg_attribute source_attr2 on source_attr2.attnum = source_cons2 AND source_attr2.attrelid = source_table
+						  left outer join pg_attribute source_attr3 on source_attr3.attnum = source_cons3 AND source_attr3.attrelid = source_table
+						  left outer join pg_attribute source_attr4 on source_attr4.attnum = source_cons4 AND source_attr4.attrelid = source_table
+						  left outer join pg_attribute source_attr5 on source_attr5.attnum = source_cons5 AND source_attr5.attrelid = source_table
+						where (SELECT nspname FROM pg_namespace WHERE oid=connamespace)=?
+						""",
+				"""
+						SELECT 'UK',
+						       current_database() baza,
+						       source_table::regclass,
+						       source_attr1.attname AS source_col1,
+						       source_attr2.attname AS source_col2,
+						       source_attr3.attname AS source_col3,
+						       source_attr4.attname AS source_col4,
+						       source_attr5.attname AS source_col5,
+						       consrc
+						FROM
+						  (SELECT consrc, connamespace, conname,
+						          source_table,
+						          target_table,
+						          source_constraints[1] AS source_cons1,
+						          source_constraints[2] AS source_cons2,
+						          source_constraints[3] AS source_cons3,
+						          source_constraints[4] AS source_cons4,
+						          source_constraints[5] AS source_cons5
+						   FROM
+						     (SELECT pg_get_constraintdef(oid) consrc, conname, connamespace, conrelid as source_table, confrelid AS target_table,
+						     	conkey AS source_constraints, confkey AS target_constraints
+						      FROM pg_constraint
+						      WHERE contype = 'u'
+						     ) query1
+						  ) query2
+						  left outer join pg_attribute source_attr1 on source_attr1.attnum = source_cons1 AND source_attr1.attrelid = source_table
+						  left outer join pg_attribute source_attr2 on source_attr2.attnum = source_cons2 AND source_attr2.attrelid = source_table
+						  left outer join pg_attribute source_attr3 on source_attr3.attnum = source_cons3 AND source_attr3.attrelid = source_table
+						  left outer join pg_attribute source_attr4 on source_attr4.attnum = source_cons4 AND source_attr4.attrelid = source_table
+						  left outer join pg_attribute source_attr5 on source_attr5.attnum = source_cons5 AND source_attr5.attrelid = source_table
+						where (SELECT nspname FROM pg_namespace WHERE oid=connamespace)=?
+												""",
+				"""
+						select 'DATA', table_catalog, c.table_name, 0 as broj
+						from information_schema.tables c
+						where
+							c.table_schema=? and
+							c.table_name not in ('')
+						order by table_catalog, table_schema, table_name
+														""" };
+
+		if (submissions.size() < 100) {
+			Connection connectionEpm = null;
+			try {
+				connectionEpm = DriverManager.getConnection(AppConfig.getString(ApplicationConstants.EPRMS_JDBC_URL),
+						AppConfig.getString(ApplicationConstants.EPRMS_JDBC_USERNAME),
+						AppConfig.getString(ApplicationConstants.EPRMS_JDBC_PASSWORD));
+				connectionEpm.setSchema(AppConfig.getString(ApplicationConstants.EPRMS_JDBC_SCHEMA));
+				connectionEpm.setAutoCommit(false);
+				connectionEpm.setReadOnly(true);
+				PreparedStatement statEpm = connectionEpm.prepareStatement("select * from database where name like ?");
+
+				for (StudentSubmitSolution submission : submissions) {
+					String student = submission.getStudentStartedTest().getStudent().getPerson().getUserName();
+
+					Connection connection = null;
+					String DbPass = "", DbName = "", DbUser = "";
+					String gradingSchema = AppConfig.getString(ApplicationConstants.STUDENTDBS_JDBC_SCHEMA);
+					String mainUrl = AppConfig.getString(ApplicationConstants.STUDENTDBS_JDBC_URL);
+
+					for (int n = 0; n < 7; n++) {
+						int statusCounter = 0;
+
+						try {
+							SimpleDateFormat sdf = new SimpleDateFormat(ApplicationConstants.DATEFORMAT_CONDENSED);
+							String formattedTestDate = sdf
+									.format(submission.getStudentStartedTest().getTestInstance().getScheduledFor());
+
+							String likestring = "db%ispit%" + student + "%" + formattedTestDate + "%";
+							statEpm.setString(1, likestring);
+							ResultSet rsEpm = statEpm.executeQuery();
+							if (rsEpm != null && rsEpm.next()) {
+								DbPass = rsEpm.getString("password");
+								DbName = rsEpm.getString("name");
+								DbUser = rsEpm.getString("owner");
+							} else {
+								logger.error("Did not find student data for {}", likestring);
+							}
+
+							Properties props = new Properties();
+							props.setProperty("user", DbUser);
+							props.setProperty("password", DbPass);
+							String url = mainUrl + "/" + DbName;
+
+							connection = DriverManager.getConnection(url, props);
+							statusCounter = 1;
+
+							connection.setClientInfo("ApplicationName", "dbLearn*RelationalEvaluator");
+							connection.setReadOnly(true);
+							connection.setAutoCommit(false);
+							connection.setSavepoint();
+							connection.setSchema(gradingSchema);
+							statusCounter = 2;
+
+							List<String[]> tempResults = execQuery(submission, connection, gradingSchema,
+									queryToRun[n]);
+							if (n == 6) {
+								for (String[] l : tempResults) {
+									String query = "SELECT count(*) FROM " + gradingSchema + "." + l[4];
+									List<String[]> countResults = execQuery(submission, connection, null, query);
+									if (countResults != null) {
+
+									}
+									l[5] = countResults.get(0)[2];
+									logger.info("{} {} {} {} ", query, countResults.get(0)[0], countResults.get(0)[1],
+											countResults.get(0)[2]);
+								}
+							}
+							ddlEvaluationData.addAll(tempResults);
+							statusCounter = 4; // 3 should be before the preparedstatement, but it is not set
+
+							SQLWarning w = connection.getWarnings();
+							if (w != null) {
+								logger.debug("warning");
+								resultsErrors.add(w.getMessage());
+							}
+							connection.rollback();
+						} catch (Exception e) {
+							if (statusCounter == 0) {
+								logger.error("{}", e);
+								resultsErrors.add(e.getMessage());
+							} else {
+								logger.error(
+										"Connected to evaluation database {}, but failed in running query {} due to {}",
+										DbName, queryToRun[n], e.getMessage());
+								logger.debug("Exception: {}", e);
+								resultsErrors.add(e.getMessage());
+							}
+						} finally {
+							if (connection != null) {
+								try {
+									connection.close();
+								} catch (Exception e) {
+									logger.error("Connection can't be closed {} {}", DbName, e.getMessage());
+								}
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				logger.error("Cant connect to epm due to {}", e.getMessage());
+			} finally {
+				if (connectionEpm != null) {
+					try {
+						connectionEpm.close();
+					} catch (Exception e) {
+						logger.error("EPM connection can't be closed {} ", e.getMessage());
+					}
+				}
+			}
+		}
+		return new Triplet<List<String[]>, List<String>, List<String>>(ddlEvaluationData, resultsHeadersSimple,
+				resultsErrors);
+	}
+
 }

@@ -70,6 +70,7 @@ public class AppModule {
 		binder.bind(EvaluationService.class);
 		binder.bind(TestManager.class);
 		binder.bind(TranslationService.class);
+		binder.bind(SystemConfigService.class);
 	}
 
 	public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration) {

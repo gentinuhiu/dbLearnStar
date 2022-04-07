@@ -1,43 +1,27 @@
-:root {
-    --ck-z-default: 100;
-    --ck-z-modal: calc( var(--ck-z-default) + 999 );
-
-	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
-	--color-incorrect: #c71c2c;
-
-	/* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */
-	--color-correct: #74b979;
-
-	--color-noevaluation: #white;
+:root { 
+	--ck-z-default: 100; 
+	--ck-z-modal: calc(var(--ck-z-default) + 999);
+	--color-incorrect-wrong: #900000; 	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
+	--color-incorrect: #c71c2c; 	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
+	--color-correct: #74b979; /* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */ 
+	--color-noevaluation: #white; 
 	--color-exception: #404040;
 }
 
-body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6 {
-    font-family: 'Fira Sans', Helvetica, Arial, sans-serif !important;
+body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	font-family: 'Fira Sans', Helvetica, Arial, sans-serif !important;
 }
 
-h1,.h1 {
-	font-size:200%;
+h1, .h1 {
+	font-size: 200%;
 }
 
-h2,.h2 {
-	font-size:160%;
+h2, .h2 {
+	font-size: 160%;
 }
 
-h3,.h3 {
-	font-size:130%;
+h3, .h3 {
+	font-size: 130%;
 }
 
 body {
@@ -69,19 +53,15 @@ p.comment {
 
 .inlinecomment {
 	background: #ffffa0;
-	margin-left:5rem;
+	margin-left: 5rem;
 	border-left: 1px solid black;
-	padding-left:0.5rem;
+	padding-left: 0.5rem;
 }
 
-@keyframes slidein {
-  from { background: white; }
-  50% { background: #ffffa0; }
-  to { background: white; }
-}
+@keyframes slidein {from { background:white;} 50% {background: #ffffa0;} to {background: white;}}
 
 .pagination li {
-	margin-left:0.5em;
+	margin-left: 0.5em;
 }
 
 .maxpoints {
@@ -92,12 +72,12 @@ p.comment {
 }
 
 #mainnav {
-	background-color: #42119c !important;  /* osnovna boja */
+	background-color: #42119c !important; /* osnovna boja */
 }
 
 #mainnav .nav-link {
 	/* Paletton Shiny */
-	color: #A074F0 !important; 
+	color: #A074F0 !important;
 }
 
 a {
@@ -117,7 +97,7 @@ svg {
 	line-height: 1.2;
 	height: 25rem !important;
 	min-height: 10em;
-	font-family: 'Fira Code', monospace, mono !important; 
+	font-family: 'Fira Code', monospace, mono !important;
 }
 
 .CodeMirror-linenumbers {
@@ -126,8 +106,8 @@ svg {
 
 .datefield-popup {
 	background: white;
-	padding:0.5em;
-	border-radius:6px;
+	padding: 0.5em;
+	border-radius: 6px;
 	border: 1px solid black;
 }
 
@@ -137,5 +117,6 @@ svg {
 }
 
 .glyphicon-calendar::before {
-  content: "📅";
+	content: "📅";
 }
+

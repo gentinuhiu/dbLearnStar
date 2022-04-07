@@ -46,4 +46,19 @@ public class ModelConstants {
 	public static final Object InstructorRole = "INSTRUCTOR";
 	public static final Object AdministratorRole = "ADMINISTRATOR";
 
+	/*
+	 * Object types
+	 */
+	public static final String DBRelationalObjectTypesTABLE = "TABLE";
+	public static final String DBRelationalObjectTypesPK = "PK";
+	public static final String DBRelationalObjectTypesFK = "FK";
+	public static final String DBRelationalObjectTypesNN = "NN";
+	public static final String DBRelationalObjectTypesCHECK = "CHECK";
+	public static final String DBRelationalObjectTypesUK = "UK";
+	public static final String DBRelationalObjectTypesDATA = "DATA";
+
+	public static final String[] AllDBRelationalObjectTypes = { DBRelationalObjectTypesTABLE, DBRelationalObjectTypesPK,
+			DBRelationalObjectTypesFK, DBRelationalObjectTypesNN, DBRelationalObjectTypesCHECK,
+			DBRelationalObjectTypesUK, DBRelationalObjectTypesDATA };
+
 }

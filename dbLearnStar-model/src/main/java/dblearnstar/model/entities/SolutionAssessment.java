@@ -22,6 +22,7 @@ package dblearnstar.model.entities;
 
 import java.util.*;
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 /*
 */
@@ -34,6 +35,7 @@ public class SolutionAssessment implements java.io.Serializable {
 	private Boolean passed;
 	private String type;
 	private Float grade;
+	private String feedbackSource;
 	private StudentSubmitSolution studentSubmitSolution;
 	private TestInstanceParameters testInstanceParameters;
 	private List<AssessmentDiscussion> assessmentDiscussions = new ArrayList<AssessmentDiscussion>();
@@ -94,6 +96,15 @@ public class SolutionAssessment implements java.io.Serializable {
 
 	public void setGrade(Float grade) {
 		this.grade = grade;
+	}
+
+	@Column(name = "feedback_source", length = 1000000, columnDefinition = "TEXT")
+	public String getFeedbackSource() {
+		return this.feedbackSource;
+	}
+
+	public void setFeedbackSource(String feedbackSource) {
+		this.feedbackSource = feedbackSource;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

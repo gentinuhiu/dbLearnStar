@@ -245,6 +245,11 @@
 </div>
 
 <div t:type="zone" t:id="zSubmissions" id="zSubmissions">
+	<div class="mb-3" t:type="if" t:test="filterTaskDDL">
+		<a href="" t:type="pagelink" class="btn btn-primary"
+			t:page="instructor/RelationSchemaEvaluation"
+			t:context="filterTaskInTestInstance">${message:eval-ddl-label}</a>
+	</div>
 	<t:if t:test="filterTestInstance">
 		<div>
 			<table t:id="recentsubmission" t:type="grid"

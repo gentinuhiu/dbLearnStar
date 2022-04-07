@@ -20,6 +20,8 @@
 
 package dblearnstar.webapp.services;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import dblearnstar.model.entities.Student;
@@ -54,9 +56,15 @@ public interface EvaluationService {
 			String queryToRun, TestInstanceParameters tip, String schema, String type);
 
 	/**
-	 * @return <resultsSimple, resultsHeadersSimple, resultsErrors>
+	 * @return <evaluationData, resultsHeadersSimple, resultsErrors>
 	 */
 	Triplet<List<Object[]>, List<String>, List<String>> getEvalResultsForViewing(String userName, String queryToRun,
 			TaskInTestInstance taskInTestInstance, TestInstanceParameters tip, String schema);
+
+	public List<String[]> execQuery(StudentSubmitSolution submission, Connection connection, String gradingSchema,
+			String string) throws SQLException;
+
+	public Triplet<List<String[]>, List<String>, List<String>> getDDLEvaluationDataFromStudentDatabases(
+			List<StudentSubmitSolution> submissions);
 
 }

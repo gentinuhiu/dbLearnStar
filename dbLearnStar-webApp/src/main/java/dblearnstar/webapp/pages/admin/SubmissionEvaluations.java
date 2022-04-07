@@ -382,6 +382,15 @@ public class SubmissionEvaluations {
 		return TaskTypeChecker.isDDL(testManager.getCodeType(submission));
 	}
 
+	public boolean isFilterTaskDDL() {
+		if (filterTaskInTestInstance != null) {
+			return filterTaskInTestInstance.getTask().getTaskIsOfTypes().stream()
+					.anyMatch(tti -> tti.getTaskType().getCodetype().equals(ModelConstants.TaskCodeDDL));
+		} else {
+			return false;
+		}
+	}
+
 	public boolean isUPLOAD() {
 		return TaskTypeChecker.isUPLOAD(testManager.getCodeType(submission));
 	}

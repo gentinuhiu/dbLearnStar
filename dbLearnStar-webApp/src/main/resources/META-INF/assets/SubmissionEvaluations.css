@@ -104,7 +104,15 @@ code p {
 }
 
 .modalSubmission {
-	min-height: 13em;
+	min-height: 23em;
+}
+
+#zSolution {
+	min-height:30em !important;
+}
+
+#solution {
+	min-height:30em !important;
 }
 
 pre#kodot {
