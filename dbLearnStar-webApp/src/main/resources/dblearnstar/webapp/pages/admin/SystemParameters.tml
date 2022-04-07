@@ -1,0 +1,30 @@
+<html t:type="layout" title="message:admin/SystemParameters-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<h1>${message:admin/SystemParameters-pagelink}</h1>
+
+<div t:type="if" t:test="editSystemParameter">
+	<form t:type="beaneditform" t:object="editSystemParameter"
+		t:id="editSystemParameter" t:exclude="systemParameterId" />
+</div>
+
+<p>
+	<a href="" t:type="actionlink" class="btn btn-sm btn-primary"
+		t:id="newSystemParameter"><t:svgicon
+				t:path="plus" />${message:new-label}</a>
+</p>
+
+<table class="table table-sm" t:type="grid" t:source="systemParameters"
+	t:row="systemParameter" t:exclude="systemParameterId" t:add="icons">
+	<p:iconsCell>
+		<a href="" t:type="actionlink" class="btn btn-sm btn-primary"
+			t:id="editParameter" t:context="systemParameter"><t:svgicon
+				t:path="edit" />${message:edit-label}</a>
+		<a href="" t:type="actionlink" class="btn btn-sm btn-danger"
+			t:id="deleteParameter" t:context="systemParameter"><t:svgicon
+				t:path="trash" />${message:remove-label}</a>
+	</p:iconsCell>
+</table>
+
+</html>
