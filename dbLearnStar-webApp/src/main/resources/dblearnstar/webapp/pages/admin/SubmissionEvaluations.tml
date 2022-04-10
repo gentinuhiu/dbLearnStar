@@ -26,99 +26,108 @@
 
 
 			<div class="card mt-2" t:type="if" t:test="editedAssessmentTaskSQL">
-				<div class="card-header">
-					<div class="row m-0 p-0 ">
-						<div class="col-3">
-							<a role="button" href="#" t:type="eventlink"
-								t:id="prettyFormatToggle"
-								class="btn btn-sm btn-primary ${classPrettyFormat}"
-								t:zone="zSolution">Format SQL <t:SVGIcon t:path="align-left" />
-							</a>
-						</div>
-						<div class="col-9 text-right">
-							${message:evaluationSimple-label}:
-							<t:booleanindicator
-								t:value="editedAssessment.studentSubmitSolution.evaluationSimple"
-								showCheckMark="true" showNo="true" />
-							${message:evaluationComplex-label}:
-							<t:booleanindicator
-								t:value="editedAssessment.studentSubmitSolution.evaluationComplex"
-								showCheckMark="true" showNo="true" />
-							${message:evaluationExam-label}:
-							<t:booleanindicator
-								t:value="editedAssessment.studentSubmitSolution.evaluationExam"
-								showCheckMark="true" showNo="true" />
-							<a href="" t:type="actionlink" t:id="reevaluateEditedSubmission"
-								t:context="editedAssessment.studentSubmitSolution"
-								t:zone="zModal" class="btn btn-sm btn-warning">${message:reevaluate-label}
-								<t:SVGIcon t:path="repeat" />
-							</a> <a href="" class="btn btn-sm btn-info" t:type="actionlink"
-								t:id="viewEvaluationResults" t:zone="zSQLEval"
-								t:context="editedAssessment.studentSubmitSolution">${message:sqlEvaluation-label}
-								<t:SVGIcon t:path="eye" />
-							</a>
-						</div>
-					</div>
-				</div>
-				<div class="card-body" t:id="zSQLEval" t:type="zone">
-					<div class="row">
-						<div class="col-6 bg-danger" t:type="if" t:test="resultsErrors1">
-							<ul>
-								<li t:type="loop" t:source="resultsErrors1"
-									t:value="resultsError">${resultsError}</li>
-							</ul>
-						</div>
-						<div class="col-6 bg-danger" t:type="if" t:test="resultsErrors2">
-							<ul>
-								<li t:type="loop" t:source="resultsErrors2"
-									t:value="resultsError">${resultsError}</li>
-							</ul>
-						</div>
-					</div>
-					<div class="row" t:type="if" t:test="resultsEvaluation1">
-						<div class="col-sm-12">
-							<div class="alert alert-success resultspanel resultspanel-colors"
-								role="alert" t:type="if" t:test="resultsEvaluation1">
-								<h3>${message:query-results-label}</h3>
-								<table class="table table-hover table-bordered table-striped">
-									<thead>
-										<tr>
-											<th t:type="loop" t:source="resultsHeaders1"
-												t:value="oneHeader">${oneHeader}</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr t:type="loop" t:source="resultsEvaluation1"
-											t:value="oneRow">
-											<td t:type="loop" t:source="oneRow" t:value="oneColumn">${oneColumn}</td>
-										</tr>
-									</tbody>
-								</table>
+				<div t:id="zSQLEval" t:type="zone">
+					<div class="card-header">
+						<div class="row m-0 p-0 ">
+							<div class="col-3">
+								<a role="button" href="#" t:type="eventlink"
+									t:id="prettyFormatToggle"
+									class="btn btn-sm btn-primary ${classPrettyFormat}"
+									t:zone="zSolution">Format SQL <t:SVGIcon
+										t:path="align-left" />
+								</a>
 							</div>
-							<div class="alert alert-success resultspanel resultspanel-colors"
-								role="alert" t:type="if" t:test="resultsEvaluation2">
-								<h3>${message:query-results-label}</h3>
-								<table class="table table-hover table-bordered table-striped">
-									<thead>
-										<tr>
-											<th t:type="loop" t:source="resultsHeaders2"
-												t:value="oneHeader">${oneHeader}</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr t:type="loop" t:source="resultsEvaluation2"
-											t:value="oneRow">
-											<td t:type="loop" t:source="oneRow" t:value="oneColumn">${oneColumn}</td>
-										</tr>
-									</tbody>
-								</table>
+							<div class="col-9 text-right">
+								${message:evaluationSimple-label}:
+								<t:booleanindicator
+									t:value="editedAssessment.studentSubmitSolution.evaluationSimple"
+									showCheckMark="true" showNo="true" />
+								${message:evaluationComplex-label}:
+								<t:booleanindicator
+									t:value="editedAssessment.studentSubmitSolution.evaluationComplex"
+									showCheckMark="true" showNo="true" />
+								${message:evaluationExam-label}:
+								<t:booleanindicator
+									t:value="editedAssessment.studentSubmitSolution.evaluationExam"
+									showCheckMark="true" showNo="true" />
+								<a href="" t:type="eventlink" t:id="reevaluateEditedSubmission"
+									t:context="editedAssessment.studentSubmitSolution"
+									t:zone="zModal" class="btn btn-sm btn-warning">${message:reevaluate-label}
+									<t:SVGIcon t:path="repeat" />
+								</a> <a href="" class="btn btn-sm btn-info" t:type="eventlink"
+									t:id="viewEvaluationResults" t:zone="zSQLEval"
+									t:context="editedAssessment.studentSubmitSolution">${message:sqlEvaluation-label}
+									<t:SVGIcon t:path="eye" />
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="card-body" t:type="if" t:test="anyStatus">
+						<div class="row">
+							<div class="col-6 bg-danger" t:type="if" t:test="resultsErrors1">
+								<ul>
+									<li t:type="loop" t:source="resultsErrors1"
+										t:value="resultsError">${resultsError}</li>
+								</ul>
+							</div>
+							<div class="col-6 bg-danger" t:type="if" t:test="resultsErrors2">
+								<ul>
+									<li t:type="loop" t:source="resultsErrors2"
+										t:value="resultsError">${resultsError}</li>
+								</ul>
+							</div>
+						</div>
+						<div class="row" t:type="if" t:test="anyResults">
+							<div class="col-12">
+								<div
+									class="alert alert-success resultspanel resultspanel-colors"
+									role="alert" t:type="if" t:test="resultsEvaluation1">
+									<h3>${message:query-results-label}1</h3>
+									<table
+										class="table table-sm table-hover table-bordered table-striped">
+										<thead>
+											<tr>
+												<th t:type="loop" t:source="resultsHeaders1"
+													t:value="oneHeader">${oneHeader}</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr t:type="loop" t:source="resultsEvaluation1"
+												t:value="oneRow">
+												<td t:type="loop" t:source="oneRow" t:value="oneColumn"><t:outputraw
+														t:value="oneColumn" /></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div
+									class="alert alert-success resultspanel resultspanel-colors"
+									role="alert" t:type="if" t:test="resultsEvaluation2">
+									<h3>${message:query-results-label}2</h3>
+									<table
+										class="table table-sm table-hover table-bordered table-striped">
+										<thead>
+											<tr>
+												<th t:type="loop" t:source="resultsHeaders2"
+													t:value="oneHeader">${oneHeader}</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr t:type="loop" t:source="resultsEvaluation2"
+												t:value="oneRow">
+												<td t:type="loop" t:source="oneRow" t:value="oneColumn"><t:outputraw
+														t:value="oneColumn" /></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<form t:type="form" class="form-vertical" t:id="FormEditor"
+			<form t:type="form" class="form-vertical mt-1" t:id="FormEditor"
 				id="FormEditor" t:autofocus="true">
 				<div class="form-row">
 					<div class="form-group col-6  ${classSQLsolution}" t:type="zone"
@@ -129,7 +138,7 @@
 					</div>
 					<div class="form-group col-6 feedback">
 						<label t:type="label" t:for="feedback"></label>
-						<textarea t:type="textarea" t:id="feedback"
+						<textarea t:type="textarea" id="feedback" t:id="feedback"
 							t:value="editedAssessment.feedback" t:mixins="WebEditor"
 							t:WebEditor.areaType="CKADMIN" />
 					</div>
@@ -290,7 +299,7 @@
 				</p:submittedOnCell>
 				<p:assessmentCell>
 					<div t:type="if" t:test="SQL">
-						<a href="" t:type="actionlink" t:id="reevaluateSubmission"
+						<a href="" t:type="eventlink" t:id="reevaluateSubmission"
 							t:context="submission" t:zone="zSubmissions"
 							class="btn btn-sm btn-warning"><img t:type="svgicon"
 							t:path="repeat" />${message:reevaluate-label}</a>

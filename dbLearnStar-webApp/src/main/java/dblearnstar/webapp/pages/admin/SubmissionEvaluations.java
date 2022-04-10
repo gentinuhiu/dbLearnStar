@@ -20,6 +20,7 @@
 
 package dblearnstar.webapp.pages.admin;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -291,7 +292,8 @@ public class SubmissionEvaluations {
 		List<TestInstance> list = testManager.getAllTestInstances();
 		Comparator<TestInstance> comparator = (ti1,
 				ti2) -> (ti1 != null && ti2 != null && ti1.getScheduledFor() != null && ti2.getScheduledFor() != null
-						? ti1.getScheduledFor().compareTo(ti2.getScheduledFor())
+						? ti1.getScheduledFor().toInstant().truncatedTo(ChronoUnit.DAYS)
+								.compareTo(ti2.getScheduledFor().toInstant().truncatedTo(ChronoUnit.DAYS))
 						: 0);
 		Comparator<TestInstance> reverser = comparator.reversed();
 		list.sort(reverser);
@@ -344,8 +346,15 @@ public class SubmissionEvaluations {
 		return personManager.getPersonFullNameWithId(submission.getStudentStartedTest().getStudent().getPerson());
 	}
 
+	private void clearResultsAndErrors() {
+		resultsEvaluation1 = null;
+		resultsEvaluation2 = null;
+		resultsErrors1 = null;
+		resultsErrors2 = null;
+	}
+
 	@CommitAfter
-	public void onActionFromReevaluateSubmission(StudentSubmitSolution s) {
+	public void onReevaluateSubmission(StudentSubmitSolution s) {
 		evaluationService.processSolution(userInfo.getUserName(), s);
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zSubmissions);
@@ -353,10 +362,11 @@ public class SubmissionEvaluations {
 	}
 
 	@CommitAfter
-	public void onActionFromReevaluateEditedSubmission(StudentSubmitSolution s) {
+	public void onReevaluateEditedSubmission(StudentSubmitSolution s) {
+		clearResultsAndErrors();
 		evaluationService.processSolution(userInfo.getUserName(), s);
 		if (request.isXHR()) {
-			ajaxResponseRenderer.addRender(zModal);
+			ajaxResponseRenderer.addRender(zSQLEval);
 		}
 	}
 
@@ -464,9 +474,9 @@ public class SubmissionEvaluations {
 		}
 	}
 
-	void onActionFromViewEvaluationResults(StudentSubmitSolution s) {
-		if (resultsEvaluation1 != null) {
-			resultsEvaluation1 = null;
+	void onViewEvaluationResults(StudentSubmitSolution s) {
+		if (resultsEvaluation1 != null || resultsEvaluation2 != null) {
+			clearResultsAndErrors();
 		} else {
 			TaskInTestInstance tti = s.getTaskInTestInstance();
 			/*
@@ -551,6 +561,20 @@ public class SubmissionEvaluations {
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zSubmissions);
 		}
+	}
+
+	public boolean isAnyErrors() {
+		return (resultsErrors1 != null && resultsErrors1.size() > 0)
+				|| (resultsErrors2 != null && resultsErrors2.size() > 0);
+	}
+
+	public boolean isAnyResults() {
+		return (resultsEvaluation1 != null && resultsEvaluation1.size() > 0)
+				|| (resultsEvaluation2 != null && resultsEvaluation2.size() > 0);
+	}
+
+	public boolean isAnyStatus() {
+		return isAnyErrors() || isAnyResults();
 	}
 
 }

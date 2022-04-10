@@ -97,8 +97,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 					String queryStringManip = queryToRun.replace("now()", schema + ".now()");
 					queryStringManip = queryStringManip.replace("current_date", schema + ".now()");
 
-					String evalQueryString = "((" + queryStringManip + ") except (select * from " + evalViewName
-							+ ")) union ((select * from " + evalViewName + ") except (" + queryStringManip + "))";
+					String evalQueryString = "select *, 'EDEN' from ( ( " + queryStringManip
+							+ " ) except ( select * from " + evalViewName
+							+ " ) ) eden union select *, 'DVA' from ( ( select * from " + evalViewName + " ) except ( "
+							+ queryStringManip + " ) ) dva ";
 
 					logger.debug("user {} issued evalQueryString: {}", userName, evalQueryString);
 
@@ -477,8 +479,12 @@ public class EvaluationServiceImpl implements EvaluationService {
 					String queryStringManip = queryToRun.replace("now()", schema + ".now()");
 					queryStringManip = queryStringManip.replace("current_date", schema + ".now()");
 
-					String evalQueryString = "((" + queryStringManip + ") except (select * from " + evalViewName
-							+ ")) union ((select * from " + evalViewName + ") except (" + queryStringManip + "))";
+//					String evalQueryString = "((" + queryStringManip + ") except (select * from " + evalViewName
+//							+ ")) union ((select * from " + evalViewName + ") except (" + queryStringManip + "))";
+
+					String evalQueryString = "select '<span class=\"inSubmission\">In Submission</span>' as WHERE, *   from ( ( " + queryStringManip + " ) except ( select * from " + evalViewName
+							+ " ) ) eden union select '<span class=\"inCorrectSolution\">In Correct Solution</span>' as WHERE, *  from ( ( select * from " + evalViewName + " ) except ( " + queryStringManip
+							+ " ) ) dva order by 1,2";
 
 					logger.debug("user {} issued evalQueryString: {}", userName, evalQueryString);
 
