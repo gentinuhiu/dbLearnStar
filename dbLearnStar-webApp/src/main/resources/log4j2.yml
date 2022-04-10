@@ -5,7 +5,8 @@ configuration:
     console:
       name: STDOUT
       patternLayout:
-        Pattern: "%d{DEFAULT} [%-22thread] %-5level %60.60logger %msg%n"
+        #Pattern: "%d{DEFAULT} [%-22thread] %-5level %60.60logger %msg%n"
+        Pattern: "%d{yyyy-MM-dd - HH:mm:ss,SSS} [%p] %c{2} %m%n"
 
   loggers:
     root:
@@ -57,4 +58,8 @@ configuration:
       # up and running, replacing it with more selective debugging output.
       -
         name: dblearnstar.webapp
+        level: info
+
+      -
+        name: org.hibernate
         level: info

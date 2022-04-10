@@ -35,6 +35,7 @@ import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
 import org.apache.tapestry5.corelib.components.Zone;
+import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.PersistentLocale;
 import org.apache.tapestry5.services.SelectModelFactory;
@@ -52,6 +53,7 @@ import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.annotations.StudentPage;
 import dblearnstar.webapp.model.TestCollectionSelectModel;
+import dblearnstar.webapp.pages.admin.SubmissionEvaluations;
 import dblearnstar.webapp.services.DigestService;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.PersonManager;
@@ -76,6 +78,7 @@ public class ExamsAndTasksOverviewPage {
 	private AjaxResponseRenderer ajaxResponseRenderer;
 
 	@SessionState
+	@Property
 	private UserInfo userInfo;
 
 	@Inject
@@ -133,10 +136,10 @@ public class ExamsAndTasksOverviewPage {
 	public List<TestCollection> getTestCollections() {
 		List<TestCollection> list = (UsefulMethods.castList(TestCollection.class,
 				genericService.getAll(TestCollection.class)))
-						.stream()
-						.filter(p -> (p.getTestInstances() != null && p.getTestInstances().size() > 0)
-								|| (p.getSubCollections() != null && p.getSubCollections().size() > 0))
-						.collect(Collectors.toList());
+				.stream()
+				.filter(p -> (p.getTestInstances() != null && p.getTestInstances().size() > 0)
+						|| (p.getSubCollections() != null && p.getSubCollections().size() > 0))
+				.collect(Collectors.toList());
 		ComparatorTestCollection c = new ComparatorTestCollection();
 		Collections.sort(list, c);
 		return list;
@@ -189,6 +192,23 @@ public class ExamsAndTasksOverviewPage {
 		} else {
 			return "btn-warning";
 		}
+	}
+
+	public String getBtnBooleanClass(Boolean value) {
+		if (value != null && value) {
+			return "btn-success";
+		} else {
+			return "btn-warning";
+		}
+
+	}
+
+	public String getClassOpenToAllStudents() {
+		return getBtnBooleanClass(testInstance.getOpenToAllStudents());
+	}
+
+	public String getClassOpenForReviewByStudents() {
+		return getBtnBooleanClass(testInstance.getOpenForReviewByStudents());
 	}
 
 	public List<TaskInTestInstance> getTaskInTestInstances() {
@@ -255,4 +275,27 @@ public class ExamsAndTasksOverviewPage {
 			return "";
 		}
 	}
+
+	@InjectPage
+	private SubmissionEvaluations submissionEvaluations;
+
+	public Object onEvaluate(TestInstance ti) {
+		submissionEvaluations.onValueChangedFromSelectTestInstance(ti);
+		return submissionEvaluations;
+	}
+
+	@CommitAfter
+	public void onToggleOpenToAll(TestInstance ti) {
+		if (userInfo != null && userInfo.isInstructor()) {
+			ti.setOpenToAllStudents(!ti.getOpenToAllStudents());
+		}
+	}
+
+	@CommitAfter
+	public void onToggleOpenForReviewByStudents(TestInstance ti) {
+		if (userInfo != null && userInfo.isInstructor()) {
+			ti.setOpenForReviewByStudents(!ti.getOpenForReviewByStudents());
+		}
+	}
+
 }

@@ -192,3 +192,15 @@ table tbody tr.exception {
 	stroke: black !important; 
 	stroke-width: 2px !important;
 }
+
+.inSubmission {
+	background: green;
+	color: white;
+	padding:0.1em;
+}
+
+.inCorrectSolution {
+	background: white;
+	color: black;
+	padding:0.1em;
+}
