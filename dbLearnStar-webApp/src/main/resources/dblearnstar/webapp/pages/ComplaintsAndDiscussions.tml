@@ -33,8 +33,7 @@
 				</h4>
 				<div class="reshenieto">
 					<t:if t:test="sql">
-						<pre>
-							<t:outputRaw
+						<pre><span t:type="outputRaw"
 								t:value="solutionAssessmentToDiscuss.studentSubmitSolution.submission" />
 						</pre>
 						<p:else>

@@ -163,15 +163,13 @@ table tbody tr.exception {
 	background: var(--color-exception) !important;
 }
 
-.modal-dialog {
-	width: 95%;
-	max-width: 95%;
-}
-
 #solution {
 	min-height: 20em;
 }
 
+.modal #solution {
+	min-height: 50em !important;
+}
 .nonSqlSolution .code {
 	white-space: pre-wrap;
 	break-word: all;
@@ -203,4 +201,27 @@ table tbody tr.exception {
 	background: white;
 	color: black;
 	padding:0.1em;
+}
+
+
+/* fullscreen modal */
+.modal {
+  padding: 0 !important;
+}
+
+.modal .modal-dialog {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+}
+
+.modal .modal-content {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+
+.modal .modal-body {
+  overflow-y: auto;
 }

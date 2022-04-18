@@ -482,9 +482,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 //					String evalQueryString = "((" + queryStringManip + ") except (select * from " + evalViewName
 //							+ ")) union ((select * from " + evalViewName + ") except (" + queryStringManip + "))";
 
-					String evalQueryString = "select '<span class=\"inSubmission\">In Submission</span>' as WHERE, *   from ( ( " + queryStringManip + " ) except ( select * from " + evalViewName
-							+ " ) ) eden union select '<span class=\"inCorrectSolution\">In Correct Solution</span>' as WHERE, *  from ( ( select * from " + evalViewName + " ) except ( " + queryStringManip
-							+ " ) ) dva order by 1,2";
+					String evalQueryString = "select '<span class=\"inSubmission\">In Submission</span>' as WHERE, *   from ( ( "
+							+ queryStringManip + " ) except ( select * from " + evalViewName
+							+ " ) ) eden union select '<span class=\"inCorrectSolution\">In Correct Solution</span>' as WHERE, *  from ( ( select * from "
+							+ evalViewName + " ) except ( " + queryStringManip + " ) ) dva order by 1,2";
 
 					logger.debug("user {} issued evalQueryString: {}", userName, evalQueryString);
 
@@ -574,6 +575,9 @@ public class EvaluationServiceImpl implements EvaluationService {
 		boolean isNextRow = rs.next();
 		int numColumns = rs.getMetaData().getColumnCount();
 
+		logger.debug("Executing Query {} {} {} ", submission.getStudentStartedTest().getStudent().getPerson().getUserName(), queryToRun,
+				numColumns);
+
 		while (isNextRow) {
 			String[] o = new String[numColumns + 2];
 			o[0] = Long.toString(submission.getStudentSubmitSolutionId());
@@ -603,8 +607,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 
 		String[] queryToRun = {
 				"""
-						select 'TABLE' type,
-						table_catalog, table_name,
+						select
+							'TABLE' type,
+						 	current_database() as DB,
+						 	table_name,
 							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
 								isc.table_name=ist.table_name and ordinal_position=1) col1,
 							(select column_name  from information_schema.columns isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
@@ -629,7 +635,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 						""",
 				"""
 						select 'PK',
-							table_catalog, table_name,
+							current_database() as DB,
+							table_name,
 							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
 								isc.table_name=ist.table_name and isc.constraint_name=ist.constraint_name and isc.ordinal_position=1) col1,
 							(select column_name  from information_schema.key_column_usage isc where isc.table_catalog=ist.table_catalog and isc.table_schema=ist.table_schema and
@@ -653,26 +660,22 @@ public class EvaluationServiceImpl implements EvaluationService {
 							order by table_catalog, table_schema, table_name
 						""",
 				"""
-						select 'FK', tco.table_catalog, kcu.table_name as foreign_table,
-						       rel_tco.table_name as primary_table,
-						       string_agg(kcu.column_name, ', ') as fk_columns,
-						       string_agg(kcu2.column_name, ', ') as pk_columns
-						from information_schema.table_constraints tco
-						join information_schema.key_column_usage kcu
-							on (tco.constraint_schema,tco.constraint_name) = (kcu.constraint_schema,kcu.constraint_name)
-						join information_schema.key_column_usage kcu2
-							on (kcu.constraint_schema,kcu.constraint_name,kcu.ordinal_position) = (kcu2.constraint_schema,kcu2.constraint_name,kcu2.ordinal_position)
-						join information_schema.referential_constraints rco
-							on (tco.constraint_schema,tco.constraint_name) = (rco.constraint_schema,rco.constraint_name)
-						join information_schema.table_constraints rel_tco
-							on (rco.unique_constraint_schema,rco.unique_constraint_name) = (rel_tco.constraint_schema,rel_tco.constraint_name)
-						where tco.constraint_type = 'FOREIGN KEY' and tco.table_schema=?
-						group by tco.table_catalog, kcu.table_schema, kcu.table_name, kcu2.table_schema, kcu2.table_name,
-						         rel_tco.table_name, rel_tco.table_schema, kcu.constraint_name, kcu2.constraint_name
-						order by kcu.table_schema, kcu.table_name
+						SELECT 'FK',
+						    current_database() as DB,
+							conrelid::regclass  AS table_from,
+							confrelid::regclass as table_to,
+							regexp_replace(pg_get_constraintdef(oid), '^FOREIGN KEY (.*) REFERENCES .*$', '\\1') foreign_key_columns,
+							regexp_replace(pg_get_constraintdef(oid), '^.*REFERENCES (.*).*$', '\\1') primary_key_columns
+						FROM   pg_catalog.pg_constraint pc
+						WHERE  pc.contype IN ('f')
+						AND    pc.connamespace=?::regnamespace
+						ORDER  BY 1,2,3
 						""",
 				"""
-						select 'NN',table_catalog, table_name,   column_name
+						select 'NN',
+							current_database() as DB,
+							table_name,
+							column_name
 						from information_schema.columns where is_nullable='NO' and table_schema=?
 						order by table_catalog, table_name;
 						""",
@@ -711,7 +714,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 						""",
 				"""
 						SELECT 'UK',
-						       current_database() baza,
+						       current_database() as DB,
 						       source_table::regclass,
 						       source_attr1.attname AS source_col1,
 						       source_attr2.attname AS source_col2,
@@ -743,7 +746,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 						where (SELECT nspname FROM pg_namespace WHERE oid=connamespace)=?
 												""",
 				"""
-						select 'DATA', table_catalog, c.table_name, 0 as broj
+						select 'DATA',
+							current_database() as DB,
+							c.table_name,
+							0 as broj
 						from information_schema.tables c
 						where
 							c.table_schema=? and
@@ -814,7 +820,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 
 									}
 									l[5] = countResults.get(0)[2];
-									logger.info("{} {} {} {} ", query, countResults.get(0)[0], countResults.get(0)[1],
+									logger.debug("{} {} {} {} ", query, countResults.get(0)[0], countResults.get(0)[1],
 											countResults.get(0)[2]);
 								}
 							}

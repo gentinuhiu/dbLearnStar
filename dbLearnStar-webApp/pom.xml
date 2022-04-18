@@ -11,7 +11,7 @@
 
 	<groupId>dblearnstar</groupId>
 	<artifactId>dblearnstar</artifactId>
-	<version>0.8.13</version>
+	<version>0.8.14</version>
 	<name>dbLearnStar</name>
 
 	<packaging>war</packaging>
