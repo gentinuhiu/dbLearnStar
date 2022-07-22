@@ -236,6 +236,7 @@ public class TestAdminPage {
 	@CommitAfter
 	void onActionFromDeleteTestInstance(TestInstance testInstance) {
 		testInstance.getTestInstanceParameters().forEach(tip -> genericService.delete(tip));
+		testInstance.getTaskInTestInstances().forEach(tti -> genericService.delete(tti));
 		genericService.delete(testInstance);
 	}
 
