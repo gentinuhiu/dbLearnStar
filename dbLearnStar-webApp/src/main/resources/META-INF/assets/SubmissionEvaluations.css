@@ -11,91 +11,12 @@
 }
 
 th {
+/*
 	font-size: 65% !important;
 	overflow: scroll;
+*/
 }
 
-td {
-	font-size: 70% !important;
-	overflow: auto;
-}
-
-td[data-grid-property="submittedOn"] {
-	/* 	width: 10em !important; */
-	
-}
-
-td[data-grid-property="evaluationExam"] {
-	width: 4em !important;
-	max-width: 5em !important;
-	word-break: break-all;
-}
-
-td[data-grid-property="evaluationSimple"] {
-	width: 4em !important;
-	max-width: 5em !important;
-	word-break: break-all;
-}
-
-td[data-grid-property="evaluationComplex"] {
-	width: 4em !important;
-	max-width: 5em !important;
-	word-break: break-all;
-}
-
-td[data-grid-property="notForEvaluation"] {
-	width: 4em !important;
-	max-width: 5em !important;
-	word-break: break-all;
-}
-
-td[data-grid-property="submittedBy"] {
-	width: 9em !important;
-}
-
-td[data-grid-property="task"] {
-	max-width: 10em;
-}
-
-td[data-grid-property="submission"] {
-	
-}
-
-td[data-grid-property="submission"] .code {
-	font-size: 75% !important;
-	line-height: 0.8em !important;
-	height: 19em !important;
-	width: 99% !important;
-	white-space: pre-wrap;
-}
-
-td[data-grid-property="submission"] .code img {
-	max-width: 80% !important;
-}
-
-td[data-grid-property="assessment"] {
-	max-width: 23em !important;
-	min-width: 15em !important;
-}
-
-td[data-grid-property="assessment"] pre {
-	font-size: 75% !important;
-	line-height: 0.8em !important;
-	max-height: 12em !important;
-	white-space: pre-wrap;
-}
-
-td a.btn {
-	font-size: 65%;
-}
-
-td[data-grid-property="clientInfo"] {
-	max-width: 10%;
-}
-
-td[data-grid-property="ipAddress"] {
-	max-width: 10%;
-}
 
 code p {
 	margin-top: 0px;
@@ -103,16 +24,19 @@ code p {
 	padding: 0px;
 }
 
-.modalSubmission {
-	min-height: 23em;
+.submittedCode {
+	max-width: 60em;
+	max-height: 12em;
 }
 
 #zSolution {
 	min-height:30em !important;
 }
 
-#solution {
-	min-height:30em !important;
+.modalSubmission {
+	max-height: 10em !important;
+	background: #e0e0e0 !important;
+	padding: 0.5em !important;
 }
 
 pre#kodot {

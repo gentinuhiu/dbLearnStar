@@ -19,9 +19,7 @@
 						</a>
 					</h3>
 				</div>
-				<div class="card-body collapse" id="collapsedDescription">
-					<t:outputraw t:value="translateTaskDescription"></t:outputraw>
-				</div>
+
 			</div>
 
 
@@ -132,9 +130,15 @@
 				<div class="form-row">
 					<div class="form-group col-6  ${classSQLsolution}" t:type="zone"
 						t:id="zSolution" id="zSolution">
-						<label for="solution">${message:solution-label}</label>
+						<label for="solution">${message:submittedBy-label}:
+							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.userName}
+							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.lastName}
+							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.firstName}</label>
+						<div class="card-body collapse" id="collapsedDescription">
+							<t:outputraw t:value="translateTaskDescription"></t:outputraw>
+						</div>
 						<t:code id="solution" t:id="solution" t:value="formattedSolution"
-							class="modalSubmission form-control col-12"></t:code>
+							t:additionalclass="literal:modalSubmission"></t:code>
 					</div>
 					<div class="form-group col-6 feedback">
 						<label t:type="label" t:for="feedback"></label>
@@ -146,10 +150,10 @@
 				<t:errors />
 				<div class="form-row   align-items-center">
 					<div class="form-group col-3">
-						<label t:type="label" t:for="passed">Passed <input
-							t:type="checkbox" t:id="passed" t:value="editedAssessment.passed"
-							class="form-control"></input>
-						</label>
+						<label t:type="label" t:for="passed" class="form-check-label">Passed</label>
+						<input t:type="checkbox" t:id="passed"
+							t:value="editedAssessment.passed"
+							class="form-control"/>
 					</div>
 					<div class="form-group col-3">
 						<label t:type="label" t:for="type"></label> <input
@@ -266,7 +270,8 @@
 				t:rowsperpage="50" t:rowClass="${evaluationClass}"
 				class="table table-sm table-hover table-bordered table-striped">
 				<p:submissionCell>
-					<t:code t:value="submission.submission"></t:code>
+					<t:code t:additionalClass="literal:submittedCode"
+						t:value="submission.submission"></t:code>
 				</p:submissionCell>
 				<p:clientInfoCell>
 					<t:code t:value="submission.clientInfo"></t:code>
