@@ -32,8 +32,11 @@
 					${solutionAssessmentToDiscuss.studentSubmitSolution.studentStartedTest.student.person.userName}
 				</h4>
 				<div class="reshenieto">
+					<p>${message:submittedOn-label}:
+						${solutionAssessmentToDiscuss.studentSubmitSolution.submittedOn}</p>
 					<t:if t:test="sql">
-						<pre><span t:type="outputRaw"
+						<pre>
+							<span t:type="outputRaw"
 								t:value="solutionAssessmentToDiscuss.studentSubmitSolution.submission" />
 						</pre>
 						<p:else>

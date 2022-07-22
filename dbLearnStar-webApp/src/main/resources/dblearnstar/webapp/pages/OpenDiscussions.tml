@@ -10,7 +10,7 @@
 			<div class="form-group">
 				<label t:type="label" for="selectTestInstance">${message:selectTestInstance-label}
 					- ${message:onlyTestInstancesWithDiscussionsAreShown-label}</label> <select
-					size="4" class="form-control form-control-sm"
+					size="10" class="form-control form-control-sm"
 					t:id="selectTestInstance" t:type="select"
 					t:model="testInstanceSelectModel" t:value="selectedTestInstance"
 					t:zone="zTestInstance" t:required="true"></select>
