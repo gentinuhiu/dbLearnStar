@@ -17,6 +17,14 @@ th {
 */
 }
 
+td[data-grid-property="submission"] {
+        max-width: 40rem;
+}
+
+
+td[data-grid-property="assessment"] {
+	max-width: 20rem;
+}
 
 code p {
 	margin-top: 0px;
