@@ -1,5 +1,4 @@
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" 
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -11,7 +10,7 @@
 
 	<groupId>dblearnstar</groupId>
 	<artifactId>dblearnstar</artifactId>
-	<version>0.8.14</version>
+	<version>0.8.15</version>
 	<name>dbLearnStar</name>
 
 	<packaging>war</packaging>
@@ -42,19 +41,19 @@
 		<jackson-version>2.13.2</jackson-version>
 		<jackson-databind-version>2.13.2.2</jackson-databind-version>
 		<log4j-version>2.17.2</log4j-version>
-	        <json-version>1.1.4</json-version>
-        	<junit-version>5.8.2</junit-version>
+		<json-version>1.1.4</json-version>
+		<junit-version>5.8.2</junit-version>
 		<yasson-version>2.0.4</yasson-version>
-	        <servlet-version>3.1.0</servlet-version>
+		<servlet-version>3.1.0</servlet-version>
 
-        	<maven-compiler-version>3.8.1</maven-compiler-version>
-	        <maven-surefire-version>3.0.0-M5</maven-surefire-version>
+		<maven-compiler-version>3.8.1</maven-compiler-version>
+		<maven-surefire-version>3.0.0-M5</maven-surefire-version>
 
-		<postgresql-version>42.4.0</postgresql-version>
+		<postgresql-version>42.4.1</postgresql-version>
 		<cas-client-version>3.6.4</cas-client-version>
 	</properties>
 
-<!--
+	<!--
 	<repositories>
 		<repository>
 			<id>apache-staging</id>
@@ -123,8 +122,8 @@
 			<version>${tapestry-version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <!-- Uncomment this to add support for spring, hibernate, bean validation and file uploads -->
-        <!--
+		<!-- Uncomment this to add support for spring, hibernate, bean validation and file uploads -->
+		<!--
         <dependency>
             <groupId>org.apache.tapestry</groupId>
             <artifactId>tapestry-spring</artifactId>
@@ -132,19 +131,19 @@
             <scope>compile</scope>
         </dependency>
 	-->
-	<dependency>
-		<groupId>org.apache.tapestry</groupId>
-		<artifactId>tapestry-hibernate</artifactId>
-		<version>${tapestry-version}</version>
-		<scope>compile</scope>
-	</dependency>
-        <dependency>
-                <groupId>org.apache.tapestry</groupId>
-                <artifactId>tapestry-hibernate-core</artifactId>
-                <version>${tapestry-version}</version>
-                <scope>compile</scope>
-        </dependency>
-	<!--
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-hibernate</artifactId>
+			<version>${tapestry-version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-hibernate-core</artifactId>
+			<version>${tapestry-version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!--
         <dependency>
             <groupId>org.apache.tapestry</groupId>
             <artifactId>tapestry-beanvalidator</artifactId>
@@ -152,61 +151,61 @@
             <scope>compile</scope>
         </dependency>
 	-->
-        <dependency>
-            <groupId>org.apache.tapestry</groupId>
-            <artifactId>tapestry-upload</artifactId>
-            <version>${tapestry-version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Unit Testing -->
-        <dependency>
-            <groupId>org.apache.tapestry</groupId>
-            <artifactId>tapestry-test</artifactId>
-            <version>${tapestry-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit-version}</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-upload</artifactId>
+			<version>${tapestry-version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Unit Testing -->
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-test</artifactId>
+			<version>${tapestry-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${junit-version}</version>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- Miscellaneous -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j-version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>yasson</artifactId>
-            <version>${yasson-version}</version>
+			<version>${log4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>yasson</artifactId>
+			<version>${yasson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-            <version>${jackson-version}</version>
+			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind-version}</version>
+			<version>${jackson-databind-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-yaml</artifactId>
-            <version>${jackson-version}</version>
+			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -356,60 +355,60 @@
 		</testResources>
 
 		<plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>3.5.0</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-version}</version>
-                <configuration>
-                    <release>17</release>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-version}</version>
-                <configuration>
-                    <systemPropertyVariables>
-                        <propertyName>firefox</propertyName>
-                    </systemPropertyVariables>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit-platform</artifactId>
-                        <version>${maven-surefire-version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-testng</artifactId>
-                        <version>${maven-surefire-version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.5.0</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-version}</version>
+				<configuration>
+					<release>17</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-version}</version>
+				<configuration>
+					<systemPropertyVariables>
+						<propertyName>firefox</propertyName>
+					</systemPropertyVariables>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit-platform</artifactId>
+						<version>${maven-surefire-version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-testng</artifactId>
+						<version>${maven-surefire-version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
