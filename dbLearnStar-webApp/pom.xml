@@ -10,7 +10,7 @@
 
 	<groupId>dblearnstar</groupId>
 	<artifactId>dblearnstar</artifactId>
-	<version>0.8.15</version>
+	<version>0.8.16</version>
 	<name>dbLearnStar</name>
 
 	<packaging>war</packaging>
@@ -38,8 +38,8 @@
 
 		<spring-boot-version>2.6.9</spring-boot-version>
 		<tapestry-version>5.8.2</tapestry-version>
-		<jackson-version>2.13.2</jackson-version>
-		<jackson-databind-version>2.13.2.2</jackson-databind-version>
+		<jackson-version>2.13.4</jackson-version>
+		<jackson-databind-version>2.13.4.2</jackson-databind-version>
 		<log4j-version>2.17.2</log4j-version>
 		<json-version>1.1.4</json-version>
 		<junit-version>5.8.2</junit-version>
@@ -49,7 +49,7 @@
 		<maven-compiler-version>3.8.1</maven-compiler-version>
 		<maven-surefire-version>3.0.0-M5</maven-surefire-version>
 
-		<postgresql-version>42.4.1</postgresql-version>
+		<postgresql-version>42.5.0</postgresql-version>
 		<cas-client-version>3.6.4</cas-client-version>
 	</properties>
 
@@ -66,7 +66,7 @@
 		<dependency>
 			<groupId>dblearnstar</groupId>
 			<artifactId>dblearnstar-model</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
+			<version>0.0.7-SNAPSHOT</version>
 		</dependency>
 
 
@@ -241,7 +241,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
-			<version>1.9</version>
+			<version>1.10.0</version>
 		</dependency>
 
 		<!-- webjars -->
