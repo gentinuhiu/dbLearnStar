@@ -3,7 +3,7 @@
 
 	<groupId>dblearnstar</groupId>
 	<artifactId>dblearnstar-model</artifactId>
-	<version>0.0.6-SNAPSHOT</version>
+	<version>0.0.7-SNAPSHOT</version>
 
 	<name>dbLearnStar - Model</name>
 
