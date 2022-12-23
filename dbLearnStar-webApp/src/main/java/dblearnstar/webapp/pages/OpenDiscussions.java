@@ -89,11 +89,11 @@ public class OpenDiscussions {
 	public List<SolutionAssessment> getSolutionAssessmentsWithDiscussion() {
 		return ((List<SolutionAssessment>) UsefulMethods.castList(SolutionAssessment.class,
 				genericService.getAll(SolutionAssessment.class)))
-						.stream()
-						.filter(p -> p.getAssessmentDiscussions().size() > 0
-								&& p.getStudentSubmitSolution().getStudentStartedTest().getTestInstance()
-										.getTestInstanceId() == selectedTestInstance.getTestInstanceId())
-						.collect(Collectors.toList());
+				.stream()
+				.filter(p -> p.getAssessmentDiscussions().size() > 0
+						&& p.getStudentSubmitSolution().getStudentStartedTest().getTestInstance()
+								.getTestInstanceId() == selectedTestInstance.getTestInstanceId())
+				.collect(Collectors.toList());
 	}
 
 	public List<TestInstance> getTestInstances() {
@@ -135,14 +135,27 @@ public class OpenDiscussions {
 	@Inject
 	private PersonManager personManager;
 
-	public boolean isAnsweredByInstructor() {
-		boolean answer = false;
-		for (AssessmentDiscussion ad : runningSolutionAssessment.getAssessmentDiscussions()) {
-			if (personManager.isInstructor(ad.getPerson())) {
-				answer = true;
+	public boolean answered(AssessmentDiscussion ad) {
+		if (ad.getReplies() != null && ad.getReplies().size() > 0) {
+			boolean allAnswered = true;
+			for (AssessmentDiscussion i : ad.getReplies()) {
+				if (!answered(i)) {
+					allAnswered = false;
+				}
 			}
+			return allAnswered;
+		} else {
+			return personManager.isInstructor(ad.getPerson());
 		}
-		return answer;
+	}
+
+	public boolean isAnsweredByInstructor() {
+		boolean allAnswered = true;
+		for (AssessmentDiscussion ad : runningSolutionAssessment.getAssessmentDiscussions().stream()
+				.filter(p -> p.getReplyTo() == null).toList()) {
+			allAnswered = allAnswered && answered(ad);
+		}
+		return allAnswered;
 	}
 
 }

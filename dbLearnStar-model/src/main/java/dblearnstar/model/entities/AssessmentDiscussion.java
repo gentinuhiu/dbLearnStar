@@ -36,6 +36,7 @@ public class AssessmentDiscussion implements java.io.Serializable {
 	private SolutionAssessment solutionEvaluation;
 	private AssessmentDiscussion replyTo;
 	private Person person;
+	private List<AssessmentDiscussion> replies;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -114,6 +115,15 @@ public class AssessmentDiscussion implements java.io.Serializable {
 
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "replyTo")
+	public List<AssessmentDiscussion> getReplies() {
+		return replies;
+	}
+
+	public void setReplies(List<AssessmentDiscussion> replies) {
+		this.replies = replies;
 	}
 
 }
