@@ -149,6 +149,9 @@ public class SubmissionEvaluations {
 	private Boolean onlyAssessed;
 	@Persist
 	@Property
+	private Boolean onlyUnAssessed;
+	@Persist
+	@Property
 	private Boolean hideClientInfo;
 	@Persist
 	@Property
@@ -234,6 +237,11 @@ public class SubmissionEvaluations {
 			lista = lista.stream().filter(sss -> (sss.getEvaluations() != null && sss.getEvaluations().size() > 0))
 					.collect(Collectors.toList());
 		}
+		if (lista != null && onlyUnAssessed != null && onlyUnAssessed) {
+			lista = lista.stream().filter(sss -> (sss.getEvaluations() == null || sss.getEvaluations().size() == 0))
+					.collect(Collectors.toList());
+		}
+
 		return lista;
 	}
 

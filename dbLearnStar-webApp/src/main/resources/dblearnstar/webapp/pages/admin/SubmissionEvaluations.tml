@@ -215,38 +215,37 @@
 
 			</div>
 			<div class="form-row">
-				<div class="form-group col-md-2">
-					&nbsp;&nbsp;&nbsp;
+				<div class="form-group ml-4 mr-3">
 					<t:checkbox t:id="onlyEval" onclick="this.form.submit();"
 						class="form-check-input" />
 					<label t:type="label" for="onlyEval" class="form-check-label"></label>
 				</div>
-				<div class="form-group col-md-2">
-					&nbsp;&nbsp;&nbsp;
+				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyCorrect" onclick="this.form.submit();"
 						class="form-check-input" />
 					<label t:type="label" for="onlyCorrect" class="form-check-label"></label><br />
 				</div>
-				<div class="form-group col-md-2">
-					&nbsp;&nbsp;&nbsp;
+				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyLast" onclick="this.form.submit();"
 						class="form-check-input" />
 					<label t:type="label" for="onlyLast" class="form-check-label"></label><br />
 				</div>
-				<div class="form-group col-md-2">
-					&nbsp;&nbsp;&nbsp;
+				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyAssessed" onclick="this.form.submit();"
 						class="form-check-input" />
 					<label t:type="label" for="onlyAssessed" class="form-check-label"></label><br />
 				</div>
-				<div class="form-group col-md-2">
-					&nbsp;
+				<div class="form-group mr-3 ml-3">
+					<t:checkbox t:id="onlyUnAssessed" onclick="this.form.submit();"
+						class="form-check-input" />
+					<label t:type="label" for="onlyUnAssessed" class="form-check-label"></label><br />
+				</div>
+				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyDateOfExam" onclick="this.form.submit();"
 						class="form-check-input" />
 					<label t:type="label" for="onlyDateOfExam" class="form-check-label"></label><br />
 				</div>
-				<div class="form-group col-md-2">
-					&nbsp;
+				<div class="form-group mr-3 ml-4">
 					<t:checkbox t:id="hideClientInfo" onclick="this.form.submit();"
 						class="form-check-input" />
 					<label t:type="label" for="hideClientInfo" class="form-check-label"></label><br />
