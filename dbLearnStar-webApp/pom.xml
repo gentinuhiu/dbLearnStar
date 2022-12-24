@@ -10,7 +10,7 @@
 
 	<groupId>dblearnstar</groupId>
 	<artifactId>dblearnstar</artifactId>
-	<version>0.8.16</version>
+	<version>0.9</version>
 	<name>dbLearnStar</name>
 
 	<packaging>war</packaging>
@@ -222,6 +222,12 @@
 		</dependency>
 
 		<dependency>
+		   <groupId>com.zaxxer</groupId>
+		   <artifactId>HikariCP</artifactId>
+		   <version>5.0.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-core</artifactId>
 			<version>${cas-client-version}</version>
@@ -266,7 +272,7 @@
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>ckeditor</artifactId>
-			<version>4.17.1</version>
+			<version>4.19.0</version>
 		</dependency>
 
 		<dependency>
