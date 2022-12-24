@@ -450,7 +450,7 @@ public class TestManagerImpl implements TestManager {
 	public boolean accessToTaskInTestInstanceAllowed(Student student, TaskInTestInstance tti) {
 		return getTestInstancesForStudentByTestType(student.getStudentId(),
 				tti.getTestInstance().getTestTemplate().getTestType().getTestTypeId()).stream()
-						.anyMatch(ti -> ti.getTestInstanceId() == tti.getTestInstance().getTestInstanceId());
+				.anyMatch(ti -> ti.getTestInstanceId() == tti.getTestInstance().getTestInstanceId());
 	}
 
 	@Override

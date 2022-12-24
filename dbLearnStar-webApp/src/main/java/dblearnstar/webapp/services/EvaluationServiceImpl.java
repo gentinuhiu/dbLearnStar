@@ -603,7 +603,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 			List<StudentSubmitSolution> submissions) {
 		List<String[]> ddlEvaluationData = new ArrayList<String[]>();
 		List<String> resultsHeadersSimple = new ArrayList<String>();
-		List<String> resultsErrors = new ArrayList<String>();
+		List<String> resultsDbConnErrors = new ArrayList<String>();
 
 		String[] queryToRun = {
 				"""
@@ -773,6 +773,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 
 					Connection connection = null;
 					String DbPass = "", DbName = "", DbUser = "";
+					String DbNameCensored = "*****";
 					String gradingSchema = AppConfig.getString(ApplicationConstants.STUDENTDBS_JDBC_SCHEMA);
 					String mainUrl = AppConfig.getString(ApplicationConstants.STUDENTDBS_JDBC_URL);
 
@@ -793,6 +794,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 								DbUser = rsEpm.getString("owner");
 							} else {
 								logger.error("Did not find student data for {}", likestring);
+								resultsDbConnErrors.add(DbNameCensored + " - Did not find student data");
 							}
 
 							Properties props = new Properties();
@@ -830,19 +832,19 @@ public class EvaluationServiceImpl implements EvaluationService {
 							SQLWarning w = connection.getWarnings();
 							if (w != null) {
 								logger.debug("warning");
-								resultsErrors.add(w.getMessage());
+								resultsDbConnErrors.add(DbNameCensored + " - " + w.getMessage());
 							}
 							connection.rollback();
 						} catch (Exception e) {
 							if (statusCounter == 0) {
-								logger.error("{}", e);
-								resultsErrors.add(e.getMessage());
+								logger.error("{}", e.getMessage());
+								resultsDbConnErrors.add(DbNameCensored + " - " + e.getMessage());
 							} else {
 								logger.error(
 										"Connected to evaluation database {}, but failed in running query {} due to {}",
 										DbName, queryToRun[n], e.getMessage());
 								logger.debug("Exception: {}", e);
-								resultsErrors.add(e.getMessage());
+								resultsDbConnErrors.add(DbNameCensored + " - " + e.getMessage());
 							}
 						} finally {
 							if (connection != null) {
@@ -867,8 +869,9 @@ public class EvaluationServiceImpl implements EvaluationService {
 				}
 			}
 		}
+
 		return new Triplet<List<String[]>, List<String>, List<String>>(ddlEvaluationData, resultsHeadersSimple,
-				resultsErrors);
+				resultsDbConnErrors);
 	}
 
 }
