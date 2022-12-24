@@ -68,6 +68,7 @@ jobs:
 
     - run: |
         echo "Build Application"
+        mvn -f dbLearnStar-model/ install
         mvn -f dbLearnStar-webApp/ clean package
 
     - name: Perform CodeQL Analysis
