@@ -38,6 +38,18 @@ define(["jquery"], function($) {
 					},
 					hintOptions: {
 						tables: {
+							apteki: ["a_id","aime"],
+							apteki_lokacii: ["a_id","a_reden_br","adresa","tel_broj"],
+							farmakomi: ["fk_id","fk_ime"],
+							farmakomi_broevi: ["fk_id","fk_reden_br","tel_broj"],
+							lekovi: ["fk_id","prod_id","l_ime","sostav"],
+							prodava: ["fk_id","prod_id","a_id","cena"],
+							dogovori: ["fk_id","a_id","datum_skl","l_id","datum_ist","sodrzhina"],
+							recepti: ["p_l_id","d_l_id","datum_izd","fk_id","prod_id","doza"],
+							matichen_na: ["p_l_id","m_datum_poch","m_datum_kraj","d_l_id"],
+							doktori: ["l_id","rab_iskustvo","specijalnost"],
+							pacienti: ["l_id","p_adresa"],
+							supervizori: ["l_id"],
 							banki: ["banka_id","b_naziv","b_adresa","grad_id"],
 							gradovi: ["grad_id","g_naziv"],
 							vraboteni: ["banka_id","vrab_br","v_embg","v_ime","godina_vrab"],
@@ -102,6 +114,7 @@ define(["jquery"], function($) {
 							evaluacii: ["l_id", "z_reden_broj", "e_reden_broj", "e_naslov", "e_opis", "e_ocenka", "e_izvrshil_l_id", "datum_ocenuvanje"],
 							lugje: ["identifikator", "ime", "adresa", "br_chovek", "embg", "ime_chovek", "vozrast"],
 							lugje: ["l_id", "ime", "prezime", "email", "datum_ragjanje"],
+							lugje: ["l_id", "ime", "prezime", "embg", "datum_ragj"],
 							proekti: ["p_id", "p_naslov", "p_opis"],
 						}
 					}
