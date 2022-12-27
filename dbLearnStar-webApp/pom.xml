@@ -278,7 +278,7 @@
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>codemirror</artifactId>
-			<version>5.63.3</version>
+			<version>6.65.7</version>
 		</dependency>
 
 		<dependency>
@@ -464,7 +464,7 @@
 									<outputDirectory>${project.basedir}/target/classes/META-INF/assets/codemirror/</outputDirectory>
 									<fileMappers>
 										<org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
-											<pattern>^\QMETA-INF/resources/webjars/codemirror/5.63.3/\E</pattern>
+											<pattern>^\QMETA-INF/resources/webjars/codemirror/6.65.7/\E</pattern>
 											<replacement>./</replacement>
 										</org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
 									</fileMappers>
