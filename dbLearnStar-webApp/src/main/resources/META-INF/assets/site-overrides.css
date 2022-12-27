@@ -8,6 +8,29 @@
 	--color-exception: #404040;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+  --main-bg-color: #260661ff;
+  --main-bg-color2: #260661ff;
+  --main-bg-color-box: #330B7Dff;
+  --main-bg-color-accent: #330B7Dff;
+  --main-bg-color-accent2: #00000080;
+  --main-font-color: white;
+  --main-font-color-hover: #E9FA5A;
+  --yt-font-color: #8E6600;
+  --sidebar-bg-color: #260661ff;
+  --main-border-color: rgb(0,0,0,0.15);
+  --main-underline-color: rgba(255,255,255,128);
+  --light: #080704;
+  --dark: #d4dac0;
+  --bs-body-bg: rgb(16,16,16);
+  --bs-body-color: white;
+  --bs-light-rgb: rgba(42,42,42,0.5);
+  --bs-bg-opacity: rgba(42,42,42,0.5);
+  }
+}
+
+
 body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 	font-family: 'Fira Sans', Helvetica, Arial, sans-serif !important;
 }
@@ -120,3 +143,56 @@ svg {
 	content: "📅";
 }
 
+@media (prefers-color-scheme: dark) {
+  a {
+    color: #E2F72F;
+  }
+  
+  a:hover {
+    color: #A1B400;
+  }
+  
+  body {
+    background-color: var(--main-bg-color2);
+    color: var(--main-font-color);
+  }
+  
+  .card {
+    background-color: #7C8B00 !important;
+  }
+  
+  .card-header {
+    background-color: #A1B400 !important;
+  }
+  
+  .bg-light {
+    background-color: #7C8B00 !important;
+  }
+  
+  .table {
+    color: var(--main-font-color);
+  }
+  
+  .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: var(--main-bg-color-accent);
+    color: var(--main-font-color-hover);
+  }
+  
+  .dropdown-menu {
+    background-color: #a0a0a0ff;
+  }
+  
+  pre {
+  	color: var(--main-font-color);
+  }
+  
+  .modal-content {
+  	background-color: var(--main-bg-color2);
+  	border-color: var(--main-bg-color2);
+  }
+  
+  .cke_wysiwyg_frame {
+  	background-color: #7C8B00 !important;
+  }
+  
+}

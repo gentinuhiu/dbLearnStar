@@ -13,7 +13,7 @@ td {
 	bottom: 5em;
 	left: 5em;
 	right: 5em;
-	background: white;
+	background: var(--main-bg-color-accent);
 	border: 1px solid black;
 	border-radius: 12px;
 	padding: 2em;

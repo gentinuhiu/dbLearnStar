@@ -40,7 +40,7 @@
 	font-size: 80%;
 	clear: both;
 	display: inline;
-	background: #e0e0e0;
+	background: var(--main-bg-color-accent2);
 	padding: 0.2em;
 }
 
@@ -82,4 +82,12 @@ th {
 
 .taskdescription img {
 	margin: 1em;
+}
+
+.close {
+	color: var(--main-font-color);
+}
+
+.close:hover {
+	color: var(--main-font-color);
 }

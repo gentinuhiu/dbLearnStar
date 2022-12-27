@@ -43,7 +43,7 @@ code p {
 
 .modalSubmission {
 	max-height: 10em !important;
-	background: #e0e0e0 !important;
+	background: var(--main-bg-color-accent) !important;
 	padding: 0.5em !important;
 }
 
@@ -61,7 +61,7 @@ pre#kodot img {
 
 .feedback {
 	max-height: 10em !important;
-	background: white !important;
+	background: var(--main-bg-color-accent) !important;
 	padding: 0.25em;
 	/* 	max-width: 15em; */
 	z-index: 5000 !important;
