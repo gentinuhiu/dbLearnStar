@@ -77,12 +77,13 @@
 						</div>
 						<div class="row" t:type="if" t:test="anyResults">
 							<div class="col-12">
+								<h3>${message:query-results-label}1</h3>
 								<div
-									class="alert alert-success resultspanel resultspanel-colors"
+									class="alert resultspanel resultspanel-colors"
 									role="alert" t:type="if" t:test="resultsEvaluation1">
-									<h3>${message:query-results-label}1</h3>
-									<table
-										class="table table-sm table-hover table-bordered table-striped">
+									
+									<table 
+										class="tblCompareData table table-sm table-hover table-bordered table-striped">
 										<thead>
 											<tr>
 												<th t:type="loop" t:source="resultsHeaders1"
@@ -92,18 +93,20 @@
 										<tbody>
 											<tr t:type="loop" t:source="resultsEvaluation1"
 												t:value="oneRow">
-												<td t:type="loop" t:source="oneRow" t:value="oneColumn"><t:outputraw
+												<td class="p-1 m-0" t:type="loop" t:source="oneRow" t:value="oneColumn"><t:outputraw
 														t:value="oneColumn" /></td>
 											</tr>
 										</tbody>
 									</table>
+									<p:else><p>/</p>
+									</p:else>
 								</div>
-								<div
-									class="alert alert-success resultspanel resultspanel-colors"
-									role="alert" t:type="if" t:test="resultsEvaluation2">
 									<h3>${message:query-results-label}2</h3>
+								<div
+									class="alert resultspanel resultspanel-colors"
+									role="alert" t:type="if" t:test="resultsEvaluation2">
 									<table
-										class="table table-sm table-hover table-bordered table-striped">
+										class="tblCompareData table table-sm table-hover table-bordered table-striped">
 										<thead>
 											<tr>
 												<th t:type="loop" t:source="resultsHeaders2"
@@ -113,11 +116,13 @@
 										<tbody>
 											<tr t:type="loop" t:source="resultsEvaluation2"
 												t:value="oneRow">
-												<td t:type="loop" t:source="oneRow" t:value="oneColumn"><t:outputraw
+												<td class="p-1 m-0" t:type="loop" t:source="oneRow" t:value="oneColumn"><t:outputraw
 														t:value="oneColumn" /></td>
 											</tr>
 										</tbody>
 									</table>
+									<p:else><p>/</p>
+									</p:else>
 								</div>
 							</div>
 						</div>
@@ -267,7 +272,7 @@
 			<table t:id="recentsubmission" t:type="grid"
 				t:source="allSubmissions" t:row="submission" t:model="modelSSS"
 				t:rowsperpage="50" t:rowClass="${evaluationClass}"
-				class="table table-sm table-hover table-bordered table-striped">
+				class="table table-sm table-bordered">
 				<p:submissionCell>
 					<t:code t:additionalClass="literal:submittedCode"
 						t:value="submission.submission"></t:code>

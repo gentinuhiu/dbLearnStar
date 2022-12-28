@@ -79,6 +79,10 @@ pre#kodot img {
 	width:120%;
 }
 
+table.tblCompareData tbody {
+	background: var(  --main-bg-color);
+}
+
 table tbody tr.correct {
 	background: var(--color-correct) !important;
 }

@@ -104,7 +104,7 @@
 								<t:loop t:source="reorderedAssessmentDiscussions"
 									t:value="runningAssessmentDiscussion">
 									<div class=" ${indentation}">
-										<a role="button" class="btn btn-sm"
+										<a role="button" class="btn btn-sm btn-link"
 											href="#disc${runningAssessmentDiscussion.assessmentDiscussionId}">
 											<svg t:type="svgicon" t:path="file" />
 											${runningAssessmentDiscussion.postedOn} -

@@ -12,11 +12,13 @@
   :root {
   --main-bg-color: #260661ff;
   --main-bg-color2: #260661ff;
-  --main-bg-color-box: #330B7Dff;
+  --main-bg-color3: #42119cff;
+  --main-bg-color-box: #42119cff;
   --main-bg-color-accent: #330B7Dff;
   --main-bg-color-accent2: #00000080;
   --main-font-color: white;
   --main-font-color-hover: #E9FA5A;
+  --main-link-color: #A074F0;
   --yt-font-color: #8E6600;
   --sidebar-bg-color: #260661ff;
   --main-border-color: rgb(0,0,0,0.15);
@@ -158,15 +160,20 @@ svg {
   }
   
   .card {
-    background-color: #7C8B00 !important;
+    background-color: var(--main-bg-color) !important;
+    border-color: var(--main-bg-color3) !important;
   }
   
   .card-header {
-    background-color: #A1B400 !important;
+    background-color: var(--main-bg-color-accent) !important;
   }
-  
+
+  .card-header h3 {
+    color: var(--main-font-color) !important;
+  }
+    
   .bg-light {
-    background-color: #7C8B00 !important;
+    background-color:var(--main-bg-color3) !important;
   }
   
   .table {
@@ -179,7 +186,11 @@ svg {
   }
   
   .dropdown-menu {
-    background-color: #a0a0a0ff;
+    background-color: var(--main-bg-color2);
+  }
+  
+  .dropdown-menu a {
+    color: var(--main-link-color) !important;
   }
   
   pre {
@@ -192,7 +203,12 @@ svg {
   }
   
   .cke_wysiwyg_frame {
-  	background-color: #7C8B00 !important;
+  	background-color: #6060ff !important;
   }
+
+	p.comment {
+		background: #7C8B00;
+	}
+
   
 }

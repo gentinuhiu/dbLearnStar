@@ -188,7 +188,7 @@
 					t:id="filterNotForEvaluation">${message:list-submissions-run-only-label}</a></li>
 			</ul>
 			<div class="mt-0">
-				<table t:type="grid" t:source="historyOfSolutions"
+				<table t:type="grid" t:source="historyOfSolutions" class="table table-sm table-bordered table-hover"
 					t:row="historicalSolution" t:rowsPerPage="10"
 					t:include="submittedOn,submission,evaluationSimple,evaluationComplex"
 					t:add="Action">
