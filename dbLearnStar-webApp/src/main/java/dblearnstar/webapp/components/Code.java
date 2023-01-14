@@ -20,6 +20,7 @@
 
 package dblearnstar.webapp.components;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
@@ -41,6 +42,10 @@ public class Code {
 		return componentResources.getId();
 	}
 
+	public String getEscapedValue() {
+		return StringEscapeUtils.escapeHtml4(value);
+	}
+	
 	public Boolean getNullValue() {
 		if (value == null) {
 			return true;

@@ -94,7 +94,7 @@ public class SolutionComparatorPage {
 	@Property
 	private TaskInTestInstance taskInTestInstance;
 	@Property
-	private float totalPoints;
+	private Float totalPoints;
 	@Property
 	Map<TaskInTestInstance, List<SolutionAssessment>> mapTTItoSA;
 
@@ -114,7 +114,7 @@ public class SolutionComparatorPage {
 	}
 
 	public void prepareMapOfEvaluationsAndTotal() {
-		totalPoints = 0;
+		totalPoints = testManager.getTotalPoints(studentId, selectedTestInstance.getTestInstanceId());
 		mapTTItoSA = new HashMap<TaskInTestInstance, List<SolutionAssessment>>();
 		for (TaskInTestInstance tti : taskInTestInstances) {
 			List<SolutionAssessment> lista = testManager.getAllEvaluationsOfSolutionsForTaskInTestInstance(studentId,
@@ -129,7 +129,7 @@ public class SolutionComparatorPage {
 
 	public Boolean getHasManySolutions() {
 		List<SolutionAssessment> list = mapTTItoSA.get(taskInTestInstance);
-		if (list != null && list.size() > 0) {
+		if (list != null && list.size() > 1) {
 			return true;
 		} else {
 			return false;
@@ -177,7 +177,7 @@ public class SolutionComparatorPage {
 		} else {
 			return sss.getTaskInTestInstance().getStudentSubmitSolutions().stream()
 					.filter(p -> (p.getEvaluations() != null && p.getEvaluations().size() > 0
-							&& p.getEvaluations().get(0).getPassed()!=null && p.getEvaluations().get(0).getPassed()
+							&& p.getEvaluations().get(0).getPassed() != null && p.getEvaluations().get(0).getPassed()
 							&& p.getStudentSubmitSolutionId() != sss.getStudentSubmitSolutionId()))
 					.collect(Collectors.toList());
 		}
@@ -280,6 +280,16 @@ public class SolutionComparatorPage {
 			return null;
 		}
 
+	}
+	
+	public String getSolutionCorrectnessClass() {
+		if (oneOfTheEvaluatedSolutions.getPassed()) {
+			return " solutionCorrect ";
+		}
+		if (!oneOfTheEvaluatedSolutions.getPassed()) {
+			return " solutionInCorrect ";
+		}
+		return " ";
 	}
 
 }

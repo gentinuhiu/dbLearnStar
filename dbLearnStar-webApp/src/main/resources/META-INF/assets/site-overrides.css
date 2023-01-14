@@ -29,6 +29,8 @@
   --bs-body-color: white;
   --bs-light-rgb: rgba(42,42,42,0.5);
   --bs-bg-opacity: rgba(42,42,42,0.5);
+  --color-incorrect: #7b000c; 	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
+  --color-correct: #277c2c; /* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */ 
   }
 }
 
@@ -143,6 +145,14 @@ svg {
 
 .glyphicon-calendar::before {
 	content: "📅";
+}
+
+.solutionCorrect {
+	background-color: var(--color-correct) !important;	
+}
+
+.solutionInCorrect {
+	background-color: var(--color-incorrect) !important;	
 }
 
 @media (prefers-color-scheme: dark) {

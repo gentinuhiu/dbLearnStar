@@ -35,7 +35,7 @@
 			t:value="oneOfTheEvaluatedSolutions" class="card mb-3">
 			<div t:type="if"
 				t:test="oneOfTheEvaluatedSolutions.studentSubmitSolution"
-				class="card-body bg-light p-2">
+				class="card-body p-2 ${solutionCorrectnessClass}">
 				<div class="row">
 					<div class="col-6">
 						<p>
@@ -95,7 +95,7 @@
 							</div>
 							<div t:type="if" t:test="otherSolutions">
 								<p>
-									<a class="btn btn-outline-info" role="button"
+									<a class="btn btn-outline-light" role="button"
 										data-toggle="collapse"
 										href="#collapseSolutions${taskInTestInstance.taskInTestInstanceId}"
 										aria-expanded="false"
@@ -110,8 +110,8 @@
 										<t:loop t:source="otherSolutions"
 											t:value="otherStudentSubmitSolution">
 											<t:if t:test="SQL">
-												<div class="card">
-													<div class="card-body">
+												<div class="card card-body p-0 m-1">
+													<div>
 														<t:code t:additionalClass="literal:p-2"
 															t:value="otherStudentSubmitSolution.submission"></t:code>
 													</div>

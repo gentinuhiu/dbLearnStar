@@ -36,6 +36,7 @@
 					<li class="nav-item" t:type="loop" t:source="studentPageNames"
 						t:value="pageName"><a class="nav-link ${classForPageName}"
 						t:type="pagelink" t:page="prop:pageName">${pageNameTitle}</a></li>
+                                         <li class="nav-item"><a class="nav-link" href="/materijali" target="_blank">Материјали <t:SVGIcon t:path="external-link" t:width="16" /></a></li> 
 				</t:if>
 				<t:if t:test="userInfo?.administrator">
 					<li class="nav-item dropdown"><a

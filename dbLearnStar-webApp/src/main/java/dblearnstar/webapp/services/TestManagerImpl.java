@@ -424,7 +424,7 @@ public class TestManagerImpl implements TestManager {
 	public Float getTotalPoints(long studentId, long testInstanceId) {
 		try {
 			Query q = getEntityManager().createQuery("""
-					select max(sa.grade)
+					select max(sa.grade) as maksot
 					from SolutionAssessment sa
 					join sa.studentSubmitSolution sss
 					where
@@ -434,7 +434,7 @@ public class TestManagerImpl implements TestManager {
 					""");
 			q.setParameter("studentId", studentId);
 			q.setParameter("testInstanceId", testInstanceId);
-			float total = (float) 0;
+			Float total = (float) 0;
 			for (Float sa : UsefulMethods.castList(Float.class, q.getResultList())) {
 				if (sa != null) {
 					total += sa;
