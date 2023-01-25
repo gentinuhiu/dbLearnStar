@@ -418,6 +418,7 @@ public class SubmissionEvaluations {
 	}
 
 	void onActionFromAddAssessment(StudentSubmitSolution s) {
+		clearResultsAndErrors();
 		editedAssessment = new SolutionAssessment();
 		editedAssessment.setStudentSubmitSolution(s);
 		prettyFormat = false;
@@ -447,6 +448,7 @@ public class SubmissionEvaluations {
 	}
 
 	public void onActionFromCancelFormEditor() {
+		clearResultsAndErrors();
 		editedAssessment = null;
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zModal).addRender(zSubmissions);
@@ -577,8 +579,8 @@ public class SubmissionEvaluations {
 	}
 
 	public boolean isAnyResults() {
-		return (resultsEvaluation1 != null && resultsEvaluation1.size() > 0)
-				|| (resultsEvaluation2 != null && resultsEvaluation2.size() > 0);
+		return (resultsEvaluation1 != null )
+				|| (resultsEvaluation2 != null );
 	}
 
 	public boolean isAnyStatus() {

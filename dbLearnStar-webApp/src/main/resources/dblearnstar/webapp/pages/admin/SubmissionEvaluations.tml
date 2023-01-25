@@ -78,11 +78,10 @@
 						<div class="row" t:type="if" t:test="anyResults">
 							<div class="col-12">
 								<h3>${message:query-results-label}1</h3>
-								<div
-									class="alert resultspanel resultspanel-colors"
-									role="alert" t:type="if" t:test="resultsEvaluation1">
-									
-									<table 
+								<div class="alert resultspanel resultspanel-colors" role="alert"
+									t:type="if" t:test="resultsEvaluation1">
+
+									<table
 										class="tblCompareData table table-sm table-hover table-bordered table-striped">
 										<thead>
 											<tr>
@@ -93,18 +92,18 @@
 										<tbody>
 											<tr t:type="loop" t:source="resultsEvaluation1"
 												t:value="oneRow">
-												<td class="p-1 m-0" t:type="loop" t:source="oneRow" t:value="oneColumn"><t:outputraw
-														t:value="oneColumn" /></td>
+												<td class="p-1 m-0" t:type="loop" t:source="oneRow"
+													t:value="oneColumn"><t:outputraw t:value="oneColumn" /></td>
 											</tr>
 										</tbody>
 									</table>
-									<p:else><p>/</p>
+									<p:else>
+										<p>/</p>
 									</p:else>
 								</div>
-									<h3>${message:query-results-label}2</h3>
-								<div
-									class="alert resultspanel resultspanel-colors"
-									role="alert" t:type="if" t:test="resultsEvaluation2">
+								<h3>${message:query-results-label}2</h3>
+								<div class="alert resultspanel resultspanel-colors" role="alert"
+									t:type="if" t:test="resultsEvaluation2">
 									<table
 										class="tblCompareData table table-sm table-hover table-bordered table-striped">
 										<thead>
@@ -116,12 +115,13 @@
 										<tbody>
 											<tr t:type="loop" t:source="resultsEvaluation2"
 												t:value="oneRow">
-												<td class="p-1 m-0" t:type="loop" t:source="oneRow" t:value="oneColumn"><t:outputraw
-														t:value="oneColumn" /></td>
+												<td class="p-1 m-0" t:type="loop" t:source="oneRow"
+													t:value="oneColumn"><t:outputraw t:value="oneColumn" /></td>
 											</tr>
 										</tbody>
 									</table>
-									<p:else><p>/</p>
+									<p:else>
+										<p>/</p>
 									</p:else>
 								</div>
 							</div>
@@ -142,8 +142,9 @@
 						<div class="card-body collapse" id="collapsedDescription">
 							<t:outputraw t:value="translateTaskDescription"></t:outputraw>
 						</div>
-						<t:code id="solution" t:id="solution" t:value="formattedSolution"
-							t:additionalclass="literal:modalSubmission"></t:code>
+						<div class="pre-scrollable modalSubmission" style="min-height:30rem;"><pre><t:outputraw t:value="formattedSolution"></t:outputraw></pre></div>
+ 
+
 					</div>
 					<div class="form-group col-6 feedback">
 						<label t:type="label" t:for="feedback"></label>
@@ -157,8 +158,7 @@
 					<div class="form-group col-3">
 						<label t:type="label" t:for="passed" class="form-check-label">Passed</label>
 						<input t:type="checkbox" t:id="passed"
-							t:value="editedAssessment.passed"
-							class="form-control"/>
+							t:value="editedAssessment.passed" class="form-control" />
 					</div>
 					<div class="form-group col-3">
 						<label t:type="label" t:for="type"></label> <input
@@ -274,8 +274,20 @@
 				t:rowsperpage="50" t:rowClass="${evaluationClass}"
 				class="table table-sm table-bordered">
 				<p:submissionCell>
-					<t:code t:additionalClass="literal:submittedCode"
-						t:value="submission.submission"></t:code>
+					<t:if t:test="SQL">
+						<t:code t:additionalClass="literal:submittedCode"
+							t:value="submission.submission"></t:code>
+					</t:if>
+					<t:if t:test="DDL">
+						<div class="pre-scrollable submittedCode">
+							<t:outputraw t:value="submission.submission"></t:outputraw>
+						</div>
+					</t:if>
+					<t:if t:test="TEXT">
+						<div class="pre-scrollable submittedText">
+							<t:outputraw t:value="submission.submission"></t:outputraw>
+						</div>
+					</t:if>
 				</p:submissionCell>
 				<p:clientInfoCell>
 					<t:code t:value="submission.clientInfo"></t:code>

@@ -35,6 +35,13 @@ code p {
 .submittedCode {
 	max-width: 60em;
 	max-height: 12em;
+	font-size: 75%;
+	line-height: 0.85em !important;
+}
+
+.submittedText {
+	max-width: 60em;
+	max-height: 18em;
 }
 
 #zSolution {
