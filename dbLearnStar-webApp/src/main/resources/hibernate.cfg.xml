@@ -5,19 +5,23 @@
 <hibernate-configuration>
 	<session-factory>
 		<!-- JDBC connection properties taken from maven profile -->
-		<property name="connection.url">@jdbc.url@</property>
-		<property name="default_schema">@jdbc.default_schema@</property>
-		<property name="connection.username">@jdbc.username@</property>
-		<property name="connection.password">@jdbc.password@</property>
-
 		<!-- DB schema update property is taken from maven profile -->
 		<property name="hbm2ddl.auto">@hib.hbm2ddlauto@</property>
 
 		<!-- Fixed properties for PostgreSQL database -->
-		<property name="dialect">org.hibernate.dialect.PostgreSQL94Dialect</property>
-		<property name="connection.driver_class">org.postgresql.Driver</property>
-		<property name="bytecode.use_reflection_optimizer">false</property>
-
 		<property name="hibernate.show_sql">false</property>
+
+		<!-- HikariCP -->
+		<property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
+		<property name="hibernate.hikari.poolName">TapestryHibernatePool</property>
+		<property name="hibernate.hikari.minimumIdle">5</property>
+		<property name="hibernate.hikari.maximumPoolSize">8</property>
+		<property name="hibernate.hikari.idleTimeout">30000</property>
+		<property name="hibernate.hikari.dataSourceClassName">org.postgresql.ds.PGSimpleDataSource</property>
+		<property name="hibernate.hikari.dataSource.url">@jdbc.url@</property>
+		<property name="hibernate.hikari.dataSource.user">@jdbc.username@</property>
+		<property name="hibernate.hikari.dataSource.password">@jdbc.password@</property>
+		<property name="hibernate.hikari.schema">@jdbc.default_schema@</property>
+
 	</session-factory>
 </hibernate-configuration>
