@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -67,6 +68,52 @@ public class EvaluationServiceImpl implements EvaluationService {
 		return session.getSession();
 	}
 
+	private String prepareQueryStringCurrentTime(String query, String schema) {
+		String queryStringModified = query;
+		queryStringModified = Pattern.compile(Pattern.quote("now()"), Pattern.CASE_INSENSITIVE)
+				.matcher(queryStringModified).replaceAll(schema + ".now()");
+		queryStringModified = Pattern.compile(Pattern.quote("current_date"), Pattern.CASE_INSENSITIVE)
+				.matcher(queryStringModified).replaceAll(schema + ".now()");
+		return queryStringModified;
+	}
+
+	private String prepareQueryStringForViewing(String query, String schema, String evalViewName, String userName) {
+		String queryStringModified = query;
+		queryStringModified = prepareQueryStringCurrentTime(query, schema);
+
+		String evalQueryString = //
+				" select '<span class=\"inSubmission\">In Submission</span>' as WHERE, *   from " //
+						+ " ( ( " + queryStringModified + " ) " //
+						+ " EXCEPT ALL " //
+						+ " ( select * from " + evalViewName + " ) ) eden " //
+						+ " UNION ALL " //
+						+ " select '<span class=\"inCorrectSolution\">In Correct Solution</span>' as WHERE, *  from " //
+						+ " ( ( select * from " + evalViewName + " ) " //
+						+ " EXCEPT ALL " //
+						+ " ( " + queryStringModified + " ) ) dva " //
+						+ " order by 1,2 ";
+		logger.debug("user {} issued evalQueryString for viewing: {}", userName, evalQueryString);
+		return evalQueryString;
+	}
+
+	private String prepareQueryStringForEval(String query, String schema, String evalViewName, String userName) {
+		String queryStringModified = query;
+		queryStringModified = prepareQueryStringCurrentTime(query, schema);
+
+		String evalQueryString = //
+				" select *, 'EDEN' from " //
+						+ " ( ( " + queryStringModified + " ) " //
+						+ " EXCEPT ALL " //
+						+ " ( select * from " + evalViewName + " ) ) eden " //
+						+ " UNION ALL " //
+						+ " select *, 'DVA' from " //
+						+ " ( ( select * from " + evalViewName + " ) " //
+						+ " EXCEPT ALL " //
+						+ " ( " + queryStringModified + " ) ) dva ";
+		logger.debug("user {} issued evalQueryString for evaluation: {}", userName, evalQueryString);
+		return evalQueryString;
+	}
+
 	/**
 	 * @return < resultsEval, resultsErrors, evaluation result >
 	 */
@@ -94,18 +141,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 					connection.setSavepoint();
 					connection.setSchema(schema);
 
-					String queryStringManip = queryToRun.replace("now()", schema + ".now()");
-					queryStringManip = queryStringManip.replace("current_date", schema + ".now()");
-
-					String evalQueryString = "select *, 'EDEN' from ( ( " + queryStringManip
-							+ " ) except ( select * from " + evalViewName
-							+ " ) ) eden union select *, 'DVA' from ( ( select * from " + evalViewName + " ) except ( "
-							+ queryStringManip + " ) ) dva ";
-
-					logger.debug("user {} issued evalQueryString: {}", userName, evalQueryString);
+					String evalQueryString = prepareQueryStringForEval(queryToRun, schema, evalViewName, userName);
 
 					PreparedStatement pstmt = connection.prepareStatement(evalQueryString);
-					pstmt.setQueryTimeout(120);
+					pstmt.setQueryTimeout(10 * 60);
 					ResultSet rs = pstmt.executeQuery();
 					if (rs.next()) {
 						// Output is not correct
@@ -316,9 +355,9 @@ public class EvaluationServiceImpl implements EvaluationService {
 				tti, tip, tip.getSchemaSimple());
 		Triplet<List<String>, List<String>, Boolean> rsltsComplex = evalResultsIn(issuedByUserName, s.getSubmission(),
 				tti, tip, tip.getSchemaComplex());
-		logger.info("Reevaluation studentSubmitSolutionId Simple: {} reevaluated as {}", s.getStudentSubmitSolutionId(),
-				rsltsSimple.getThirdItem());
-		logger.info("Reevaluation studentSubmitSolutionId Complex: {} reevaluated as {}",
+		logger.info("Reevaluation Simple studentSubmitSolutionId: {} reevaluated as: {}",
+				s.getStudentSubmitSolutionId(), rsltsSimple.getThirdItem());
+		logger.info("Reevaluation Complex studentSubmitSolutionId: {} reevaluated as: {}",
 				s.getStudentSubmitSolutionId(), rsltsComplex.getThirdItem());
 		if (rsltsSimple.getThirdItem() == true) {
 			s.setEvaluationSimple(true);
@@ -476,21 +515,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 					connection.setSchema(schema);
 					statusCounter = 2;
 
-					String queryStringManip = queryToRun.replace("now()", schema + ".now()");
-					queryStringManip = queryStringManip.replace("current_date", schema + ".now()");
-
-//					String evalQueryString = "((" + queryStringManip + ") except (select * from " + evalViewName
-//							+ ")) union ((select * from " + evalViewName + ") except (" + queryStringManip + "))";
-
-					String evalQueryString = "select '<span class=\"inSubmission\">In Submission</span>' as WHERE, *   from ( ( "
-							+ queryStringManip + " ) except ( select * from " + evalViewName
-							+ " ) ) eden union select '<span class=\"inCorrectSolution\">In Correct Solution</span>' as WHERE, *  from ( ( select * from "
-							+ evalViewName + " ) except ( " + queryStringManip + " ) ) dva order by 1,2";
-
-					logger.debug("user {} issued evalQueryString: {}", userName, evalQueryString);
+					String evalQueryString = prepareQueryStringForViewing(queryToRun, schema, evalViewName, userName);
 
 					PreparedStatement pstmt = connection.prepareStatement(evalQueryString);
-					pstmt.setQueryTimeout(120);
+					pstmt.setQueryTimeout(10 * 60);
 					ResultSet rs = pstmt.executeQuery();
 					boolean isNextRow = rs.next();
 					int numColumns = rs.getMetaData().getColumnCount();
@@ -575,8 +603,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 		boolean isNextRow = rs.next();
 		int numColumns = rs.getMetaData().getColumnCount();
 
-		logger.debug("Executing Query {} {} {} ", submission.getStudentStartedTest().getStudent().getPerson().getUserName(), queryToRun,
-				numColumns);
+		logger.debug("Executing Query {} {} {} ",
+				submission.getStudentStartedTest().getStudent().getPerson().getUserName(), queryToRun, numColumns);
 
 		while (isNextRow) {
 			String[] o = new String[numColumns + 2];
