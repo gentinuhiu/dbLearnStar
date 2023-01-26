@@ -43,6 +43,7 @@ import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.slf4j.Logger;
 
+import dblearnstar.model.entities.Task;
 import dblearnstar.model.entities.TaskInTestInstance;
 import dblearnstar.model.entities.TaskIsOfType;
 import dblearnstar.model.entities.TestCollection;
@@ -76,6 +77,8 @@ public class ExamsAndTasksOverviewPage {
 	private SelectModelFactory selectModelFactory;
 	@Inject
 	private AjaxResponseRenderer ajaxResponseRenderer;
+	@Inject
+	private DigestService digestService;
 
 	@SessionState
 	@Property
@@ -92,6 +95,8 @@ public class ExamsAndTasksOverviewPage {
 
 	@InjectPage
 	private QueryTest queryTest;
+	@InjectPage
+	private SubmissionEvaluations submissionEvaluations;
 
 	@Property
 	private TestType testType;
@@ -112,8 +117,9 @@ public class ExamsAndTasksOverviewPage {
 
 	public void onActivate() {
 		studentId = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
-		if (testCollection == null)
+		if (testCollection == null) {
 			testCollection = getTestCollections().stream().findFirst().orElse(null);
+		}
 	}
 
 	public Date getCurrentTime() {
@@ -124,9 +130,6 @@ public class ExamsAndTasksOverviewPage {
 		return UsefulMethods.castList(TestType.class, genericService.getAll(TestType.class));
 	}
 
-	@Inject
-	private DigestService digestService;
-
 	public String getHashedTestInstanceId() {
 		return digestService.obfuscate(Long.toString(testInstance.getTestInstanceId()));
 	}
@@ -134,12 +137,7 @@ public class ExamsAndTasksOverviewPage {
 	/* selectTestCollection Form */
 
 	public List<TestCollection> getTestCollections() {
-		List<TestCollection> list = (UsefulMethods.castList(TestCollection.class,
-				genericService.getAll(TestCollection.class)))
-				.stream()
-				.filter(p -> (p.getTestInstances() != null && p.getTestInstances().size() > 0)
-						|| (p.getSubCollections() != null && p.getSubCollections().size() > 0))
-				.collect(Collectors.toList());
+		List<TestCollection> list = testManager.getTestCollectionsWithTestInstances();
 		ComparatorTestCollection c = new ComparatorTestCollection();
 		Collections.sort(list, c);
 		return list;
@@ -165,20 +163,23 @@ public class ExamsAndTasksOverviewPage {
 	public List<TestInstance> getTestInstances() {
 		List<TestInstance> list;
 		if (userInfo.isAdministrator()) {
-			list = testManager.getAllTestInstancesByTestType(testType.getTestTypeId());
+			if (testCollection == null) {
+				list = testManager.getAllTestInstancesByTestType(testType.getTestTypeId());
+			} else {
+				list = testManager.getAllTestInstancesByTestTypeAndCollection(testType.getTestTypeId(),
+						testCollection.getTestCollectionId());
+			}
 		} else if (userInfo.isStudent()) {
-			list = testManager.getTestInstancesForStudentByTestType(studentId, testType.getTestTypeId());
+			if (testCollection == null) {
+				list = testManager.getTestInstancesForStudentByTestType(studentId, testType.getTestTypeId());
+			} else {
+				list = testManager.getTestInstancesForStudentByTestTypeAndCollection(studentId,
+						testType.getTestTypeId(), testCollection.getTestCollectionId());
+			}
 		} else {
 			list = new ArrayList<TestInstance>();
 		}
-		if (testCollection == null) {
-			return list;
-		} else {
-			return list.stream()
-					.filter(ti -> ti.getTestCollection() != null
-							&& ti.getTestCollection().getTestCollectionId() == testCollection.getTestCollectionId())
-					.collect(Collectors.toList());
-		}
+		return list;
 	}
 
 	public Boolean isTaskInTestInstanceSolved() {
@@ -224,26 +225,26 @@ public class ExamsAndTasksOverviewPage {
 	}
 
 	public String getTranslateTestInstanceTitle() {
-		String translated = translationService.getTranslation("TestInstance", "title", testInstance.getTestInstanceId(),
-				persistentLocale.get().getLanguage().toLowerCase());
+		String translated = translationService.getTranslation(TestInstance.class.getSimpleName(), "title",
+				testInstance.getTestInstanceId(), persistentLocale.get().getLanguage().toLowerCase());
 		return (translated != null ? translated : testInstance.getTitle());
 	}
 
 	public String getTranslatedTestInstanceDescription() {
-		String translated = translationService.getTranslation("TestInstance", "description",
+		String translated = translationService.getTranslation(TestInstance.class.getSimpleName(), "description",
 				testInstance.getTestInstanceId(), persistentLocale.get().getLanguage().toLowerCase());
 		return (translated != null ? translated : testInstance.getDescription());
 	}
 
 	public String getTranslateTestTypeTitle() {
-		String translated = translationService.getTranslation("TestType", "title", testType.getTestTypeId(),
-				persistentLocale.get().getLanguage().toLowerCase());
+		String translated = translationService.getTranslation(TestType.class.getSimpleName(), "title",
+				testType.getTestTypeId(), persistentLocale.get().getLanguage().toLowerCase());
 		return (translated != null ? translated : testType.getTitle());
 	}
 
 	public String getTranslatedTaskInTestInstanceTaskTitle() {
-		String translated = translationService.getTranslation("Task", "title", taskInTestInstance.getTask().getTaskId(),
-				persistentLocale.get().getLanguage().toLowerCase());
+		String translated = translationService.getTranslation(Task.class.getSimpleName(), "title",
+				taskInTestInstance.getTask().getTaskId(), persistentLocale.get().getLanguage().toLowerCase());
 		return (translated != null ? translated : taskInTestInstance.getTask().getTitle());
 	}
 
@@ -275,9 +276,6 @@ public class ExamsAndTasksOverviewPage {
 			return "";
 		}
 	}
-
-	@InjectPage
-	private SubmissionEvaluations submissionEvaluations;
 
 	public Object onEvaluate(TestInstance ti) {
 		submissionEvaluations.onValueChangedFromSelectTestInstance(ti);

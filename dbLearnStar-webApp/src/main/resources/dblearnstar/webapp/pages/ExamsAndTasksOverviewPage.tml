@@ -19,102 +19,105 @@
 </div>
 
 <div t:type="zone" t:id="collectionZone" id="collectionZone">
+	<div t:type="if" t:test="testCollection">
+		<div t:type="loop" t:source="testTypes" t:value="testType"
+			class="testType">
 
-	<div t:type="loop" t:source="testTypes" t:value="testType"
-		class="testType">
+			<div t:type="if" t:test="testInstances">
 
-		<div t:type="if" t:test="testInstances">
+				<h2>${translateTestTypeTitle}</h2>
 
-			<h2>${translateTestTypeTitle}</h2>
+				<div class="mb-3" id="accordion" role="tablist"
+					aria-multiselectable="false">
 
-			<div class="mb-3" id="accordion" role="tablist"
-				aria-multiselectable="false">
+					<div class="card p-0 mb-2" t:type="loop" t:source="testInstances"
+						t:value="testInstance" id="ti${hashedTestInstanceId}">
 
-				<div class="card p-0 mb-2" t:type="loop" t:source="testInstances"
-					t:value="testInstance" id="ti${hashedTestInstanceId}">
-
-					<div class="card-header ${classTestIsNow} pt-2 pb-0" role="tab"
-						id="heading${hashedTestInstanceId}">
-						<div class="float-right text-right col-3 p-0 " t:type="if"
-							t:test="userInfo.instructor">
-							<a href="" class="btn btn-sm btn-secondary mr-3"
-								t:type="eventlink" t:id="evaluate" t:context="testInstance">Evaluation</a>
-							${message:openToAllStudents-label}: <a href=""
-								class="btn btn-sm p-0 ${ClassOpenToAllStudents}" t:type="eventlink"
-								t:id="toggleOpenToAll" t:context="testInstance"><span
-								t:type="booleanindicator"
-								t:value="testInstance.openToAllStudents" t:showCheckMark="true"
-								t:showNo="true" /></a><br />
-							${message:openForReviewByStudents-label}: <a href=""
-								class="btn btn-sm p-0 ${ClassOpenForReviewByStudents}" t:type="eventlink"
-								t:id="toggleOpenForReviewByStudents" t:context="testInstance"><span
-								t:type="booleanindicator"
-								t:value="testInstance.openForReviewByStudents"
-								t:showCheckMark="true" t:showNo="true" /></a><br />
-						</div>
-						<div class="col-9">
-							<a role="button" data-toggle="collapse" data-parent="#accordion"
-								href="#collapseTasks${hashedTestInstanceId}"
-								aria-expanded="true"
-								aria-controls="collapseTasks${hashedTestInstanceId}"
-								class="btn p-0 col-12 text-left"><h3>${translateTestInstanceTitle}</h3></a>
-						</div>
-					</div>
-
-					<div id="collapseTasks${hashedTestInstanceId}"
-						class="card-body p-3 collapse" role="tabpanel"
-						aria-labelledby="heading${hashedTestInstanceId}">
-
-						<div class="float-right">
-							<t:if t:test="testInstance.openForReviewByStudents">
-								<a href="" class="btn btn-outline-info" t:type="pagelink"
-									t:page="SolutionComparator" t:context="testInstance">
-									${message:solutionComparator-pagelink}</a>
-								<a href="" class="btn btn-outline-info" t:type="pagelink"
-									t:page="OpenDiscussions" t:context="testInstance">
-									${message:OpenDiscussions-pagelink}</a>
-							</t:if>
+						<div class="card-header ${classTestIsNow} pt-2 pb-0" role="tab"
+							id="heading${hashedTestInstanceId}">
+							<div class="float-right text-right col-3 p-0 " t:type="if"
+								t:test="userInfo.instructor">
+								<a href="" class="btn btn-sm btn-secondary mr-3"
+									t:type="eventlink" t:id="evaluate" t:context="testInstance">Evaluation</a>
+								${message:openToAllStudents-label}: <a href=""
+									class="btn btn-sm p-0 ${ClassOpenToAllStudents}"
+									t:type="eventlink" t:id="toggleOpenToAll"
+									t:context="testInstance"><span t:type="booleanindicator"
+									t:value="testInstance.openToAllStudents" t:showCheckMark="true"
+									t:showNo="true" /></a><br />
+								${message:openForReviewByStudents-label}: <a href=""
+									class="btn btn-sm p-0 ${ClassOpenForReviewByStudents}"
+									t:type="eventlink" t:id="toggleOpenForReviewByStudents"
+									t:context="testInstance"><span t:type="booleanindicator"
+									t:value="testInstance.openForReviewByStudents"
+									t:showCheckMark="true" t:showNo="true" /></a><br />
+							</div>
+							<div class="col-9">
+								<a role="button" data-toggle="collapse" data-parent="#accordion"
+									href="#collapseTasks${hashedTestInstanceId}"
+									aria-expanded="true"
+									aria-controls="collapseTasks${hashedTestInstanceId}"
+									class="btn p-0 col-12 text-left"><h3>${translateTestInstanceTitle}</h3></a>
+							</div>
 						</div>
 
-						<p>${message:scheduledFor-label}:
-							<span class="badge badge-pill badge-info">${testInstance.scheduledFor}</span>
-							- ${message:scheduledUntil-label}: <span
-								class="badge badge-pill badge-info">${testInstance.scheduledUntil}</span>
-						</p>
-						<p>
-							<t:outputraw t:value="translatedTestInstanceDescription" />
-						</p>
-						<table class="table table-hover table-bordered table-striped">
-							<thead>
-								<tr class="d-flex">
-									<th class="col-2">${message:task-label}</th>
-									<th class="col-1">${message:task-points-label}</th>
-									<th class="col-7">${message:description-label}</th>
-									<th class="col-2">${message:task-status-label}</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr class="d-flex taskElement" t:type="loop"
-									t:source="taskInTestInstances" t:value="taskInTestInstance">
-									<td class="col-2 taskTitleCell"><a
-										class="col-12 btn ${classBtnSolved} btn-sm" t:type="PageLink"
-										t:page="QueryTest" t:id="SolveTest"
-										t:context="taskInTestInstance">${translatedTaskInTestInstanceTaskTitle}</a>
-									</td>
-									<td class="col-1">${taskInTestInstance.points}</td>
-									<td class="col-7 taskContentCell"><p t:type="outputraw"
-											t:value="translateTaskDescription" /></td>
-									<td class="col-2">${message:numPersonsTriedToSolve-label}:
-										${numPersonsTriedToSolve} <br />
-										${message:numPersonsSuccessful-label}: ${numPersonsSuccessful}
-									</td>
-								</tr>
-							</tbody>
-						</table>
+						<div id="collapseTasks${hashedTestInstanceId}"
+							class="card-body p-3 collapse" role="tabpanel"
+							aria-labelledby="heading${hashedTestInstanceId}">
+
+							<div class="float-right">
+								<t:if t:test="testInstance.openForReviewByStudents">
+									<a href="" class="btn btn-outline-info" t:type="pagelink"
+										t:page="SolutionComparator" t:context="testInstance">
+										${message:solutionComparator-pagelink}</a>
+									<a href="" class="btn btn-outline-info" t:type="pagelink"
+										t:page="OpenDiscussions" t:context="testInstance">
+										${message:OpenDiscussions-pagelink}</a>
+								</t:if>
+							</div>
+
+							<p>${message:scheduledFor-label}:
+								<span class="badge badge-pill badge-info">${testInstance.scheduledFor}</span>
+								- ${message:scheduledUntil-label}: <span
+									class="badge badge-pill badge-info">${testInstance.scheduledUntil}</span>
+							</p>
+							<p>
+								<t:outputraw t:value="translatedTestInstanceDescription" />
+							</p>
+							<table class="table table-hover table-bordered table-striped">
+								<thead>
+									<tr class="d-flex">
+										<th class="col-2">${message:task-label}</th>
+										<th class="col-1">${message:task-points-label}</th>
+										<th class="col-7">${message:description-label}</th>
+										<th class="col-2">${message:task-status-label}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="d-flex taskElement" t:type="loop"
+										t:source="taskInTestInstances" t:value="taskInTestInstance">
+										<td class="col-2 taskTitleCell"><a
+											class="col-12 btn ${classBtnSolved} btn-sm" t:type="PageLink"
+											t:page="QueryTest" t:id="SolveTest"
+											t:context="taskInTestInstance">${translatedTaskInTestInstanceTaskTitle}</a>
+										</td>
+										<td class="col-1">${taskInTestInstance.points}</td>
+										<td class="col-7 taskContentCell"><p t:type="outputraw"
+												t:value="translateTaskDescription" /></td>
+										<td class="col-2">${message:numPersonsTriedToSolve-label}:
+											${numPersonsTriedToSolve} <br />
+											${message:numPersonsSuccessful-label}:
+											${numPersonsSuccessful}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
 </html>

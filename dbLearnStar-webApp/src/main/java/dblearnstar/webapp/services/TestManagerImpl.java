@@ -41,6 +41,7 @@ import dblearnstar.model.entities.StudentSubmitSolution;
 import dblearnstar.model.entities.Task;
 import dblearnstar.model.entities.TaskInTestInstance;
 import dblearnstar.model.entities.TaskIsOfType;
+import dblearnstar.model.entities.TestCollection;
 import dblearnstar.model.entities.TestInstance;
 
 public class TestManagerImpl implements TestManager {
@@ -95,15 +96,63 @@ public class TestManagerImpl implements TestManager {
 	}
 
 	@Override
+	public List<TestInstance> getTestInstancesForStudentByTestTypeAndCollection(long studentId, long testTypeId,
+			long testCollectionId) {
+		String query = """
+				from TestInstance ti
+				join t.testTemplate ttem
+				join ttem.testType tt
+				join t.testCollection tc
+				where
+					tt.testTypeId = :testTypeId and
+				    tc.testCollectionId = :testCollectionId and
+					(
+						ti.openToAllStudents=true or
+						ti in (
+							select ti2
+							from GroupMember gm
+							join gm.student s
+							join s.person p
+							join gm.group g
+							join g.groupFocusOnTests gft
+							join gft.testInstance ti2
+							where
+								s.studentId=:studentId and
+								now() between ti2.scheduledFor and ti2.scheduledUntil
+						)
+					)
+				order by t.title desc
+				""";
+		return UsefulMethods.castList(TestInstance.class,
+				getEntityManager().createQuery(query).setParameter("studentId", studentId)
+						.setParameter("testTypeId", testTypeId).setParameter("testCollectionId", testCollectionId)
+						.getResultList());
+	}
+
+	@Override
 	public List<TestInstance> getAllTestInstancesByTestType(long testTypeId) {
 		String query = """
 				from TestInstance t
 				where
 					t.testTemplate.testType.testTypeId = :testTypeId
-				order by t.title desc
+				order by t.ordering asc, t.title desc
 				""";
 		return UsefulMethods.castList(TestInstance.class,
 				getEntityManager().createQuery(query).setParameter("testTypeId", testTypeId).getResultList());
+	}
+
+	@Override
+	public List<TestInstance> getAllTestInstancesByTestTypeAndCollection(long testTypeId, long testCollectionId) {
+		String query = """
+				from TestInstance t
+				where
+					t.testTemplate.testType.testTypeId = :testTypeId and
+					t.testCollection.testCollectionId = :testCollectionId
+				order by t.ordering asc, t.title desc
+				""";
+		return UsefulMethods.castList(TestInstance.class,
+				getEntityManager().createQuery(query).setParameter("testTypeId", testTypeId)
+						.setParameter("testCollectionId", testCollectionId).getResultList());
 	}
 
 	@Override
@@ -460,6 +509,28 @@ public class TestManagerImpl implements TestManager {
 			return listTypes.get(0).getTaskType().getCodetype();
 		} else {
 			return "/";
+		}
+	}
+
+	@Override
+	public List<TestCollection> getTestCollectionsWithTestInstances() {
+		try {
+			// TestCollections that have TestInstances
+			List<TestCollection> list = UsefulMethods.castList(TestCollection.class, getEntityManager().createQuery("""
+					select distinct ti.testCollection
+					from TestInstance ti
+					""").getResultList());
+			// Add to them TestCollectionts that are Parents to another, or that have subCollections
+			List<TestCollection> listAdded = UsefulMethods.castList(TestCollection.class,
+					getEntityManager().createQuery("""
+							select distinct tc.parentCollection
+							from TestCollection tc
+							""").getResultList());
+			list.addAll(listAdded);
+			return list;
+		} catch (Exception e) {
+			logger.error("Error {}", e.getMessage());
+			return null;
 		}
 	}
 

@@ -29,6 +29,7 @@ import dblearnstar.model.entities.StudentStartedTest;
 import dblearnstar.model.entities.StudentSubmitSolution;
 import dblearnstar.model.entities.Task;
 import dblearnstar.model.entities.TaskInTestInstance;
+import dblearnstar.model.entities.TestCollection;
 import dblearnstar.model.entities.TestInstance;
 
 public interface TestManager {
@@ -37,11 +38,16 @@ public interface TestManager {
 
 	public List<TestInstance> getAllTestInstancesByTestType(long testTypeId);
 
+	public List<TestInstance> getAllTestInstancesByTestTypeAndCollection(long testTypeId, long testCollectionId);
+
 	public List<TestInstance> getAllCurrentlyAvailableTestInstancesByTestType(long testTypeId);
 
 	public List<TestInstance> getTestInstancesForStudent(long studentId);
 
 	public List<TestInstance> getTestInstancesForStudentByTestType(long studentId, long testTypeId);
+
+	public List<TestInstance> getTestInstancesForStudentByTestTypeAndCollection(long studentId, long testTypeId,
+			long testCollectionId);
 
 	public Boolean isTaskInTestInstanceSolvedByStudent(long taskInTestInstanceId, long studentId);
 
@@ -90,4 +96,6 @@ public interface TestManager {
 	public boolean accessToTaskInTestInstanceAllowed(Student student, TaskInTestInstance tti);
 
 	public String getCodeType(StudentSubmitSolution submittedSolution);
+
+	public List<TestCollection> getTestCollectionsWithTestInstances();
 }
