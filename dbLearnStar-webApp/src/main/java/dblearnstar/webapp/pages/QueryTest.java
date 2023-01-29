@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Import;
@@ -134,7 +135,7 @@ public class QueryTest {
 	private Zone currentTimeZone;
 
 	@Property
-	@Persist
+//	@Persist
 	private TaskInTestInstance taskInTestInstance;
 	@Property
 	@Persist
@@ -190,7 +191,7 @@ public class QueryTest {
 	@Property
 	private String oneHeader;
 
-	private long studentId;
+	private Long studentId;
 	private boolean toUpload;
 	private boolean toSubmitText;
 
@@ -278,40 +279,49 @@ public class QueryTest {
 		}
 	}
 
-	public void onActivate() {
-		logger.debug("onActivate: empty");
-		studentId = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
-	}
-
-	public Object onActivate(TaskInTestInstance tti) {
-		logger.debug("onActivate: {}", tti.getTaskInTestInstanceId());
-		taskInTestInstance = genericService.getByPK(TaskInTestInstance.class, tti.getTaskInTestInstanceId());
-		Student student = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
-
-		if (userInfo.isAdministrator() || testManager.accessToTaskInTestInstanceAllowed(student, tti)) {
-			studentId = student.getStudentId();
-			codeType = taskInTestInstance.getTask().getTaskIsOfTypes().get(0).getTaskType().getCodetype();
-
-			resultsErrors = null;
-			resultsSimple = null;
-
-			resultsEvaluation = null;
-			resultsHeadersSimple = null;
-			taskInTestInstance = genericService.getByPK(TaskInTestInstance.class,
-					taskInTestInstance.getTaskInTestInstanceId());
-			if (filterNotForEvalution == null) {
-				filterNotForEvalution = false;
-			}
-			recordActivity(ModelConstants.ActivityViewTask, "", "onActivity");
-			toUpload = false;
-			logger.debug("access allowed");
-			accessAllowed = true;
-			return null;
-		} else {
-			accessAllowed = false;
-			logger.error("Task not allowed: ttiId:{} username:{}", tti.getTaskInTestInstanceId(),
-					student.getPerson().getUserName());
+	public Object onActivate(EventContext eventContext) {
+		if (eventContext.getCount() > 1) {
 			return ExamsAndTasksOverviewPage.class;
+		} else if (eventContext.getCount() == 1) {
+			TaskInTestInstance tti = eventContext.get(TaskInTestInstance.class, 0);
+			if (tti == null) {
+				logger.error("tti is null, username:{}", userInfo.getUserName());
+				return ExamsAndTasksOverviewPage.class;
+			} else {
+				logger.info("onActivate: {}", tti.getTaskInTestInstanceId());
+				taskInTestInstance = genericService.getByPK(TaskInTestInstance.class, tti.getTaskInTestInstanceId());
+				Student student = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
+				studentId = student.getStudentId();
+
+				if (userInfo.isAdministrator() || testManager.accessToTaskInTestInstanceAllowed(student, tti)) {
+					studentId = student.getStudentId();
+					codeType = taskInTestInstance.getTask().getTaskIsOfTypes().get(0).getTaskType().getCodetype();
+
+					resultsErrors = null;
+					resultsSimple = null;
+
+					resultsEvaluation = null;
+					resultsHeadersSimple = null;
+					taskInTestInstance = genericService.getByPK(TaskInTestInstance.class,
+							taskInTestInstance.getTaskInTestInstanceId());
+					if (filterNotForEvalution == null) {
+						filterNotForEvalution = false;
+					}
+					recordActivity(ModelConstants.ActivityViewTask, "", "onActivity");
+					toUpload = false;
+					logger.debug("access allowed");
+					accessAllowed = true;
+					return null;
+				} else {
+					accessAllowed = false;
+					logger.error("Task not allowed: ttiId:{} username:{}", tti.getTaskInTestInstanceId(),
+							userInfo.getUserName());
+					return ExamsAndTasksOverviewPage.class;
+				}
+			}
+		} else {
+			logger.error("Task not selected username:{}", userInfo.getUserName());
+			return ExamsAndTasksOverviewPage.class; // no tti selected
 		}
 	}
 
@@ -330,7 +340,7 @@ public class QueryTest {
 
 	@CommitAfter
 	public void recordActivity(String type, String payload, String issuer) {
-		logger.debug("recordActivity RECEIVED: {},{},{}", type, issuer, payload);
+		logger.info("recordActivity RECEIVED: {},{},{}", type, issuer, payload);
 		Student student = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
 		testManager.recordActivityInTask(student.getPerson(), taskInTestInstance, type, payload);
 	}
@@ -342,7 +352,8 @@ public class QueryTest {
 						.collect(Collectors.toList());
 				if (lines != null && lines.size() > 0) {
 					String s = lines.get(0);
-					return s.substring(s.indexOf("Position:") + 10).split(" ")[0];
+					String posit = s.substring(s.indexOf("Position:") + 10).split(" ")[0];
+					return posit;
 				} else {
 					return "0";
 				}
