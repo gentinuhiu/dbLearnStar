@@ -59,7 +59,7 @@ public class ModalBox implements ClientElement {
 
 	void setupRender() {
 		JSONObject json = new JSONObject();
-		json.put("keyboard", true);
+		json.put("keyboard", false);
 		json.put("backdrop", "static");
 		json.put("focus", true);
 		javaScriptSupport.require("ModalBox").invoke("activate").with(componentClientId, json);
