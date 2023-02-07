@@ -139,6 +139,7 @@
 							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.userName}
 							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.lastName}
 							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.firstName}</label>
+							<a href="" t:type="eventlink" t:id="copySolutionToFeedback" class="float-right btn btn-sm btn-danger p-0 pl-1 pr-1">↦</a>
 						<div class="card-body collapse" id="collapsedDescription">
 							<t:outputraw t:value="translateTaskDescription"></t:outputraw>
 						</div>

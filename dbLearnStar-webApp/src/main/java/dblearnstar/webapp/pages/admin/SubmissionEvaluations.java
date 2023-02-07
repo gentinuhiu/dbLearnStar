@@ -579,12 +579,14 @@ public class SubmissionEvaluations {
 	}
 
 	public boolean isAnyResults() {
-		return (resultsEvaluation1 != null )
-				|| (resultsEvaluation2 != null );
+		return (resultsEvaluation1 != null) || (resultsEvaluation2 != null);
 	}
 
 	public boolean isAnyStatus() {
 		return isAnyErrors() || isAnyResults();
 	}
 
+	void onCopySolutionToFeedback() {
+		editedAssessment.setFeedback(getFormattedSolution());
+	}
 }
