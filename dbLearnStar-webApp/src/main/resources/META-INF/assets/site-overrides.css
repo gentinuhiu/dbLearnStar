@@ -1,9 +1,10 @@
 :root { 
 	--ck-z-default: 100; 
 	--ck-z-modal: calc(var(--ck-z-default) + 999);
-	--color-incorrect-wrong: #900000; 	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
-	--color-incorrect: #c71c2c; 	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
-	--color-correct: #74b979; /* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */ 
+	--color-incorrect-wrong: #600f16ff; 
+	--color-incorrect: #e1553eff; 	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
+	--color-correct: #74b979ff; /* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */ 
+	--color-correct-better: #484837ff; /* https://www.w3schools.com/colors/colors_british.asp - Olive gree */ 
 	--color-noevaluation: #white; 
 	--color-exception: #404040;
 }
