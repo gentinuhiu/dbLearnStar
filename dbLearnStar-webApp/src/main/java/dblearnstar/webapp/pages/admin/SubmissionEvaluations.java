@@ -52,6 +52,7 @@ import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import com.github.vertical_blank.sqlformatter.core.FormatConfig;
 import com.github.vertical_blank.sqlformatter.languages.Dialect;
 
+import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentSubmitSolution;
@@ -155,6 +156,9 @@ public class SubmissionEvaluations {
 	private Boolean hideClientInfo;
 	@Persist
 	@Property
+	private Boolean hideNames;
+	@Persist
+	@Property
 	SolutionAssessment editedAssessment;
 	@Persist
 	@Property
@@ -200,6 +204,9 @@ public class SubmissionEvaluations {
 		}
 		if (hideClientInfo == null) {
 			hideClientInfo = true;
+		}
+		if (hideNames == null) {
+			hideNames = true;
 		}
 		if (filterStudent != null) {
 			filterStudent = genericService.getByPK(Student.class, filterStudent.getStudentId());
@@ -309,7 +316,7 @@ public class SubmissionEvaluations {
 	}
 
 	public SelectModel getSelectStudentsModel() {
-		return new StudentSelectModel(getAllStudents());
+		return new StudentSelectModel(getAllStudents(), hideNames);
 	}
 
 	public SelectModel getSelectTaskInTestInstanceModel() {
@@ -351,7 +358,11 @@ public class SubmissionEvaluations {
 	}
 
 	public String getSubmittedByNameWithId() {
-		return personManager.getPersonFullNameWithId(submission.getStudentStartedTest().getStudent().getPerson());
+		if (hideNames != null && hideNames) {
+			return "[" + submission.getStudentStartedTest().getStudent().getPerson().getUserName() + "]";
+		} else {
+			return personManager.getPersonFullNameWithId(submission.getStudentStartedTest().getStudent().getPerson());
+		}
 	}
 
 	private void clearResultsAndErrors() {
@@ -539,7 +550,7 @@ public class SubmissionEvaluations {
 		if (isEditedAssessmentTaskSQL() && prettyFormat) {
 			return SqlFormatter.of(Dialect.PostgreSql)
 					.format(editedAssessment.getStudentSubmitSolution().getSubmission(), FormatConfig.builder()
-							.indent("  ").uppercase(true).linesBetweenQueries(2).maxColumnLength(100).build());
+							.indent("   ").uppercase(true).linesBetweenQueries(2).maxColumnLength(100).build());
 		} else {
 			return editedAssessment.getStudentSubmitSolution().getSubmission();
 		}
@@ -588,5 +599,15 @@ public class SubmissionEvaluations {
 
 	void onCopySolutionToFeedback() {
 		editedAssessment.setFeedback(getFormattedSolution());
+	}
+
+	public String getEditedAssessmentSubmitterName() {
+		Person p = editedAssessment.getStudentSubmitSolution().getStudentStartedTest().getStudent().getPerson();
+		String name = " [" + p.getUserName() + "]";
+		if (hideNames != null && hideNames) {
+		} else {
+			name = p.getLastName() + " " + p.getFirstName() + name;
+		}
+		return name;
 	}
 }

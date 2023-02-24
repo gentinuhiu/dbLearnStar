@@ -136,15 +136,17 @@
 					<div class="form-group col-6  ${classSQLsolution}" t:type="zone"
 						t:id="zSolution" id="zSolution">
 						<label for="solution">${message:submittedBy-label}:
-							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.userName}
-							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.lastName}
-							${editedAssessment.studentSubmitSolution?.studentStartedTest.student.person.firstName}</label>
-							<a href="" t:type="eventlink" t:id="copySolutionToFeedback" class="float-right btn btn-sm btn-danger p-0 pl-1 pr-1">↦</a>
+							${editedAssessmentSubmitterName}</label>
+						<a href="" t:type="eventlink" t:id="copySolutionToFeedback"
+							class="float-right btn btn-sm btn-danger p-0 pl-1 pr-1">↦</a>
 						<div class="card-body collapse" id="collapsedDescription">
 							<t:outputraw t:value="translateTaskDescription"></t:outputraw>
 						</div>
-						<div class="pre-scrollable modalSubmission" style="min-height:30rem;"><pre><t:outputraw t:value="formattedSolution"></t:outputraw></pre></div>
- 
+						<div class="pre-scrollable modalSubmission">
+							<pre><t:outputraw t:value="formattedSolution"></t:outputraw>
+							</pre>
+						</div>
+
 
 					</div>
 					<div class="form-group col-6 feedback">
@@ -155,28 +157,29 @@
 					</div>
 				</div>
 				<t:errors />
-				<div class="form-row   align-items-center">
-					<div class="form-group col-3">
-						<label t:type="label" t:for="passed" class="form-check-label">Passed</label>
-						<input t:type="checkbox" t:id="passed"
-							t:value="editedAssessment.passed" class="form-control" />
-					</div>
-					<div class="form-group col-3">
+				<div class="form-row form-inline">
+					<div class="form-group mr-2">
 						<label t:type="label" t:for="type"></label> <input
 							t:type="textfield" t:id="type" t:value="editedAssessment.type"
-							class="form-control"></input>
+							class="form-control ml-1"></input>
 					</div>
-					<div class="form-group col-3">
+					<div class="form-group mr-2">
 						<label t:type="label" t:for="grade"></label> <input
-							t:type="textfield"
-							data-translation-message="You must provide a numeric value for the Grade."
-							data-translation="numeric" data-validation="true" t:id="grade"
-							t:value="editedAssessment.grade" class="form-control numeric"></input>
+							t:type="textfield" t:id="grade" t:value="editedAssessment.grade"
+							class="form-control ml-1"></input>
 					</div>
-					<div class="col-auto">
+					<div class="form-group mr-2">
+						<div class="form-check">
+							<label t:type="label" t:for="passed" class="form-check-label"></label>
+							<input t:type="checkbox" t:id="passed"
+								t:value="editedAssessment.passed" class="form-check-input ml-3"></input>
+						</div>
+					</div>
+					<div class="form-group col-2 ml-3">
 						<button type="submit" class="btn btn-primary" value="OK">OK</button>
 						<a type="button" role="button" href="" t:type="actionlink"
-							t:id="cancelFormEditor" class="btn btn-secondary">Cancel </a>
+							t:id="cancelFormEditor" class="btn btn-secondary ml-1">Cancel
+						</a>
 					</div>
 				</div>
 			</form>
@@ -229,32 +232,37 @@
 				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyCorrect" onclick="this.form.submit();"
 						class="form-check-input" />
-					<label t:type="label" for="onlyCorrect" class="form-check-label"></label><br />
+					<label t:type="label" for="onlyCorrect" class="form-check-label"></label>
 				</div>
 				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyLast" onclick="this.form.submit();"
 						class="form-check-input" />
-					<label t:type="label" for="onlyLast" class="form-check-label"></label><br />
+					<label t:type="label" for="onlyLast" class="form-check-label"></label>
 				</div>
 				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyAssessed" onclick="this.form.submit();"
 						class="form-check-input" />
-					<label t:type="label" for="onlyAssessed" class="form-check-label"></label><br />
+					<label t:type="label" for="onlyAssessed" class="form-check-label"></label>
 				</div>
 				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyUnAssessed" onclick="this.form.submit();"
 						class="form-check-input" />
-					<label t:type="label" for="onlyUnAssessed" class="form-check-label"></label><br />
+					<label t:type="label" for="onlyUnAssessed" class="form-check-label"></label>
 				</div>
 				<div class="form-group mr-3 ml-3">
 					<t:checkbox t:id="onlyDateOfExam" onclick="this.form.submit();"
 						class="form-check-input" />
-					<label t:type="label" for="onlyDateOfExam" class="form-check-label"></label><br />
+					<label t:type="label" for="onlyDateOfExam" class="form-check-label"></label>
 				</div>
 				<div class="form-group mr-3 ml-4">
 					<t:checkbox t:id="hideClientInfo" onclick="this.form.submit();"
 						class="form-check-input" />
-					<label t:type="label" for="hideClientInfo" class="form-check-label"></label><br />
+					<label t:type="label" for="hideClientInfo" class="form-check-label"></label>
+				</div>
+				<div class="form-group mr-3 ml-4">
+					<t:checkbox t:id="hideNames" onclick="this.form.submit();"
+						class="form-check-input" />
+					<label t:type="label" for="hideNames" class="form-check-label"></label>
 				</div>
 			</div>
 			<t:errors />
@@ -274,6 +282,12 @@
 				t:source="allSubmissions" t:row="submission" t:model="modelSSS"
 				t:rowsperpage="50" t:rowClass="${evaluationClass}"
 				class="table table-sm table-bordered">
+				<p:submittedByCell>
+					${submittedByNameWithId}<br />
+					<a href="" t:type="actionlink" t:id="ShowUserActivities"
+						t:context="submission" t:zone="zSelectStudents" role="button"
+						class="btn btn-sm btn-secondary">In Focus</a>
+				</p:submittedByCell>
 				<p:submissionCell>
 					<t:if t:test="SQL">
 						<t:code t:additionalClass="literal:submittedCode"
@@ -293,12 +307,6 @@
 				<p:clientInfoCell>
 					<t:code t:value="submission.clientInfo"></t:code>
 				</p:clientInfoCell>
-				<p:submittedByCell>
-				${submittedByNameWithId}<br />
-					<a href="" t:type="actionlink" t:id="ShowUserActivities"
-						t:context="submission" t:zone="zSelectStudents" role="button"
-						class="btn btn-sm btn-secondary">In Focus</a>
-				</p:submittedByCell>
 				<p:notForEvaluationCell>
 					<t:booleanindicator t:value="submission?.notForEvaluation"
 						showCheckMark="true" />
