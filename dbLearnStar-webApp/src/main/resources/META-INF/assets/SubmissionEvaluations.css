@@ -53,6 +53,9 @@ code p {
 	max-height: 10em !important;
 	background: var(--main-bg-color-accent) !important;
 	padding: 0.5em !important;
+	line-height: 100% !important;
+	min-height: 28rem;
+	font-size:90%; 
 }
 
 pre#kodot {
@@ -197,4 +200,12 @@ table tbody tr.exception {
 .actions {
 	white-space: nowrap; 
 	background:var(--main-bg-color2);
+}
+
+#zModal input[type="checkbox"] {
+  transform:scale(3, 3);
+}
+
+#zModal #type,#grade {
+  width: 12em;
 }

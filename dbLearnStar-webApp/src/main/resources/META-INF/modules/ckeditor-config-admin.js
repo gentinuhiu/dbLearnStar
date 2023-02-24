@@ -64,7 +64,8 @@ define(["jquery", "ckeditor-jquery"], function($) {
 				],
 				removeButtons: 'Anchor,Strike,blockquote',
 				contentsCss: [spec.csspath],
-				baseFloatZIndex: 40000
+				baseFloatZIndex: 40000,
+				height: '22rem'
 			});
 	};
 	return init;
