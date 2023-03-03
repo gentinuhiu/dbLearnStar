@@ -33,6 +33,7 @@ import dblearnstar.model.entities.Student;
 
 public class StudentSelectModel extends AbstractSelectModel {
 	private List<Student> students;
+	private Boolean hideNames;
 
 	public StudentSelectModel(List<Student> students) {
 		if (students == null) {
@@ -40,6 +41,16 @@ public class StudentSelectModel extends AbstractSelectModel {
 		} else {
 			this.students = students;
 		}
+		this.hideNames = false;
+	}
+
+	public StudentSelectModel(List<Student> students, Boolean hideNames) {
+		if (students == null) {
+			this.students = new ArrayList<Student>();
+		} else {
+			this.students = students;
+		}
+		this.hideNames = hideNames;
 	}
 
 	@Override
@@ -52,7 +63,11 @@ public class StudentSelectModel extends AbstractSelectModel {
 		List<OptionModel> options = new ArrayList<OptionModel>();
 		for (Student student : students) {
 			Person p = student.getPerson();
-			String name = p.getLastName() + " " + p.getFirstName() + " [" + p.getUserName() + "]";
+			String name = " [" + p.getUserName() + "]";
+			if (hideNames != null && hideNames) {
+			} else {
+				name = p.getLastName() + " " + p.getFirstName() + name;
+			}
 			options.add(new OptionModelImpl(name, student));
 		}
 		return options;
