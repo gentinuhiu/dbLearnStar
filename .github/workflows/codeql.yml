@@ -75,8 +75,8 @@ jobs:
         echo "Build Application"
         mvn -f dbLearnStar-model/ install
         mvn -f dbLearnStar-webApp/ clean package
-
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
+

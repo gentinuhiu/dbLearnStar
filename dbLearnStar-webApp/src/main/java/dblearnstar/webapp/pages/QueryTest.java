@@ -340,7 +340,7 @@ public class QueryTest {
 
 	@CommitAfter
 	public void recordActivity(String type, String payload, String issuer) {
-		logger.info("recordActivity RECEIVED: {},{},{}", type, issuer, payload);
+		logger.debug("recordActivity RECEIVED: {},{},{}", type, issuer, payload);
 		Student student = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
 		testManager.recordActivityInTask(student.getPerson(), taskInTestInstance, type, payload);
 	}
@@ -637,7 +637,7 @@ public class QueryTest {
 
 	@CommitAfter
 	public void onSuccess() {
-		logger.info("onSuccess");
+		logger.debug("onSuccess");
 		if (toUpload) {
 			logger.info("Processing upload");
 			startTestIfNotStarted();
@@ -650,7 +650,7 @@ public class QueryTest {
 					AppConfig.getString("date.upload.submission.format"));
 			String emde5 = "";
 			try {
-				MessageDigest md = MessageDigest.getInstance("MD5");
+				MessageDigest md = MessageDigest.getInstance("SHA-1");
 				md.update(file.getStream().readAllBytes());
 				byte[] hashBytes = md.digest();
 				StringBuilder sb = new StringBuilder();
