@@ -69,16 +69,18 @@
 						</t:if>
 					</div></li>
 			</ul>
-			<!-- /.navbar-collapse -->
 		</div>
 	</nav>
+
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
 				<t:alerts />
 			</div>
 		</div>
+
 		<t:body />
+
 		<hr />
 		<footer>
 			<p>&copy;${message:copyrightYear} - ${message:copyrightHolder}</p>
