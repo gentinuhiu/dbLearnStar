@@ -79,24 +79,26 @@ public class Reevaluation {
 		evaluationService.processSolution(userInfo.getUserName(), s);
 	}
 
+	private void processListOfSubmissions(List<StudentSubmitSolution> list) {
+		list.forEach((studentSubmitSolution) -> {
+			try {
+				processSolution(studentSubmitSolution);
+			} catch (Exception e) {
+				logger.error("Fail evaluation for sssId: {}", studentSubmitSolution.getStudentSubmitSolutionId());
+			}
+		});
+	}
+
 	public void onActionFromReEvalTest(TestInstance selectedTestInstance) {
 		List<StudentSubmitSolution> list = evaluationService
 				.getAllSolutionsForEvalutionFromTestInstance(selectedTestInstance);
-		for (StudentSubmitSolution s : list) {
-			try {
-				processSolution(s);
-			} catch (Exception e) {
-				logger.error("Fail evaluation for sssId: {}", s.getStudentSubmitSolutionId());
-			}
-		}
+		processListOfSubmissions(list);
 		logger.info("Finished reEvalTest and processed {} entries", list.size());
 	}
 
 	public void onActionFromReEvalAll() {
 		List<StudentSubmitSolution> list = evaluationService.getAllSolutionsForEvaluation();
-		for (StudentSubmitSolution s : list) {
-			processSolution(s);
-		}
+		processListOfSubmissions(list);
 		logger.info("Finished reEvalAll and processed {} entries", list.size());
 	}
 
