@@ -136,14 +136,15 @@
 					<div class="form-group col-6  ${classSQLsolution}" t:type="zone"
 						t:id="zSolution" id="zSolution">
 						<label for="solution">${message:submittedBy-label}:
-							${editedAssessmentSubmitterName}</label>
-						<a href="" t:type="eventlink" t:id="copySolutionToFeedback"
+							${editedAssessmentSubmitterName}</label> <a href="" t:type="eventlink"
+							t:id="copySolutionToFeedback"
 							class="float-right btn btn-sm btn-danger p-0 pl-1 pr-1">↦</a>
 						<div class="card-body collapse" id="collapsedDescription">
 							<t:outputraw t:value="translateTaskDescription"></t:outputraw>
 						</div>
 						<div class="pre-scrollable modalSubmission">
-							<pre><t:outputraw t:value="formattedSolution"></t:outputraw>
+							<pre>
+								<t:outputraw t:value="formattedSolution"></t:outputraw>
 							</pre>
 						</div>
 
@@ -362,6 +363,10 @@
 								t:type="svgicon" t:path="x" />${message:assessmentComment-incorrect}</a>
 						</p:else>
 					</div>
+					<a href="" t:type="pagelink" t:id="viewActivities"
+						t:context="[submission.studentStartedTest.student.person,submission.taskInTestInstance]"
+						t:page="instructor/ActivityMonitor" class="btn btn-sm btn-info"><img
+						t:type="svgicon" t:path="info" />${message:instructor/activityMonitor-pagelink}</a>
 				</p:assessmentCell>
 				<p:empty>
 					<div>${message:no-data-label}</div>

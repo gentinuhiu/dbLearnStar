@@ -22,10 +22,15 @@ package dblearnstar.webapp.services;
 
 import java.util.List;
 
+import dblearnstar.model.entities.ActivityInTask;
 import dblearnstar.model.entities.Person;
+import dblearnstar.model.entities.TaskInTestInstance;
 
 public interface ActivityDao {
 
 	List<Person> activePersonsInInterval(int seconds);
+
+	List<ActivityInTask> getActivitiesInTaskForPerson(Person selectedPerson,
+			TaskInTestInstance selectedTaskInTestInstance);
 
 }

@@ -1,0 +1,26 @@
+<html t:type="layout"
+	t:title="message:instructor/activityMonitor-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<h1>${message:instructor/activityMonitor-pagelink}</h1>
+
+<div class="card card-body bg-light mb-3">
+	<form class="form form-inline" t:type="form">
+		<label t:type="label" t:for="filterType"></label> <input
+			t:type="textfield" t:id="filterType" />
+	</form>
+</div>
+
+<table class="table table-sm table-striped table-bordered table-hover"
+	t:type="grid" t:source="activitiesInTaskForPerson"
+	t:row="activityInTask" t:add="hashCode" t:rowsperpage="100">
+	<p:whenOccuredCell>
+		<t:output format="literal: dd.MM.yyyy HH:mm:ss.SSS"
+			value="activityInTask.whenOccured" />
+	</p:whenOccuredCell>
+	<p:hashCodeCell>
+	${hash}
+	</p:hashCodeCell>
+</table>
+</html>

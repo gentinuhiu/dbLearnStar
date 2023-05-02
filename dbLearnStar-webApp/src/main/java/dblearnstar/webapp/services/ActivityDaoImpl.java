@@ -29,13 +29,19 @@ import javax.persistence.Query;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.hibernate.Session;
+import org.slf4j.Logger;
 
+import dblearnstar.model.entities.ActivityInTask;
 import dblearnstar.model.entities.Person;
+import dblearnstar.model.entities.TaskInTestInstance;
 
 public class ActivityDaoImpl implements ActivityDao {
 
 	@Inject
 	private Session session;
+
+	@Inject
+	private Logger logger;
 
 	private Session getEntityManager() {
 		return session.getSession();
@@ -51,6 +57,21 @@ public class ActivityDaoImpl implements ActivityDao {
 		q.setParameter("filterTime",
 				Date.from(LocalDateTime.now().minusSeconds(seconds).atZone(ZoneId.systemDefault()).toInstant()));
 		return UsefulMethods.castList(Person.class, q.getResultList());
+	}
+
+	@Override
+	public List<ActivityInTask> getActivitiesInTaskForPerson(Person p, TaskInTestInstance tti) {
+		Query q = getEntityManager().createQuery("""
+				select ait
+				from ActivityInTask ait 
+				join ait.person p 
+				join ait.taskInTestInstance tti
+				where p.personId=:personId and tti.taskInTestInstanceId=:taskInTestInstanceId
+				order by ait.whenOccured desc
+				""");
+		q.setParameter("personId", p.getPersonId());
+		q.setParameter("taskInTestInstanceId", tti.getTaskInTestInstanceId());
+		return UsefulMethods.castList(ActivityInTask.class, q.getResultList());
 	}
 
 }

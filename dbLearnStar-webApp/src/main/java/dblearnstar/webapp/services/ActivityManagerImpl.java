@@ -24,7 +24,9 @@ import java.util.List;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
 
+import dblearnstar.model.entities.ActivityInTask;
 import dblearnstar.model.entities.Person;
+import dblearnstar.model.entities.TaskInTestInstance;
 
 public class ActivityManagerImpl implements ActivityManager {
 
@@ -34,6 +36,12 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	public List<Person> activePersonsInInterval(int seconds) {
 		return activityDao.activePersonsInInterval(seconds);
+	}
+
+	@Override
+	public List<ActivityInTask> getActivitiesInTaskForPerson(Person selectedPerson,
+			TaskInTestInstance selectedTaskInTestInstance) {
+		return activityDao.getActivitiesInTaskForPerson(selectedPerson, selectedTaskInTestInstance);
 	}
 
 }
