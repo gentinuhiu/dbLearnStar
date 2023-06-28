@@ -59,7 +59,7 @@ public class AssessmentDiscussion implements java.io.Serializable {
 		this.type = type;
 	}
 
-	@Column(name = "message", nullable = false, length = 10000)
+	@Column(name = "message", nullable = false, length = 10000000)
 	public String getMessage() {
 		return this.message;
 	}
