@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentSubmitSolution;
 import dblearnstar.model.entities.TaskInTestInstance;
@@ -66,5 +67,7 @@ public interface EvaluationService {
 
 	public Triplet<List<String[]>, List<String>, List<String>> getDDLEvaluationDataFromStudentDatabases(
 			List<StudentSubmitSolution> submissions);
+
+	public List<SolutionAssessment> getSolutionAssessmentsWithDiscussionForTestInstance(long testInstanceId);
 
 }

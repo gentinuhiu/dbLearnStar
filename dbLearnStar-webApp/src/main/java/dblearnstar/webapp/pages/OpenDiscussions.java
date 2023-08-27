@@ -42,6 +42,7 @@ import dblearnstar.model.model.ComparatorTestInstance;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.annotations.StudentPage;
+import dblearnstar.webapp.services.EvaluationService;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.PersonManager;
 import dblearnstar.webapp.services.TestManager;
@@ -64,7 +65,11 @@ public class OpenDiscussions {
 	@Inject
 	private TestManager testManager;
 	@Inject
-	private PersonManager pm;
+	private PersonManager personManager;
+	@Inject
+	private EvaluationService evaluationService;
+
+
 	@Inject
 	private AjaxResponseRenderer ajaxResponseRenderer;
 	@InjectComponent
@@ -87,13 +92,8 @@ public class OpenDiscussions {
 	}
 
 	public List<SolutionAssessment> getSolutionAssessmentsWithDiscussion() {
-		return ((List<SolutionAssessment>) UsefulMethods.castList(SolutionAssessment.class,
-				genericService.getAll(SolutionAssessment.class)))
-				.stream()
-				.filter(p -> p.getAssessmentDiscussions().size() > 0
-						&& p.getStudentSubmitSolution().getStudentStartedTest().getTestInstance()
-								.getTestInstanceId() == selectedTestInstance.getTestInstanceId())
-				.collect(Collectors.toList());
+		return evaluationService
+				.getSolutionAssessmentsWithDiscussionForTestInstance(selectedTestInstance.getTestInstanceId());
 	}
 
 	public List<TestInstance> getTestInstances() {
@@ -107,7 +107,7 @@ public class OpenDiscussions {
 			Collections.sort(tilist, c);
 			return tilist;
 		} else if (userInfo.isStudent()) {
-			long studentId = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
+			long studentId = personManager.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
 			List<AssessmentDiscussion> listAD = UsefulMethods.castList(AssessmentDiscussion.class,
 					genericService.getAll(AssessmentDiscussion.class));
 			List<TestInstance> tilist = listAD.stream().map(
@@ -132,11 +132,10 @@ public class OpenDiscussions {
 		ajaxResponseRenderer.addRender(zTestInstance);
 	}
 
-	@Inject
-	private PersonManager personManager;
-
 	public boolean answered(AssessmentDiscussion ad) {
+		logger.debug("   ad = {} {}", ad.getAssessmentDiscussionId(), ad.getPerson().getUserName());
 		if (ad.getReplies() != null && ad.getReplies().size() > 0) {
+			logger.debug("      has replies");
 			boolean allAnswered = true;
 			for (AssessmentDiscussion i : ad.getReplies()) {
 				if (!answered(i)) {
@@ -145,12 +144,14 @@ public class OpenDiscussions {
 			}
 			return allAnswered;
 		} else {
+			logger.info("      no replies");
 			return personManager.isInstructor(ad.getPerson());
 		}
 	}
 
 	public boolean isAnsweredByInstructor() {
 		boolean allAnswered = true;
+		logger.debug("sa = {}", runningSolutionAssessment.getSolutionAssessmentId());
 		for (AssessmentDiscussion ad : runningSolutionAssessment.getAssessmentDiscussions().stream()
 				.filter(p -> p.getReplyTo() == null).toList()) {
 			allAnswered = allAnswered && answered(ad);

@@ -44,6 +44,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 
+import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentSubmitSolution;
 import dblearnstar.model.entities.TaskInTestInstance;
@@ -900,6 +901,20 @@ public class EvaluationServiceImpl implements EvaluationService {
 
 		return new Triplet<List<String[]>, List<String>, List<String>>(ddlEvaluationData, resultsHeadersSimple,
 				resultsDbConnErrors);
+	}
+
+	@Override
+	public List<SolutionAssessment> getSolutionAssessmentsWithDiscussionForTestInstance(long testInstanceId) {
+		return UsefulMethods.castList(SolutionAssessment.class,
+				getEntityManager()
+						.createQuery(
+								"""
+										select distinct ad.solutionEvaluation
+										from AssessmentDiscussion ad
+										where ad.solutionEvaluation.studentSubmitSolution.studentStartedTest.testInstance.testInstanceId=:testInstanceId
+										order by ad.solutionEvaluation.evaluatedOn
+														""")
+						.setParameter("testInstanceId", testInstanceId).getResultList());
 	}
 
 }
