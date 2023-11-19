@@ -53,49 +53,42 @@ public class AppConfiguration {
 	public ServletContextInitializer initializer() {
 		return new ServletContextInitializer() {
 			@Override
-			public void onStartup(ServletContext servletContext) throws ServletException {
-				servletContext.setInitParameter("tapestry.app-package", "dblearnstar.webapp");
-				servletContext.setInitParameter("tapestry.development-modules",
-						"dblearnstar.webapp.services.DevelopmentModule");
-				servletContext.setInitParameter("tapestry.qa-modules", "dblearnstar.webapp.services.QaModule");
+			public void onStartup(ServletContext ctx) throws ServletException {
+				// Tapestry init parameters
+				ctx.setInitParameter("tapestry.app-package", "dblearnstar.webapp");
+				ctx.setInitParameter("tapestry.development-modules", "dblearnstar.webapp.services.DevelopmentModule");
+				ctx.setInitParameter("tapestry.qa-modules", "dblearnstar.webapp.services.QaModule");
 
-				servletContext.setInitParameter("artifactParameterName", "ticket");
+				ctx.setInitParameter("artifactParameterName", "ticket");
 
-				servletContext.setInitParameter("casServerLogoutUrl",
-						AppConfig.getString("cas.server") + "/cas/logout");
+				// Apereo CAS init parameters
+				ctx.setInitParameter("casServerLogoutUrl", AppConfig.getString("cas.server") + "/cas/logout");
+				ctx.setInitParameter("casServerLoginUrl", AppConfig.getString("cas.server") + "/cas/login");
+				ctx.setInitParameter("casServerUrlPrefix", AppConfig.getString("cas.server") + "/cas");
+				ctx.setInitParameter("service", AppConfig.getString("app.server") + ctx.getContextPath());
 
-				servletContext.setInitParameter("casServerLoginUrl", AppConfig.getString("cas.server") + "/cas/login");
+				// Filters
 
-				servletContext.setInitParameter("casServerUrlPrefix", AppConfig.getString("cas.server") + "/cas");
+				EnumSet<DispatcherType> esDTs = EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR);
 
-				servletContext.setInitParameter("service",
-						AppConfig.getString("app.server") + servletContext.getContextPath());
+				ctx.addFilter("encodingFilter", UTF8Filter.class)
+					.addMappingForUrlPatterns(esDTs, false, "/*");
 
-				servletContext.addFilter("encodingFilter", UTF8Filter.class).addMappingForUrlPatterns(
-						EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false, "/*");
+				ctx.addFilter("CAS Single Sign Out Filter", SingleSignOutFilter.class)
+					.addMappingForUrlPatterns(esDTs, false, "/*");
+				ctx.addFilter("CAS Authentication Filter", AuthenticationFilter.class)
+					.addMappingForUrlPatterns(esDTs, false, "/*");
+				ctx.addFilter("CAS Validation Filter", Cas20ProxyReceivingTicketValidationFilter.class)
+					.addMappingForUrlPatterns(esDTs, false, "/*");
+				ctx.addFilter("CAS HttpServletRequest Wrapper Filter", HttpServletRequestWrapperFilter.class)
+					.addMappingForUrlPatterns(esDTs, false, "/*");
 
-				servletContext.addFilter("CAS Single Sign Out Filter", SingleSignOutFilter.class)
-						.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false,
-								"/*");
+				ctx.addFilter("app", TapestryFilter.class)
+					.addMappingForUrlPatterns(esDTs, false, "/*");
 
-				servletContext.addFilter("CAS Authentication Filter", AuthenticationFilter.class)
-						.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false,
-								"/*");
+				ctx.addListener(SingleSignOutHttpSessionListener.class);
 
-				servletContext.addFilter("CAS Validation Filter", Cas20ProxyReceivingTicketValidationFilter.class)
-						.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false,
-								"/*");
-
-				servletContext.addFilter("CAS HttpServletRequest Wrapper Filter", HttpServletRequestWrapperFilter.class)
-						.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false,
-								"/*");
-
-				servletContext.addFilter("app", TapestryFilter.class).addMappingForUrlPatterns(
-						EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false, "/*");
-
-				servletContext.addListener(SingleSignOutHttpSessionListener.class);
-
-				servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
+				ctx.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
 			}
 		};
 	}
