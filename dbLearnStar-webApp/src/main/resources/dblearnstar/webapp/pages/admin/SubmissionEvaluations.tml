@@ -91,9 +91,11 @@
 										</thead>
 										<tbody>
 											<tr t:type="loop" t:source="resultsEvaluation1"
-												t:value="oneRow">
-												<td class="p-1 m-0" t:type="loop" t:source="oneRow"
-													t:value="oneColumn"><t:outputraw t:value="oneColumn" /></td>
+												t:value="oneRow" class="p-0 m-0">
+												<td class="p-0 m-0" t:type="loop" t:source="oneRow"
+													t:value="oneColumn"><tt>
+														<t:outputraw t:value="oneColumn" />
+													</tt></td>
 											</tr>
 										</tbody>
 									</table>
@@ -114,9 +116,11 @@
 										</thead>
 										<tbody>
 											<tr t:type="loop" t:source="resultsEvaluation2"
-												t:value="oneRow">
-												<td class="p-1 m-0" t:type="loop" t:source="oneRow"
-													t:value="oneColumn"><t:outputraw t:value="oneColumn" /></td>
+												t:value="oneRow" class="p-0 m-0">
+												<td class="p-0 m-0" t:type="loop" t:source="oneRow"
+													t:value="oneColumn"><tt>
+														<t:outputraw t:value="oneColumn" />
+													</tt></td>
 											</tr>
 										</tbody>
 									</table>
@@ -143,9 +147,7 @@
 							<t:outputraw t:value="translateTaskDescription"></t:outputraw>
 						</div>
 						<div class="pre-scrollable modalSubmission">
-							<pre>
-								<t:outputraw t:value="formattedSolution"></t:outputraw>
-							</pre>
+							<pre><t:outputraw t:value="formattedSolution" /></pre>
 						</div>
 
 
@@ -343,8 +345,7 @@
 							value="submissionsFirstEvaluation?.evaluatedOn" />
 						<pre class="feedback">
 							<t:outputraw value="submissionsFirstEvaluation.feedback" />
-						</pre>
-						<a href="" t:type="actionlink" t:id="editAssessment"
+						</pre> <a href="" t:type="actionlink" t:id="editAssessment"
 							t:async="true" t:context="submissionsFirstEvaluation"
 							class="btn btn-sm btn-primary"><img t:type="svgicon"
 							t:path="edit" />${message:editAssessment-label}</a>

@@ -7,6 +7,8 @@
 	--color-correct-better: #484837ff; /* https://www.w3schools.com/colors/colors_british.asp - Olive gree */ 
 	--color-noevaluation: #white; 
 	--color-exception: #404040;
+	--main-bg-color-accent: #eceef3ff;
+  	--main-bg-color-accent2: #00000080;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,17 +88,14 @@ p.comment {
 	padding-left: 0.5rem;
 }
 
-@keyframes slidein {from { background:white;} 50% {background: #ffffa0;} to {background: white;}}
+@keyframes slidein {
+  from { background: white; }
+  50% { background: #ffffa0; }
+  to { background: white; }
+}
 
 .pagination li {
 	margin-left: 0.5em;
-}
-
-.maxpoints {
-	background: #c0c0c0;
-	font-weight: bold;
-	border-radius: 0.25em;
-	padding: 0.2em;
 }
 
 #mainnav {
@@ -118,6 +117,13 @@ svg {
 	stroke-width: 0.1em;
 	stroke-linecap: round;
 	stroke-linejoin: round;
+}
+
+.maxpoints {
+	background: #c0c0c0;
+	font-weight: bold;
+	border-radius: 0.25em;
+	padding: 0.2em;
 }
 
 .CodeMirror {

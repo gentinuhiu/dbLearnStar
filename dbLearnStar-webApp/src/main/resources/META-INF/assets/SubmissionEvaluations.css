@@ -95,6 +95,7 @@ pre#kodot img {
 
 table.tblCompareData tbody {
 	background: var(  --main-bg-color);
+	font-size: 85%;
 }
 
 table tbody tr.correct {
