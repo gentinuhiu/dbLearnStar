@@ -99,10 +99,11 @@ public class TestManagerImpl implements TestManager {
 	public List<TestInstance> getTestInstancesForStudentByTestTypeAndCollection(long studentId, long testTypeId,
 			long testCollectionId) {
 		String query = """
+				select ti
 				from TestInstance ti
-				join t.testTemplate ttem
+				join ti.testTemplate ttem
 				join ttem.testType tt
-				join t.testCollection tc
+				join ti.testCollection tc
 				where
 					tt.testTypeId = :testTypeId and
 				    tc.testCollectionId = :testCollectionId and
@@ -118,10 +119,11 @@ public class TestManagerImpl implements TestManager {
 							join gft.testInstance ti2
 							where
 								s.studentId=:studentId and
-								now() between ti2.scheduledFor and ti2.scheduledUntil
+								(now() between ti2.scheduledFor and ti2.scheduledUntil or 
+								ti2.openForReviewByStudents=true)
 						)
 					)
-				order by t.title desc
+				order by ti.ordering asc, ti.title desc
 				""";
 		return UsefulMethods.castList(TestInstance.class,
 				getEntityManager().createQuery(query).setParameter("studentId", studentId)
@@ -497,6 +499,7 @@ public class TestManagerImpl implements TestManager {
 
 	@Override
 	public boolean accessToTaskInTestInstanceAllowed(Student student, TaskInTestInstance tti) {
+		//TODO: need a more appropriate implementation
 		return getTestInstancesForStudentByTestType(student.getStudentId(),
 				tti.getTestInstance().getTestTemplate().getTestType().getTestTypeId()).stream()
 				.anyMatch(ti -> ti.getTestInstanceId() == tti.getTestInstance().getTestInstanceId());
@@ -520,7 +523,8 @@ public class TestManagerImpl implements TestManager {
 					select distinct ti.testCollection
 					from TestInstance ti
 					""").getResultList());
-			// Add to them TestCollectionts that are Parents to another, or that have subCollections
+			// Add to them TestCollectionts that are Parents to another, or that have
+			// subCollections
 			List<TestCollection> listAdded = UsefulMethods.castList(TestCollection.class,
 					getEntityManager().createQuery("""
 							select distinct tc.parentCollection
