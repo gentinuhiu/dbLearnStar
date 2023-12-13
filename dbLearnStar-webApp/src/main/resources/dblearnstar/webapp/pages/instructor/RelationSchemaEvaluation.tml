@@ -3,22 +3,6 @@
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<style>
-.grade-pos {
-	background: var(--color-correct);
-}
-
-.grade-neg {
-	background: var(--color-incorrect-wrong);
-	color: yellow;
-}
-
-.grade-zero {
-	background: var(--color-incorrect);
-	color: white;
-}
-</style>
-
 <h1>${message:instructor/relationSchemaEvaluation-pagelink}</h1>
 
 <h2>Filter Data</h2>
@@ -43,13 +27,15 @@
 		</div>
 		<t:submit t:value="Filter" />
 		<a href="" class="ml-auto btn btn-info" t:type="eventlink"
-			t:id="loadSavedData"><img t:type="svgicon"
-			t:path="file" t:height="1.5em" /> Reload saved data</a> <a href="" class="ml-auto btn btn-info" t:type="eventlink"
+			t:id="loadSavedData"><img t:type="svgicon" t:path="file"
+			t:height="1.5em" /> Reload saved data</a> <a href=""
+			class="ml-auto btn btn-info" t:type="eventlink"
 			t:id="saveDataAndGenerateReports"><img t:type="svgicon"
-			t:path="database" t:height="1.5em" /> Save data &amp; generate reports</a> <a href=""
-			class="ml-auto btn btn-outline-danger" t:type="eventlink"
-			t:id="refreshData"><img t:type="svgicon" t:path="alert-triangle"
-			t:height="1.5em" /> Reconstruct the entire evaluation set</a>
+			t:path="database" t:height="1.5em" /> Save data &amp; generate
+			reports</a> <a href="" class="ml-auto btn btn-outline-danger"
+			t:type="eventlink" t:id="refreshData"><img t:type="svgicon"
+			t:path="alert-triangle" t:height="1.5em" /> Reconstruct the entire
+			evaluation set</a>
 	</form>
 </div>
 
@@ -57,21 +43,29 @@
 
 <div class="mb-3">
 	<p>
-		<a href="" class="ml-auto btn btn-success" t:type="eventlink"
+		<a href="" class="ml-auto btn grade-pos2" t:type="eventlink"
+			t:id="setUngradedPos2">Set ungraded to +2</a> <a href=""
+			class="ml-auto btn grade-pos" t:type="eventlink"
 			t:id="setUngradedPos">Set ungraded to +1</a> <a href=""
-			class="ml-auto btn btn-secondary" t:type="eventlink"
+			class="ml-auto btn grade-zero" t:type="eventlink"
 			t:id="setUngradedZero">Set ungraded to 0</a> <a href=""
-			class="ml-auto btn btn-danger" t:type="eventlink"
+			class="ml-auto btn grade-neg" t:type="eventlink"
 			t:id="setUngradedNeg">Set ungraded to -1</a> <a href=""
-			class="ml-auto btn btn-light" t:type="eventlink" t:id="resetGraded">Reset
+			class="ml-auto btn btn-outline-primary" t:type="eventlink" t:id="resetGraded">Reset
 			graded</a>
 	</p>
 </div>
 
 <div t:type="zone" t:id="zEvaluationTable" id="zEvaluationTable">
-	<div t:type="if" t:test="resultsErrors">${resultsErrors}</div>
+	<div t:type="if" t:test="resultsErrors">
+		<a href="" class="btn btn-sm btn-default" t:type="eventlink"
+			t:id="clearErrors">Clear errors</a>
+		<ul>
+			<li t:type="loop" t:source="resultsErrors" t:value="resultError">${resultError}</li>
+		</ul>
+	</div>
 	Rows: ${filteredEvaluationData.size()}
-	<table class="table table-hover table-bordered ">
+	<table class="table table-sm table-bordered ">
 		<thead class="table-dark">
 			<tr>
 				<th>Actions</th>
@@ -85,15 +79,19 @@
 		<tbody>
 			<tr t:type="loop" t:source="filteredEvaluationData" t:value="oneRow"
 				class=" ${correctnessClass} ">
-				<td style="width: 10em;"><a href="" t:type="eventlink"
-					t:id="markPos" t:zone="zEvaluationTable" t:context="oneRow"
-					class="btn btn-sm btn-success">+1</a> <a href="" t:type="eventlink"
-					t:id="markZero" t:zone="zEvaluationTable" t:context="oneRow"
-					class="btn btn-sm btn-secondary">0</a> <a href=""
+				<td class="actions"><a href="" t:type="eventlink"
+					t:id="markPos2" t:zone="zEvaluationTable" t:context="oneRow"
+					class="btn btn-sm grade-pos2 p-1">+2</a> <a href=""
+					t:type="eventlink" t:id="markPos" t:zone="zEvaluationTable"
+					t:context="oneRow" class="btn btn-sm grade-pos p-1">+1</a> <a
+					href="" t:type="eventlink" t:id="markZero"
+					t:zone="zEvaluationTable" t:context="oneRow"
+					class="btn btn-sm grade-zero p-1">0</a> <a href=""
 					t:type="eventlink" t:id="markNeg" t:zone="zEvaluationTable"
-					t:context="oneRow" class="btn btn-sm btn-danger">-1</a> <a href=""
-					t:type="eventlink" t:id="markReset" t:zone="zEvaluationTable"
-					t:context="oneRow" class="btn btn-sm btn-light">/</a></td>
+					t:context="oneRow" class="btn btn-sm grade-neg p-1">-1</a> <a
+					href="" t:type="eventlink" t:id="markReset"
+					t:zone="zEvaluationTable" t:context="oneRow"
+					class="btn btn-sm btn-outline-primary p-1">/</a></td>
 				<td t:type="loop" t:source="parsedRow" t:value="oneColumn">${oneColumn}</td>
 			</tr>
 		</tbody>

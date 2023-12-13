@@ -43,7 +43,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 @AdministratorPage
 @InstructorPage
-@Import(module = { "zoneUpdateEffect" })
+@Import(module = { "zoneUpdateEffect" }, stylesheet = { "SubmissionEvaluations.css" })
 public class RelationSchemaEvaluation {
 
 	@Inject
@@ -97,6 +97,8 @@ public class RelationSchemaEvaluation {
 	@Persist
 	@Property
 	List<String> resultsErrors;
+	@Property
+	String resultError;
 
 	void onActivate(TaskInTestInstance taskInTestInstance) {
 		taskInTestInstanceToGrade = genericService.getByPK(TaskInTestInstance.class,
@@ -172,6 +174,13 @@ public class RelationSchemaEvaluation {
 		}
 	}
 
+	public void onMarkPos2(Object[] context) {
+		setEvaluationPointGrade(context, "2");
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zEvaluationTable);
+		}
+	}
+
 	public void onMarkNeg(Object[] context) {
 		setEvaluationPointGrade(context, "-1");
 		if (request.isXHR()) {
@@ -197,6 +206,17 @@ public class RelationSchemaEvaluation {
 		for (String[] ss : getFilteredEvaluationData()) {
 			if (ss[1] == null || ss[1].equals("")) {
 				setEvaluationPointGrade(ss, "1");
+			}
+		}
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zEvaluationTable);
+		}
+	}
+
+	public void onSetUngradedPos2() {
+		for (String[] ss : getFilteredEvaluationData()) {
+			if (ss[1] == null || ss[1].equals("")) {
+				setEvaluationPointGrade(ss, "2");
 			}
 		}
 		if (request.isXHR()) {
@@ -246,7 +266,9 @@ public class RelationSchemaEvaluation {
 	public String getCorrectnessClass() {
 		if (oneRow != null && oneRow[1] != null) {
 			Integer grade = Integer.parseInt(oneRow[1]);
-			if (grade > 0) {
+			if (grade >= 2) {
+				return "grade-pos2";
+			} else if (grade == 1) {
 				return "grade-pos";
 			} else if (grade == 0) {
 				return "grade-zero";
@@ -381,6 +403,10 @@ public class RelationSchemaEvaluation {
 		Triplet<List<String[]>, List<String>, List<String>> results = evaluationService
 				.getDDLEvaluationDataFromStudentDatabases(getSubmissions());
 		evaluationData = results.getFirstItem();
+		for (int i = 0; i < evaluationData.size(); i++) {
+			evaluationData.get(i)[3] = evaluationData.get(i)[3].replaceFirst("202122z_va_ispit_......",
+					"exam_by_******"); // @TODO: направено за SIGITE презентација да се преправи
+		}
 		resultsHeadersSimple = results.getSecondItem();
 		resultsErrors = results.getThirdItem();
 	}
@@ -416,4 +442,7 @@ public class RelationSchemaEvaluation {
 
 	}
 
+	void onClearErrors() {
+		resultsErrors = null;
+	}
 }
