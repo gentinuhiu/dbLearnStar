@@ -15,7 +15,7 @@
 		<property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
 		<property name="hibernate.hikari.poolName">TapestryHibernatePool</property>
 		<property name="hibernate.hikari.minimumIdle">5</property>
-		<property name="hibernate.hikari.maximumPoolSize">8</property>
+		<property name="hibernate.hikari.maximumPoolSize">16</property>
 		<property name="hibernate.hikari.idleTimeout">30000</property>
 		<property name="hibernate.hikari.dataSourceClassName">org.postgresql.ds.PGSimpleDataSource</property>
 		<property name="hibernate.hikari.dataSource.url">@jdbc.url@</property>
