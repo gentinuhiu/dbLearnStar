@@ -97,6 +97,10 @@
 				t:path="plus-square" /> New group</a>
 	</p:else>
 </div>
+<div t:type="if" t:test="groupCopyFrom" class="bg-info p-2 mt-3 mb-3">
+	<a class="btn btn-sm btn-secondary" t:type="eventlink" t:id="forgetCopy">Remove</a>
+	Copy members from: ${groupCopyFrom?.title}
+</div>
 <table t:type="grid" t:source="allGroups" t:row="group" t:add="actions">
 	<p:titleCell>${group.title}</p:titleCell>
 	<p:actionsCell>
@@ -107,7 +111,17 @@
 		<a href="" t:type="actionlink" t:context="group"
 			title="message:symbol-delete" t:id="delete"
 			class="btn btn-sm btn-danger" role="button"><t:SVGIcon
-				t:path="minus-square" /> ${message:symbol-delete}</a>
+				t:path="minus-square" t:mixins="confirm" /> ${message:symbol-delete}</a>
+		<a href="" t:type="eventlink" t:context="group"
+			title="message:symbol-copy" t:id="copyMembers"
+			class="btn btn-sm btn-danger" role="button"><t:SVGIcon
+				t:path="copy" /> ${message:symbol-copy}</a>
+		<t:if t:test="groupCopyFrom">
+		<a href="" t:type="eventlink" t:context="group"
+			title="message:symbol-paste" t:id="pasteMembers" t:mixins="confirm" 
+			class="btn btn-sm btn-danger" role="button"><t:SVGIcon
+				t:path="list" /> ${message:symbol-paste}</a>
+		</t:if>
 	</p:actionsCell>
 </table>
 </html>

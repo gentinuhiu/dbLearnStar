@@ -20,6 +20,7 @@
 
 package dblearnstar.webapp.pages.admin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tapestry5.SelectModel;
@@ -103,6 +104,9 @@ public class GroupManagement {
 			if (g != null) {
 				editGroup = g;
 			}
+		}
+		if (groupCopyFrom != null) {
+			groupCopyFrom = genericService.getByPK(Group.class, groupCopyFrom.getGroupId());
 		}
 	}
 
@@ -250,5 +254,31 @@ public class GroupManagement {
 
 	void onCancelNewFocusOnTestForm() {
 		editGroupFocusOnTest = null;
+	}
+
+	@Persist
+	@Property
+	private Group groupCopyFrom;
+
+	void onCopyMembers(Group g) {
+		groupCopyFrom = g;
+	}
+
+	void onForgetCopy() {
+		groupCopyFrom = null;
+	}
+
+	@CommitAfter
+	void onPasteMembers(Group g) {
+		g.getGroupMembers().forEach(p -> genericService.delete(p));
+		if (groupCopyFrom.getGroupMembers() != null && groupCopyFrom.getGroupMembers().size() > 0) {
+			for (GroupMember gm : groupCopyFrom.getGroupMembers()) {
+				GroupMember newGm = new GroupMember();
+				newGm.setGroup(g);
+				newGm.setStudent(gm.getStudent());
+				genericService.save(newGm);
+			}
+		}
+		groupCopyFrom=null;
 	}
 }
