@@ -90,12 +90,6 @@ public class StudentGroupProgress {
 		return selectModelFactory.create(groupManager.getAllGroups(), "title");
 	}
 
-	public Boolean getSolvedTaskByStudent() {
-		Boolean test = testManager.isTaskInTestInstanceSolvedByStudent(taskInTestInstance.getTaskInTestInstanceId(),
-				groupMember.getStudent().getStudentId());
-		return test;
-	}
-
 	public Float getAssessmentsForTaskForStudent() {
 		return testManager.getGradeForTaskInTestInstanceByStudent(taskInTestInstance.getTaskInTestInstanceId(),
 				groupMember.getStudent().getStudentId());
@@ -105,22 +99,30 @@ public class StudentGroupProgress {
 		return groupFocusOnTest.getTestInstance().getTaskInTestInstances().size();
 	}
 
-	public String getColorClass() {
-		Boolean solved = getSolvedTaskByStudent();
-		Float grade = getAssessmentsForTaskForStudent();
-		if (solved == null) {
-			if (grade != null) {
-				return " color-queryError ";
-			} else {
-				return " ";
-			}
+	public Integer getResultGrade() {
+		return (Integer) result[0];
+	}
+
+	public String getResultColorClass() {
+		Boolean shouldPass = (Boolean) result[1];
+		Boolean passed = (Boolean) result[2];
+
+		String colorClass = " ";
+		if (passed != null && passed) {
+			colorClass += " result-passed ";
+		} else if (passed != null && !passed) {
+			colorClass += " result-notpassed ";
 		} else {
-			if (solved) {
-				return " color-queryCorrect ";
-			} else {
-				return " color-queryError ";
-			}
+
 		}
+		if (shouldPass != null && shouldPass) {
+			colorClass += " result-queryCorrect ";
+		} else if (shouldPass != null && !shouldPass) {
+			colorClass += " result-queryError ";
+		} else {
+
+		}
+		return colorClass;
 	}
 
 	public String getGroupMemberFullNameWithId() {
@@ -132,7 +134,15 @@ public class StudentGroupProgress {
 	}
 
 	public List<TaskInTestInstance> getTaskInTestInstances() {
-		return testManager.getTasksInTestInstance(groupFocusOnTest.getTestInstance().getTestInstanceId());
+		return testManager.getTaskInTestInstancesByTestInstance(groupFocusOnTest.getTestInstance().getTestInstanceId());
+	}
+
+	@Property
+	private Object[] result;
+
+	public List<Object[]> getTestInstanceResultsByStudentSortedByTaskName() {
+		return testManager.getTestInstanceResultsByStudentSortedByTaskName(groupMember.getStudent(),
+				groupFocusOnTest.getTestInstance());
 	}
 
 	public Float getGroupMemberTotalPoints() {
@@ -160,8 +170,7 @@ public class StudentGroupProgress {
 	}
 
 	public String getTaskInTestInstanceTaskTitleTranslated() {
-		String translated = translationService.getTranslation("Task", "title",
-				taskInTestInstance.getTask().getTaskId(),
+		String translated = translationService.getTranslation("Task", "title", taskInTestInstance.getTask().getTaskId(),
 				persistentLocale.get().getLanguage().toLowerCase());
 		return (translated != null ? translated : taskInTestInstance.getTask().getTitle());
 	}

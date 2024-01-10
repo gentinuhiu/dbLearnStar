@@ -79,7 +79,7 @@ public interface TestManager {
 	public List<StudentSubmitSolution> getIncorrectSolutionsByStudentAndTaskInTestInstance(long studentId,
 			long taskInTestInstanceId);
 
-	public List<TaskInTestInstance> getTasksInTestInstance(long testInstanceId);
+	public List<TaskInTestInstance> getTaskInTestInstancesByTestInstance(long testInstanceId);
 
 	public void recordActivityInTask(Person person, TaskInTestInstance taskInTestInstance, String type, String payload);
 
@@ -98,4 +98,6 @@ public interface TestManager {
 	public String getCodeType(StudentSubmitSolution submittedSolution);
 
 	public List<TestCollection> getTestCollectionsWithTestInstances();
+
+	public List<Object[]> getTestInstanceResultsByStudentSortedByTaskName(Student student, TestInstance testInstance);
 }

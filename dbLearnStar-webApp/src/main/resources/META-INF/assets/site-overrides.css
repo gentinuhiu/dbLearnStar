@@ -68,8 +68,25 @@ code {
 }
 
 .color-queryCorrect {
-	background: var(--color-correct);
+	background:  var(--color-correct);
 	color: black;
+}
+
+.result-queryError {
+	background: var(--color-incorrect);
+}
+
+.result-queryCorrect {
+	background:  var(--color-correct);
+}
+
+.result-passed {
+	font-weight: 900;
+	color: #a0ffa0;
+}
+
+.result-notpassed {
+	color: white;
 }
 
 .centered-hv {

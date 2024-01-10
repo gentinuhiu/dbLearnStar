@@ -119,7 +119,7 @@ public class TestManagerImpl implements TestManager {
 							join gft.testInstance ti2
 							where
 								s.studentId=:studentId and
-								(now() between ti2.scheduledFor and ti2.scheduledUntil or 
+								(now() between ti2.scheduledFor and ti2.scheduledUntil or
 								ti2.openForReviewByStudents=true)
 						)
 					)
@@ -391,7 +391,7 @@ public class TestManagerImpl implements TestManager {
 	}
 
 	@Override
-	public List<TaskInTestInstance> getTasksInTestInstance(long testInstanceId) {
+	public List<TaskInTestInstance> getTaskInTestInstancesByTestInstance(long testInstanceId) {
 		return UsefulMethods.castList(TaskInTestInstance.class, getEntityManager().createQuery("""
 				from TaskInTestInstance tti
 				where tti.testInstance.testInstanceId = :testInstanceId
@@ -499,7 +499,7 @@ public class TestManagerImpl implements TestManager {
 
 	@Override
 	public boolean accessToTaskInTestInstanceAllowed(Student student, TaskInTestInstance tti) {
-		//TODO: need a more appropriate implementation
+		// TODO: need a more appropriate implementation
 		return getTestInstancesForStudentByTestType(student.getStudentId(),
 				tti.getTestInstance().getTestTemplate().getTestType().getTestTypeId()).stream()
 				.anyMatch(ti -> ti.getTestInstanceId() == tti.getTestInstance().getTestInstanceId());
@@ -534,6 +534,35 @@ public class TestManagerImpl implements TestManager {
 			return list;
 		} catch (Exception e) {
 			logger.error("Error {}", e.getMessage());
+			return null;
+		}
+	}
+
+	@Override
+	public List<Object[]> getTestInstanceResultsByStudentSortedByTaskName(Student student, TestInstance testInstance) {
+		try {
+			return getEntityManager()
+					.createNativeQuery(
+							"""
+									select
+									cast(max(sa.grade) as integer) max_grade,
+									max(case when sss.student_submit_solution_id is null then null when sss.evaluation_simple and sss.evaluation_complex
+									then 1 else 0 end)>0 should_pass,
+									max(case when sa.passed is not null and sa.passed then 1 when sa.passed is not null and not(sa.passed) then 0 else null end )>0 passed
+									from
+									task_in_test_instance titi
+									join task t on titi.task_id=t.task_id
+									left join student_started_test sst on sst.student_id=?
+									left join student_submit_solution sss on sss.task_in_test_instance_id=titi.task_in_test_instance_id and sss.student_started_test_id=sst.student_started_test_id
+									left join solution_assessment sa on sss.student_submit_solution_id=sa.student_submit_solution_id
+									where titi.test_instance_id=?
+									group by titi.task_in_test_instance_id, t.task_id, t.title, sst.student_id
+									order by t.title
+																""")
+					.setParameter(1, student.getStudentId()).setParameter(2, testInstance.getTestInstanceId())
+					.getResultList();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
 			return null;
 		}
 	}
