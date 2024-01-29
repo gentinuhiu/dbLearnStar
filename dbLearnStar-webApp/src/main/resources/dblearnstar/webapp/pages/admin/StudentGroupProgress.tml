@@ -38,7 +38,7 @@
 				<th
 					style="text-orientation: sideways; writing-mode: vertical-lr; font-size: 80%; width: 4em;">Total</th>
 			</thead>
-			<tr t:type="loop" t:source="selectedGroup.groupMembers"
+			<tr t:type="loop" t:source="selectedGroupMembersSorted"
 				t:value="groupMember">
 				<td
 					style="white-space: nowrap; padding: 0em 0.5em; vertical-align: middle;">${groupMemberFullNameWithId}</td>

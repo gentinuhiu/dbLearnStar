@@ -30,6 +30,7 @@ import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.PersistentLocale;
 import org.apache.tapestry5.services.SelectModelFactory;
+import org.openqa.selenium.devtools.v100.debugger.Debugger.EvaluateOnCallFrameResponse;
 import org.slf4j.Logger;
 
 import dblearnstar.model.entities.Group;
@@ -37,6 +38,7 @@ import dblearnstar.model.entities.GroupFocusOnTest;
 import dblearnstar.model.entities.GroupMember;
 import dblearnstar.model.entities.TaskInTestInstance;
 import dblearnstar.webapp.annotations.AdministratorPage;
+import dblearnstar.webapp.services.EvaluationService;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.GroupManager;
 import dblearnstar.webapp.services.PersonManager;
@@ -60,6 +62,8 @@ public class StudentGroupProgress {
 	private GroupManager groupManager;
 	@Inject
 	private PersonManager personManager;
+	@Inject
+	private EvaluationService evaluationService;
 
 	@Property
 	@Persist
@@ -173,6 +177,10 @@ public class StudentGroupProgress {
 		String translated = translationService.getTranslation("Task", "title", taskInTestInstance.getTask().getTaskId(),
 				persistentLocale.get().getLanguage().toLowerCase());
 		return (translated != null ? translated : taskInTestInstance.getTask().getTitle());
+	}
+	
+	public List<GroupMember> getSelectedGroupMembersSorted() {
+		return evaluationService.groupMembersSortedByTestTotals(selectedGroup);
 	}
 
 }

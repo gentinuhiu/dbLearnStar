@@ -24,6 +24,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import dblearnstar.model.entities.Group;
+import dblearnstar.model.entities.GroupMember;
 import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentSubmitSolution;
@@ -43,6 +45,9 @@ public interface EvaluationService {
 
 	public List<StudentSubmitSolution> getAllSolutionsForEvalutionFromTestInstance(TestInstance selectedTestInstance);
 
+	public List<StudentSubmitSolution> getAllSolutionsForEvalutionFromTaskInTestInstance(
+			TaskInTestInstance taskInTestInstance);
+
 	public List<StudentSubmitSolution> getAllSubmissionsOrdered();
 
 	public List<StudentSubmitSolution> getSubmissionsByStudentAndTaskInTestInstance(Student student,
@@ -51,7 +56,7 @@ public interface EvaluationService {
 	public List<StudentSubmitSolution> getOnlyLastSubmissionsByStudentAndTaskInTestInstance(Student student,
 			TestInstance testInstance, TaskInTestInstance taskInTestInstance, Boolean onlyForEval, Boolean onlyCorrect);
 
-	public void processSolution(String issuedByUserName, StudentSubmitSolution s);
+	public void reEvalSolution(String issuedByUserName, StudentSubmitSolution s);
 
 	public Triplet<List<Object[]>, List<String>, List<String>> getResultsForPrintingPurposes(String userName,
 			String queryToRun, TestInstanceParameters tip, String schema, String type);
@@ -69,5 +74,9 @@ public interface EvaluationService {
 			List<StudentSubmitSolution> submissions);
 
 	public List<SolutionAssessment> getSolutionAssessmentsWithDiscussionForTestInstance(long testInstanceId);
+
+	public void reEvalListOfSubmissions(String userName, List<StudentSubmitSolution> list);
+
+	public List<GroupMember> groupMembersSortedByTestTotals(Group selectedGroup);
 
 }

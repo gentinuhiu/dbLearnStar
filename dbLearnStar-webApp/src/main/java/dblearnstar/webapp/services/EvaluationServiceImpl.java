@@ -44,6 +44,8 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 
+import dblearnstar.model.entities.Group;
+import dblearnstar.model.entities.GroupMember;
 import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentSubmitSolution;
@@ -163,7 +165,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 					}
 					connection.rollback();
 				} catch (Exception e) {
-					logger.error("Error occured {}", e);
+					logger.error("Error occured when evaluating submissionId={}", e.getMessage());
 					if (e.getMessage().contains("ERROR: each EXCEPT query must have the same number of columns")) {
 						rslts.getFirstItem().add(messages.get("sql-outputSchemaFormatError"));
 					} else if (e.getMessage().contains("ERROR: EXCEPT types")) {
@@ -240,6 +242,16 @@ public class EvaluationServiceImpl implements EvaluationService {
 					from StudentSubmitSolution sss where sss.notForEvaluation=false and
 				sss.studentStartedTest.testInstance.testInstanceId=:testInstanceId
 				""").setParameter("testInstanceId", testInstance.getTestInstanceId()).getResultList());
+	}
+
+	@Override
+	public List<StudentSubmitSolution> getAllSolutionsForEvalutionFromTaskInTestInstance(
+			TaskInTestInstance taskInTestInstance) {
+		return UsefulMethods.castList(StudentSubmitSolution.class, getEntityManager().createQuery("""
+					from StudentSubmitSolution sss where sss.notForEvaluation=false and
+				sss.taskInTestInstance.taskInTestInstanceId=:taskInTestInstanceId
+				""").setParameter("taskInTestInstanceId", taskInTestInstance.getTaskInTestInstanceId())
+				.getResultList());
 	}
 
 	@Override
@@ -345,13 +357,14 @@ public class EvaluationServiceImpl implements EvaluationService {
 		}
 	}
 
-	public void processSolution(String issuedByUserName, StudentSubmitSolution s) {
+	public void reEvalSolution(String issuedByUserName, StudentSubmitSolution s) {
 		TaskInTestInstance tti = s.getTaskInTestInstance();
 		/*
 		 * TODO: Only supports TestInstances with a single TestInstanceParameter line
 		 */
 		TestInstanceParameters tip = tti.getTestInstance().getTestInstanceParameters().get(0);
 
+		logger.info("Reevaluation started for studentSubmitSolutionId: {}", s.getStudentSubmitSolutionId());
 		Triplet<List<String>, List<String>, Boolean> rsltsSimple = evalResultsIn(issuedByUserName, s.getSubmission(),
 				tti, tip, tip.getSchemaSimple());
 		Triplet<List<String>, List<String>, Boolean> rsltsComplex = evalResultsIn(issuedByUserName, s.getSubmission(),
@@ -915,6 +928,43 @@ public class EvaluationServiceImpl implements EvaluationService {
 										order by ad.solutionEvaluation.evaluatedOn
 														""")
 						.setParameter("testInstanceId", testInstanceId).getResultList());
+	}
+
+	@Override
+	public void reEvalListOfSubmissions(String userName, List<StudentSubmitSolution> list) {
+		list.forEach((studentSubmitSolution) -> {
+			try {
+				reEvalSolution(userName, studentSubmitSolution);
+			} catch (Exception e) {
+				logger.error("Fail evaluation for sssId: {}", studentSubmitSolution.getStudentSubmitSolutionId());
+			}
+		});
+	}
+
+	@Override
+	public List<GroupMember> groupMembersSortedByTestTotals(Group selectedGroup) {
+		return getEntityManager().createNativeQuery(
+				"""
+						SELECT
+						group_member_id, group_id, student_id
+						FROM (
+							SELECT gm.group_member_id, gm.group_id, gm.student_id, ti.test_instance_id, titi.task_in_test_instance_id, max(sa.grade) test_task_grade, max(sss.submitted_on) prateno_na
+							FROM
+							"group" g
+							JOIN group_member gm ON g.group_id=gm.group_id
+							JOIN group_focus_on_test gfot ON g.group_id=gfot.group_id
+							JOIN test_instance ti ON ti.test_instance_id=gfot.test_instance_id
+							JOIN task_in_test_instance titi ON ti.test_instance_id=titi.test_instance_id
+							JOIN student_started_test sst ON sst.test_instance_id=ti.test_instance_id AND sst.student_id=gm.student_id
+							JOIN student_submit_solution sss ON titi.task_in_test_instance_id=sss.task_in_test_instance_id AND sss.student_started_test_id=sst.student_started_test_id
+							JOIN solution_assessment sa ON sss.student_submit_solution_id=sa.student_submit_solution_id
+							WHERE g.group_id=?
+							GROUP BY gm.group_member_id, ti.test_instance_id, titi.task_in_test_instance_id
+						) temp1
+						GROUP BY group_member_id, group_id, student_id
+						ORDER BY sum(test_task_grade) DESC, max(prateno_na) asc
+																						""",
+				GroupMember.class).setParameter(1, selectedGroup.getGroupId()).getResultList();
 	}
 
 }
