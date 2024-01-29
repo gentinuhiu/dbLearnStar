@@ -143,10 +143,13 @@ public class GroupManagement {
 						Student s = personManager
 								.getStudentsByPersonId(personManager.getPersonByUsername(lineField).getPersonId())
 								.get(0);
-						GroupMember gm = new GroupMember();
-						gm.setGroup(editGroup);
-						gm.setStudent(s);
-						genericService.save(gm);
+						if (editGroup.getGroupMembers().stream()
+								.noneMatch(p -> p.getStudent().getStudentId() == s.getStudentId())) {
+							GroupMember gm = new GroupMember();
+							gm.setGroup(editGroup);
+							gm.setStudent(s);
+							genericService.save(gm);
+						}
 					} catch (Exception e) {
 						errors += ">>> Student " + line + " can not be imported due to: " + e.getLocalizedMessage();
 					}
@@ -279,6 +282,6 @@ public class GroupManagement {
 				genericService.save(newGm);
 			}
 		}
-		groupCopyFrom=null;
+		groupCopyFrom = null;
 	}
 }
