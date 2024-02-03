@@ -1,0 +1,63 @@
+.sgpTable {
+	font-size: 80%;
+}
+
+.sgpHeadTestLabel {
+	padding: 0.2em !important;
+	vertical-align: middle;
+}
+
+.sgpHeadTestInstance {
+	padding: 0.5em !important;
+	vertical-align: top !important;
+}
+
+.sgpHeadFullNameLabel {
+	padding: 0.2em !important;
+}
+
+.sgpHeadUserNameLabel {
+	padding: 0.2em !important;
+}
+
+.sgpHeadTask {
+	text-orientation: sideways;
+	writing-mode: vertical-lr;
+	padding: 0.25em !important;
+	vertical-align: top !important;
+}
+
+.sgpHeadTaskPoints {
+	font-weight: 400;
+	margin-top: 0.1em;
+}
+
+.sgpHeadTotal {
+	text-orientation: sideways;
+	writing-mode: vertical-lr;
+	padding: 0.2em !important;
+	vertical-align: middle !important;
+	text-align: end !important;
+}
+
+.sgpResFullName {
+	padding: 0.2em !important;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+.sgpResUserName {
+	padding: 0.2em !important;
+}
+
+.sgpResPoints {
+	padding: 0.2em !important;
+	width: 2rem;
+	text-align: center !important;
+}
+
+.sgpResTotal {
+	padding: 0.2em !important;
+	width: 5rem;
+	text-align: end !important;
+}

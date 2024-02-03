@@ -17,40 +17,38 @@
 </div>
 <div t:id="groupZone" id="groupZone" t:type="zone">
 	<div t:type="if" t:test="selectedGroup" class="table-responsive">
-		<table class="table table-condensed  table-bordered">
+		<table class="sgpTable table table-condensed table-bordered">
 			<thead>
-				<th colspan="2"  style="vertical-align: middle;"><p
-						style="text-align: right;">${message:Test-label}</p></th>
+				<th colspan="2" class="sgpHeadTestLabel">${message:Test-label}</th>
 				<th t:type="loop" t:source="selectedGroup.groupFocusOnTests"
 					t:value="groupFocusOnTest" colspan="${numTasks}"
-					style="font-size: 85%;">${groupFocusTestInstanceTitleTranslated}</th>
+					class="sgpHeadTestInstance">${groupFocusTestInstanceTitleTranslated}</th>
 				<th></th>
 			</thead>
 			<thead>
-				<th><p>${message:Student-label}</p></th>
-				<th><p>${message:userName-label}</p></th>
+				<th class="sgpHeadFullNameLabel">${message:Student-label}</th>
+				<th class="sgpHeadUserNameLabel">${message:userName-label}</th>
 				<t:loop t:source="selectedGroup.groupFocusOnTests"
 					t:value="groupFocusOnTest">
 					<th t:type="loop" t:source="taskInTestInstances"
-						t:value="taskInTestInstance"
-						style="text-orientation: sideways; writing-mode: vertical-lr; font-size: 80%;">${taskInTestInstanceTaskTitleTranslated} (${taskInTestInstance.points})</th>
+						t:value="taskInTestInstance" class="sgpHeadTask">${taskInTestInstanceTaskTitleTranslated}
+						<span class="sgpHeadTaskPoints">(${taskInTestInstance.points})</span>
+					</th>
 				</t:loop>
-				<th
-					style="text-orientation: sideways; writing-mode: vertical-lr; font-size: 80%; width: 4em;">Total</th>
+				<th class="sgpHeadTotal">Total</th>
 			</thead>
 			<tr t:type="loop" t:source="selectedGroupMembersSorted"
 				t:value="groupMember">
-				<td
-					style="white-space: nowrap; padding: 0em 0.5em; vertical-align: middle;">${groupMemberFullNameWithId}</td>
-				<td>${groupMemberUserName}</td>
+				<td class="sgpResFullName">${groupMemberFullNameWithId}</td>
+				<td class="sgpResUserName">${groupMemberUserName}</td>
 				<t:loop t:source="selectedGroup.groupFocusOnTests"
 					t:value="groupFocusOnTest">
 					<td t:type="loop"
 						t:source="testInstanceResultsByStudentSortedByTaskName"
-						t:value="result" style="width: 3em;"
-						class="${resultColorClass} centered-hv ">${resultGrade}</td>
+						t:value="result"
+						class="sgpResPoints ${resultColorClass} centered-hv ">${resultGrade}</td>
 				</t:loop>
-				<td>${groupMemberTotalPoints}</td>
+				<td class="sgpResTotal">${groupMemberTotalPoints}</td>
 			</tr>
 		</table>
 	</div>
