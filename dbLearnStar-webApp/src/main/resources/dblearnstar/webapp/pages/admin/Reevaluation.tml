@@ -9,8 +9,21 @@
 		<table t:type="grid" t:source="allTestInstances" t:row="testInstance"
 			t:add="actions" t:exclude="testInstanceId, scheduledFor,description">
 			<p:actionsCell>
-				<a href="" t:type="actionLink" t:id="reEvalTest"
-					t:context="testInstance">${message:reevaluate-label}</a>
+				<div class="row">
+					<div class="col-12 mb-3">
+						<a href="" class="col-12 btn btn-sm btn-primary" t:type="actionLink"
+							t:id="reEvalTest" t:context="testInstance">${message:reevaluate-label}
+							ALL</a>
+					</div>
+					<div class="col-3 mb-2" t:type="loop"
+						t:source="testInstance.taskInTestInstances"
+						t:value="taskInTestInstance">
+						<a href="" class="btn btn-sm btn-secondary "
+							t:type="actionLink" t:id="reEvalTaskInTestInstance"
+							t:context="taskInTestInstance">${message:reevaluate-label}
+							${taskInTestInstance.task.title}</a>
+					</div>
+				</div>
 			</p:actionsCell>
 		</table>
 		<a href="" t:type="actionLink" t:id="reEvalAll"

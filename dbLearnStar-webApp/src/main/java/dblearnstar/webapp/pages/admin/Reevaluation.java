@@ -30,6 +30,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
 import dblearnstar.model.entities.StudentSubmitSolution;
+import dblearnstar.model.entities.TaskInTestInstance;
 import dblearnstar.model.entities.TestInstance;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
@@ -66,6 +67,9 @@ public class Reevaluation {
 	@Property
 	private TestInstance testInstance;
 
+	@Property
+	private TaskInTestInstance taskInTestInstance;
+
 	@Inject
 	Request request;
 
@@ -75,30 +79,25 @@ public class Reevaluation {
 	}
 
 	@CommitAfter
-	public void processSolution(StudentSubmitSolution s) {
-		evaluationService.processSolution(userInfo.getUserName(), s);
-	}
-
-	private void processListOfSubmissions(List<StudentSubmitSolution> list) {
-		list.forEach((studentSubmitSolution) -> {
-			try {
-				processSolution(studentSubmitSolution);
-			} catch (Exception e) {
-				logger.error("Fail evaluation for sssId: {}", studentSubmitSolution.getStudentSubmitSolutionId());
-			}
-		});
-	}
-
 	public void onActionFromReEvalTest(TestInstance selectedTestInstance) {
 		List<StudentSubmitSolution> list = evaluationService
 				.getAllSolutionsForEvalutionFromTestInstance(selectedTestInstance);
-		processListOfSubmissions(list);
+		evaluationService.reEvalListOfSubmissions(userInfo.getUserName(), list);
 		logger.info("Finished reEvalTest and processed {} entries", list.size());
 	}
 
+	@CommitAfter
+	public void onActionFromReEvalTaskInTestInstance(TaskInTestInstance taskInTestInstance) {
+		List<StudentSubmitSolution> list = evaluationService
+				.getAllSolutionsForEvalutionFromTaskInTestInstance(taskInTestInstance);
+		evaluationService.reEvalListOfSubmissions(userInfo.getUserName(), list);
+		logger.info("Finished reEvalTaskInTestInstance and processed {} entries", list.size());
+	}
+
+	@CommitAfter
 	public void onActionFromReEvalAll() {
 		List<StudentSubmitSolution> list = evaluationService.getAllSolutionsForEvaluation();
-		processListOfSubmissions(list);
+		evaluationService.reEvalListOfSubmissions(userInfo.getUserName(), list);
 		logger.info("Finished reEvalAll and processed {} entries", list.size());
 	}
 
