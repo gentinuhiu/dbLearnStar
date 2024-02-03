@@ -1,42 +1,48 @@
-:root { 
-	--ck-z-default: 100; 
-	--ck-z-modal: calc(var(--ck-z-default) + 999);
-	--color-incorrect-wrong: #600f16ff; 
-	--color-incorrect: #e1553eff; 	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
-	--color-correct: #74b979ff; /* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */ 
-	--color-correct-better: #484837ff; /* https://www.w3schools.com/colors/colors_british.asp - Olive gree */ 
-	--color-noevaluation: #white; 
+:root {
+	--ck-z-default: 100;
+	--ck-z-modal: calc(var(--ck-z-default)+ 999);
+	--color-incorrect-wrong: #600f16ff;
+	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
+	--color-incorrect: #e1553eff;
+	/* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */
+	--color-correct: #74b979ff;
+	/* https://www.w3schools.com/colors/colors_british.asp - Olive green */
+	--color-correct-better: #484837ff;
+	--color-noevaluation: #white;
 	--color-exception: #404040;
 	--main-bg-color-accent: #eceef3ff;
-  	--main-bg-color-accent2: #00000080;
+	--main-bg-color-accent2: #00000080;
+	--inlinecomment-bg-color: #cfef60;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-  --main-bg-color: #260661ff;
-  --main-bg-color2: #260661ff;
-  --main-bg-color3: #42119cff;
-  --main-bg-color-box: #42119cff;
-  --main-bg-color-accent: #330B7Dff;
-  --main-bg-color-accent2: #00000080;
-  --main-font-color: white;
-  --main-font-color-hover: #E9FA5A;
-  --main-link-color: #A074F0;
-  --yt-font-color: #8E6600;
-  --sidebar-bg-color: #260661ff;
-  --main-border-color: rgb(0,0,0,0.15);
-  --main-underline-color: rgba(255,255,255,128);
-  --light: #080704;
-  --dark: #d4dac0;
-  --bs-body-bg: rgb(16,16,16);
-  --bs-body-color: white;
-  --bs-light-rgb: rgba(42,42,42,0.5);
-  --bs-bg-opacity: rgba(42,42,42,0.5);
-  --color-incorrect: #7b000c; 	/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
-  --color-correct: #277c2c; /* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */ 
-  }
+@media ( prefers-color-scheme : dark) {
+	:root {
+		--main-bg-color: #260661ff;
+		--main-bg-color2: #260661ff;
+		--main-bg-color3: #42119cff;
+		--main-bg-color-box: #42119cff;
+		--main-bg-color-accent: #330B7Dff;
+		--main-bg-color-accent2: #00000080;
+		--main-font-color: white;
+		--main-font-color-hover: #E9FA5A;
+		--main-link-color: #A074F0;
+		--yt-font-color: #8E6600;
+		--sidebar-bg-color: #260661ff;
+		--main-border-color: rgb(0, 0, 0, 0.15);
+		--main-underline-color: rgba(255, 255, 255, 128);
+		--light: #080704;
+		--dark: #d4dac0;
+		--bs-body-bg: rgb(16, 16, 16);
+		--bs-body-color: white;
+		--bs-light-rgb: rgba(42, 42, 42, 0.5);
+		--bs-bg-opacity: rgba(42, 42, 42, 0.5);
+		/* https://www.w3schools.com/colors/colors_british.asp - Carnival red */
+		--color-incorrect: #7b000c;
+		/* https://www.w3schools.com/colors/colors_british.asp - Bright green / Goblin / Garland */
+		--color-correct: #277c2c;
+		--inlinecomment-bg-color: #8faf10;
+	}
 }
-
 
 body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 	font-family: 'Fira Sans', Helvetica, Arial, sans-serif !important;
@@ -68,7 +74,7 @@ code {
 }
 
 .color-queryCorrect {
-	background:  var(--color-correct);
+	background: var(--color-correct);
 	color: black;
 }
 
@@ -77,7 +83,7 @@ code {
 }
 
 .result-queryCorrect {
-	background:  var(--color-correct);
+	background: var(--color-correct);
 }
 
 .result-passed {
@@ -99,16 +105,23 @@ p.comment {
 }
 
 .inlinecomment {
-	background: #ffffa0;
+	background: var(--inlinecomment-bg-color);
 	margin-left: 5rem;
 	border-left: 1px solid black;
+	padding: 0.1rem;
 	padding-left: 0.5rem;
 }
 
 @keyframes slidein {
-  from { background: white; }
-  50% { background: #ffffa0; }
-  to { background: white; }
+	from { 
+		background:white; 
+	}
+	50% { 
+		background:#ffffa0; 
+	}
+	to { 
+		background: white; 
+	}
 }
 
 .pagination li {
@@ -172,77 +185,61 @@ svg {
 }
 
 .solutionCorrect {
-	background-color: var(--color-correct) !important;	
+	background-color: var(--color-correct) !important;
 }
 
 .solutionInCorrect {
-	background-color: var(--color-incorrect) !important;	
+	background-color: var(--color-incorrect) !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  a {
-    color: #E2F72F;
-  }
-  
-  a:hover {
-    color: #A1B400;
-  }
-  
-  body {
-    background-color: var(--main-bg-color2);
-    color: var(--main-font-color);
-  }
-  
-  .card {
-    background-color: var(--main-bg-color) !important;
-    border-color: var(--main-bg-color3) !important;
-  }
-  
-  .card-header {
-    background-color: var(--main-bg-color-accent) !important;
-  }
-
-  .card-header h3 {
-    color: var(--main-font-color) !important;
-  }
-    
-  .bg-light {
-    background-color:var(--main-bg-color3) !important;
-  }
-  
-  .table {
-    color: var(--main-font-color);
-  }
-  
-  .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-    background-color: var(--main-bg-color-accent);
-    color: var(--main-font-color-hover);
-  }
-  
-  .dropdown-menu {
-    background-color: var(--main-bg-color2);
-  }
-  
-  .dropdown-menu a {
-    color: var(--main-link-color) !important;
-  }
-  
-  pre {
-  	color: var(--main-font-color);
-  }
-  
-  .modal-content {
-  	background-color: var(--main-bg-color2);
-  	border-color: var(--main-bg-color2);
-  }
-  
-  .cke_wysiwyg_frame {
-  	background-color: #6060ff !important;
-  }
-
+@media ( prefers-color-scheme : dark) {
+	a {
+		color: #E2F72F;
+	}
+	a:hover {
+		color: #A1B400;
+	}
+	body {
+		background-color: var(--main-bg-color2);
+		color: var(--main-font-color);
+	}
+	.card {
+		background-color: var(--main-bg-color) !important;
+		border-color: var(--main-bg-color3) !important;
+	}
+	.card-header {
+		background-color: var(--main-bg-color-accent) !important;
+	}
+	.card-header h3 {
+		color: var(--main-font-color) !important;
+	}
+	.bg-light {
+		background-color: var(--main-bg-color3) !important;
+	}
+	.table {
+		color: var(--main-font-color);
+	}
+	.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+		background-color: var(--main-bg-color-accent);
+		color: var(--main-font-color-hover);
+	}
+	.dropdown-menu {
+		background-color: var(--main-bg-color2);
+	}
+	.dropdown-menu a {
+		color: var(--main-link-color) !important;
+	}
+	pre {
+		color: var(--main-font-color);
+	}
+	.modal-content {
+		background-color: var(--main-bg-color2);
+		border-color: var(--main-bg-color2);
+	}
+	.cke_wysiwyg_frame {
+		background-color: #6060ff !important;
+	}
 	p.comment {
 		background: #7C8B00;
 	}
-
-  
 }
