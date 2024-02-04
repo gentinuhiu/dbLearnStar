@@ -955,9 +955,9 @@ public class EvaluationServiceImpl implements EvaluationService {
 							JOIN group_focus_on_test gfot ON g.group_id=gfot.group_id
 							JOIN test_instance ti ON ti.test_instance_id=gfot.test_instance_id
 							JOIN task_in_test_instance titi ON ti.test_instance_id=titi.test_instance_id
-							JOIN student_started_test sst ON sst.test_instance_id=ti.test_instance_id AND sst.student_id=gm.student_id
-							JOIN student_submit_solution sss ON titi.task_in_test_instance_id=sss.task_in_test_instance_id AND sss.student_started_test_id=sst.student_started_test_id
-							JOIN solution_assessment sa ON sss.student_submit_solution_id=sa.student_submit_solution_id
+							LEFT JOIN student_started_test sst ON sst.test_instance_id=ti.test_instance_id AND sst.student_id=gm.student_id
+							LEFT JOIN student_submit_solution sss ON titi.task_in_test_instance_id=sss.task_in_test_instance_id AND sss.student_started_test_id=sst.student_started_test_id
+							LEFT JOIN solution_assessment sa ON sss.student_submit_solution_id=sa.student_submit_solution_id
 							WHERE g.group_id=?
 							GROUP BY gm.group_member_id, ti.test_instance_id, titi.task_in_test_instance_id
 						) temp1
