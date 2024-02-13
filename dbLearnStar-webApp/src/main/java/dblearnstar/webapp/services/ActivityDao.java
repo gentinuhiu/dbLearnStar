@@ -33,4 +33,6 @@ public interface ActivityDao {
 	List<ActivityInTask> getActivitiesInTaskForPerson(Person selectedPerson,
 			TaskInTestInstance selectedTaskInTestInstance);
 
+	void recordActivityInTask(Person person, TaskInTestInstance taskInTestInstance, String type, String payload);
+
 }

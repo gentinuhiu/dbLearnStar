@@ -63,6 +63,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.apache.tapestry5.upload.services.UploadedFile;
 import org.slf4j.Logger;
 
+import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentStartedTest;
 import dblearnstar.model.entities.StudentSubmitSolution;
@@ -75,6 +76,7 @@ import dblearnstar.model.model.UserInfo;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.annotations.StudentPage;
 import dblearnstar.webapp.components.ModalBox;
+import dblearnstar.webapp.services.ActivityManager;
 import dblearnstar.webapp.services.EvaluationService;
 import dblearnstar.webapp.services.GenericService;
 import dblearnstar.webapp.services.PersonManager;
@@ -119,6 +121,8 @@ public class QueryTest {
 	@Inject
 	private TestManager testManager;
 	@Inject
+	private ActivityManager activityManager;
+	@Inject
 	private EvaluationService evaluationService;
 	@Inject
 	private PersonManager pm;
@@ -133,6 +137,8 @@ public class QueryTest {
 	private Zone evalZone;
 	@InjectComponent
 	private Zone currentTimeZone;
+
+	private Student activeStudent;
 
 	@Property
 //	@Persist
@@ -201,7 +207,7 @@ public class QueryTest {
 			@RequestParameter(value = "issuer") String issuer) {
 		toUpload = false;
 		toSubmitText = false;
-		recordActivity(ModelConstants.ActivityStillViewing, payload, issuer);
+		recordActivity(activeStudent.getPerson(), ModelConstants.ActivityStillViewing, payload, issuer);
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(currentTimeZone);
 		}
@@ -213,7 +219,7 @@ public class QueryTest {
 			@RequestParameter(value = "issuer") String issuer) {
 		toUpload = false;
 		toSubmitText = false;
-		recordActivity(ModelConstants.ActivityExecSelection, query, issuer);
+		recordActivity(activeStudent.getPerson(), ModelConstants.ActivityExecSelection, query, issuer);
 		runQueryAndEval(true, query); // field is NotForEvaluation
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(historyZone).addRender(evalZone).addRender(errorZone).addRender(resultsZone);
@@ -226,7 +232,7 @@ public class QueryTest {
 			@RequestParameter(value = "issuer") String issuer) {
 		toUpload = false;
 		toSubmitText = false;
-		recordActivity(ModelConstants.ActivityExecAll, query, issuer);
+		recordActivity(activeStudent.getPerson(), ModelConstants.ActivityExecAll, query, issuer);
 		runQueryAndEval(true, query); // field is NotForEvaluation
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(historyZone).addRender(evalZone).addRender(errorZone).addRender(resultsZone);
@@ -237,7 +243,7 @@ public class QueryTest {
 	@OnEvent("evalAll")
 	public void execEvalAll(@RequestParameter(value = "query") String query,
 			@RequestParameter(value = "issuer") String issuer) {
-		recordActivity(ModelConstants.ActivityEval, query, issuer);
+		recordActivity(activeStudent.getPerson(), ModelConstants.ActivityEval, query, issuer);
 	}
 
 	@PublishEvent
@@ -246,7 +252,7 @@ public class QueryTest {
 			@RequestParameter(value = "issuer") String issuer) {
 		toUpload = false;
 		toSubmitText = false;
-		recordActivity(ModelConstants.ActivityPlan, query, issuer);
+		recordActivity(activeStudent.getPerson(), ModelConstants.ActivityPlan, query, issuer);
 		runQueryAndEval(true, "explain " + query); // field is
 													// NotForEvaluation
 		if (request.isXHR()) {
@@ -288,7 +294,6 @@ public class QueryTest {
 				logger.error("tti is null, username:{}", userInfo.getUserName());
 				return ExamsAndTasksOverviewPage.class;
 			} else {
-				logger.debug("onActivate: {}", tti.getTaskInTestInstanceId());
 				taskInTestInstance = genericService.getByPK(TaskInTestInstance.class, tti.getTaskInTestInstanceId());
 				Student student = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
 				studentId = student.getStudentId();
@@ -307,7 +312,7 @@ public class QueryTest {
 					if (filterNotForEvalution == null) {
 						filterNotForEvalution = false;
 					}
-					recordActivity(ModelConstants.ActivityViewTask, "", "onActivity");
+					recordActivity(activeStudent.getPerson(), ModelConstants.ActivityViewTask, "", "onActivity");
 					toUpload = false;
 					logger.debug("access allowed");
 					accessAllowed = true;
@@ -339,10 +344,9 @@ public class QueryTest {
 	}
 
 	@CommitAfter
-	public void recordActivity(String type, String payload, String issuer) {
+	public void recordActivity(Person p, String type, String payload, String issuer) {
 		logger.debug("recordActivity RECEIVED: {},{},{}", type, issuer, payload);
-		Student student = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
-		testManager.recordActivityInTask(student.getPerson(), taskInTestInstance, type, payload);
+		activityManager.recordActivityInTask(p, taskInTestInstance, type, payload);
 	}
 
 	public String getQueryErrorPosition() {
@@ -457,7 +461,7 @@ public class QueryTest {
 	public void onSelectedFromEvaluate() {
 		toUpload = false;
 		toSubmitText = false;
-		recordActivity(ModelConstants.ActivityEval, queryString, "onSelectedFromEvaluate");
+		recordActivity(activeStudent.getPerson(), ModelConstants.ActivityEval, queryString, "onSelectedFromEvaluate");
 		runQueryAndEval(false, queryString); // field is NotForEvaluation
 	}
 
@@ -465,7 +469,7 @@ public class QueryTest {
 		logger.debug("upload clicked");
 		toUpload = true;
 		toSubmitText = false;
-		recordActivity(ModelConstants.ActivityTryUpload, "", "onSelectedFromUpload");
+		recordActivity(activeStudent.getPerson(), ModelConstants.ActivityTryUpload, "", "onSelectedFromUpload");
 		// doTheUpload();
 	}
 
@@ -473,7 +477,8 @@ public class QueryTest {
 		logger.debug("submit clicked");
 		toUpload = false;
 		toSubmitText = true;
-		recordActivity(ModelConstants.ActivitySubmitText, "", "onSelectedFromSubmitTextSolution");
+		recordActivity(activeStudent.getPerson(), ModelConstants.ActivitySubmitText, "",
+				"onSelectedFromSubmitTextSolution");
 	}
 
 	public void onValidateFromQueryTestForm() {

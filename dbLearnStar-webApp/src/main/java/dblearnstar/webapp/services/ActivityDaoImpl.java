@@ -74,4 +74,16 @@ public class ActivityDaoImpl implements ActivityDao {
 		return UsefulMethods.castList(ActivityInTask.class, q.getResultList());
 	}
 
+	@Override
+	public void recordActivityInTask(Person person, TaskInTestInstance taskInTestInstance, String type,
+			String payload) {
+		ActivityInTask activityInTask = new ActivityInTask();
+		activityInTask.setPerson(person);
+		activityInTask.setTaskInTestInstance(taskInTestInstance);
+		activityInTask.setType(type);
+		activityInTask.setWhenOccured(new Date());
+		activityInTask.setPayload(payload);
+		getEntityManager().save(activityInTask);
+	}
+
 }

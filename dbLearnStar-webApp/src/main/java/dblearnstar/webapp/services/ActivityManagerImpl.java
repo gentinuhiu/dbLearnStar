@@ -20,6 +20,7 @@
 
 package dblearnstar.webapp.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -42,6 +43,12 @@ public class ActivityManagerImpl implements ActivityManager {
 	public List<ActivityInTask> getActivitiesInTaskForPerson(Person selectedPerson,
 			TaskInTestInstance selectedTaskInTestInstance) {
 		return activityDao.getActivitiesInTaskForPerson(selectedPerson, selectedTaskInTestInstance);
+	}
+
+	@Override
+	public void recordActivityInTask(Person person, TaskInTestInstance taskInTestInstance, String type,
+			String payload) {
+		activityDao.recordActivityInTask(person, taskInTestInstance, type, payload);
 	}
 
 }

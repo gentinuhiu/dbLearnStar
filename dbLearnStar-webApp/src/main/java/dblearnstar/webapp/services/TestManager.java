@@ -22,7 +22,6 @@ package dblearnstar.webapp.services;
 
 import java.util.List;
 
-import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.SolutionAssessment;
 import dblearnstar.model.entities.Student;
 import dblearnstar.model.entities.StudentStartedTest;
@@ -80,8 +79,6 @@ public interface TestManager {
 			long taskInTestInstanceId);
 
 	public List<TaskInTestInstance> getTaskInTestInstancesByTestInstance(long testInstanceId);
-
-	public void recordActivityInTask(Person person, TaskInTestInstance taskInTestInstance, String type, String payload);
 
 	public List<Student> getStudentsWhoStartedTestInstance(TestInstance testInstance);
 

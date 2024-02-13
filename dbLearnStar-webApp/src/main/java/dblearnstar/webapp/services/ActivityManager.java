@@ -33,4 +33,6 @@ public interface ActivityManager {
 	public List<ActivityInTask> getActivitiesInTaskForPerson(Person selectedPerson,
 			TaskInTestInstance selectedTaskInTestInstance);
 
+	public void recordActivityInTask(Person person, TaskInTestInstance taskInTestInstance, String type, String payload);
+
 }
