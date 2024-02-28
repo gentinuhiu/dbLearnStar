@@ -295,11 +295,11 @@ public class QueryTest {
 				return ExamsAndTasksOverviewPage.class;
 			} else {
 				taskInTestInstance = genericService.getByPK(TaskInTestInstance.class, tti.getTaskInTestInstanceId());
-				Student student = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
-				studentId = student.getStudentId();
+				activeStudent = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0);
+				studentId = activeStudent.getStudentId();
 
-				if (userInfo.isAdministrator() || testManager.accessToTaskInTestInstanceAllowed(student, tti)) {
-					studentId = student.getStudentId();
+				if (userInfo.isAdministrator() || testManager.accessToTaskInTestInstanceAllowed(activeStudent, tti)) {
+					studentId = activeStudent.getStudentId();
 					codeType = taskInTestInstance.getTask().getTaskIsOfTypes().get(0).getTaskType().getCodetype();
 
 					resultsErrors = null;
