@@ -1,16 +1,19 @@
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0">
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.8</version>
+		<version>2.7.18</version>
 		<relativePath />
 	</parent>
 
 	<groupId>dblearnstar</groupId>
 	<artifactId>dblearnstar</artifactId>
-	<version>0.9.3</version>
+	<version>0.9.6</version>
 	<name>dbLearnStar</name>
 
 	<packaging>war</packaging>
@@ -29,38 +32,34 @@
 	</developers>
 
 	<properties>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
-		<java-version>17</java-version>
-
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<spring-boot-version>2.7.8</spring-boot-version>
-		<tapestry-version>5.8.3</tapestry-version>
-		<jackson-version>2.14.0-rc2</jackson-version>
-		<jackson-databind-version>2.14.0-rc2</jackson-databind-version>
-		<log4j-version>2.20.0</log4j-version>
-		<json-version>1.1.4</json-version>
-		<junit-version>5.8.2</junit-version>
+		<maven-compiler-version>3.12.1</maven-compiler-version>
+		<maven-surefire-version>3.2.3</maven-surefire-version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<java.version>17</java.version>
+
+		<spring-boot-version>2.7.18</spring-boot-version>
+		<tapestry-version>5.8.4</tapestry-version>
+		<jackson-version>2.13.1</jackson-version>
+		<geb-version>2.3.1</geb-version>
+		<log4j-version>2.22.1</log4j-version>
+		<junit-version>5.10.1</junit-version>
 		<yasson-version>2.0.4</yasson-version>
 		<servlet-version>4.0.1</servlet-version>
 
-		<maven-compiler-version>3.8.1</maven-compiler-version>
-		<maven-surefire-version>3.0.0-M5</maven-surefire-version>
-
-		<postgresql-version>42.5.4</postgresql-version>
+		<postgresql-version>42.7.2</postgresql-version>
 		<cas-client-version>3.6.4</cas-client-version>
 	</properties>
 
-	<!--
 	<repositories>
 		<repository>
 			<id>apache-staging</id>
 			<url>https://repository.apache.org/content/repositories/staging/</url>
 		</repository>
 	</repositories>
--->
 
 	<dependencies>
 		<dependency>
@@ -122,7 +121,8 @@
 			<version>${tapestry-version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- Uncomment this to add support for spring, hibernate, bean validation and file uploads -->
+		<!-- Uncomment this to add support for spring, hibernate, bean
+		validation and file uploads -->
 		<!--
         <dependency>
             <groupId>org.apache.tapestry</groupId>
@@ -130,7 +130,7 @@
             <version>${tapestry-version}</version>
             <scope>compile</scope>
         </dependency>
-	-->
+		-->
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
 			<artifactId>tapestry-hibernate</artifactId>
@@ -139,18 +139,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-hibernate-core</artifactId>
+			<artifactId>tapestry-beanvalidator</artifactId>
 			<version>${tapestry-version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<!--
-        <dependency>
-            <groupId>org.apache.tapestry</groupId>
-            <artifactId>tapestry-beanvalidator</artifactId>
-            <version>${tapestry-version}</version>
-            <scope>compile</scope>
-        </dependency>
-	-->
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
 			<artifactId>tapestry-upload</artifactId>
@@ -200,7 +192,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${jackson-databind-version}</version>
+			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -222,9 +214,15 @@
 		</dependency>
 
 		<dependency>
-		   <groupId>com.zaxxer</groupId>
-		   <artifactId>HikariCP</artifactId>
-		   <version>5.0.1</version>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>5.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-hikaricp</artifactId>
+			<version>5.6.15.Final</version>
 		</dependency>
 
 		<dependency>
@@ -254,27 +252,28 @@
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator</artifactId>
-			<version>0.42</version>
+			<version>0.48</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>fontsource-fira-sans</artifactId>
 			<version>3.0.5</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>feather-icons</artifactId>
-			<version>4.28.0</version>
+			<version>4.29.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>ckeditor</artifactId>
 			<version>4.19.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.webjars.npm</groupId>
+			<artifactId>firacode</artifactId>
+			<version>1.205.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>codemirror</artifactId>
@@ -282,15 +281,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.webjars.npm</groupId>
-			<artifactId>firacode</artifactId>
-			<version>1.205.0</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.github.vertical-blank</groupId>
 			<artifactId>sql-formatter</artifactId>
-			<version>2.0.3</version>
+			<version>2.0.4</version>
 		</dependency>
 
 		<dependency>
@@ -386,7 +379,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-version}</version>
 				<configuration>
-					<release>17</release>
+					<release>${java.version}</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -457,6 +450,13 @@
 									<outputDirectory>${project.basedir}/target/classes/META-INF/assets/</outputDirectory>
 								</artifactItem>
 								<artifactItem>
+									<groupId>org.webjars</groupId>
+									<artifactId>ckeditor</artifactId>
+									<type>jar</type>
+									<includes>META-INF/resources/webjars/**/*</includes>
+									<outputDirectory>${project.basedir}/target/classes/META-INF/assets/</outputDirectory>
+								</artifactItem>
+								<artifactItem>
 									<groupId>org.webjars.npm</groupId>
 									<artifactId>codemirror</artifactId>
 									<type>jar</type>
@@ -464,17 +464,11 @@
 									<outputDirectory>${project.basedir}/target/classes/META-INF/assets/codemirror/</outputDirectory>
 									<fileMappers>
 										<org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
-											<pattern>^\QMETA-INF/resources/webjars/codemirror/6.65.7/\E</pattern>
+											<pattern>
+												^\QMETA-INF/resources/webjars/codemirror/6.65.7/\E</pattern>
 											<replacement>./</replacement>
 										</org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
 									</fileMappers>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.webjars</groupId>
-									<artifactId>ckeditor</artifactId>
-									<type>jar</type>
-									<includes>META-INF/resources/webjars/**/*</includes>
-									<outputDirectory>${project.basedir}/target/classes/META-INF/assets/</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
