@@ -26,12 +26,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -65,24 +68,50 @@ public class EvaluationServiceImpl implements EvaluationService {
 	private Messages messages;
 
 	@Inject
+	private SystemConfigService systemConfigService;
+
+	@Inject
 	private Session session;
 
 	private Session getEntityManager() {
 		return session.getSession();
 	}
 
-	private String prepareQueryStringCurrentTime(String query, String schema) {
+	private String prepareQueryStringCurrentTime(TaskInTestInstance taskInTestInstance, String query, String schema) {
+		String nowString = systemConfigService.getValue("Task", taskInTestInstance.getTask().getTaskId(),
+				"TEST_NOW_" + schema);
+		if (nowString == null) {
+			logger.warn("Missing system parameter {}", "TEST_NOW_" + schema);
+		}
+		logger.debug("TEST_NOW {}", nowString);
 		String queryStringModified = query;
+		String replaceString = schema + ".now()";
+		if (nowString != null && nowString.length() == 35 && nowString.startsWith("TIMESTAMP '")
+				&& nowString.endsWith("'")) {
+			String checkParse = nowString.substring(11, nowString.length() - 1);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			Date now = null;
+			try {
+				now = sdf.parse(checkParse);
+				replaceString = nowString;
+			} catch (ParseException e) {
+				logger.error("Parsing parameter {} failed with error {}", "TEST_NOW_" + schema, e.getMessage());
+			}
+		}
 		queryStringModified = Pattern.compile(Pattern.quote("now()"), Pattern.CASE_INSENSITIVE)
-				.matcher(queryStringModified).replaceAll(schema + ".now()");
+				.matcher(queryStringModified).replaceAll(replaceString);
 		queryStringModified = Pattern.compile(Pattern.quote("current_date"), Pattern.CASE_INSENSITIVE)
-				.matcher(queryStringModified).replaceAll(schema + ".now()");
+				.matcher(queryStringModified).replaceAll(replaceString);
+		logger.debug(
+				"Modded query for evaluation is \n------------------------------\n{}\n==============================",
+				queryStringModified);
 		return queryStringModified;
 	}
 
-	private String prepareQueryStringForViewing(String query, String schema, String evalViewName, String userName) {
+	private String prepareQueryStringForViewing(TaskInTestInstance taskInTestInstance, String query, String schema,
+			String evalViewName, String userName) {
 		String queryStringModified = query;
-		queryStringModified = prepareQueryStringCurrentTime(query, schema);
+		queryStringModified = prepareQueryStringCurrentTime(taskInTestInstance, query, schema);
 
 		String evalQueryString = //
 				" select '<span class=\"inSubmission\">In Submission</span>' as WHERE, *   from " //
@@ -99,9 +128,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 		return evalQueryString;
 	}
 
-	private String prepareQueryStringForEval(String query, String schema, String evalViewName, String userName) {
+	private String prepareQueryStringForEval(TaskInTestInstance taskInTestInstance, String query, String schema,
+			String evalViewName, String userName) {
 		String queryStringModified = query;
-		queryStringModified = prepareQueryStringCurrentTime(query, schema);
+		queryStringModified = prepareQueryStringCurrentTime(taskInTestInstance, query, schema);
 
 		String evalQueryString = //
 				" select *, 'EDEN' from " //
@@ -144,7 +174,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 					connection.setSavepoint();
 					connection.setSchema(schema);
 
-					String evalQueryString = prepareQueryStringForEval(queryToRun, schema, evalViewName, userName);
+					String evalQueryString = prepareQueryStringForEval(taskInTestInstance, queryToRun, schema,
+							evalViewName, userName);
 
 					PreparedStatement pstmt = connection.prepareStatement(evalQueryString);
 					pstmt.setQueryTimeout(10 * 60);
@@ -312,37 +343,58 @@ public class EvaluationServiceImpl implements EvaluationService {
 			if (testInstance == null) {
 				return null;
 			}
+			String newLine = System.getProperty("line.separator");
 			String queryStringIntro = """
-					from StudentSubmitSolution sssL where
-					sssL.taskInTestInstance.testInstance.testInstanceId=:testInstanceId
+					SELECT sss.*
+					FROM student_submit_solution sss
+					JOIN student_started_test sst ON sss.student_started_test_id=sst.student_started_test_id
+					WHERE 
+						sst.test_instance_id=:testInstanceId
 					""";
 			String queryStringMiddle = "";
 			if (student != null) {
-				queryStringMiddle += " and sssL.studentStartedTest.student.studentId=:studentId ";
+				queryStringMiddle += """
+						AND sst.student_id=:studentId
+						""";
+			} else {
+				queryStringMiddle += """
+						AND sst.student_id IN
+						(
+							SELECT gm.student_id
+							FROM
+								group_focus_on_test gfot
+								JOIN group_member gm ON gm.group_id=gfot.group_id
+							WHERE gfot.test_instance_id=sst.test_instance_id
+						)
+						""";
 			}
 			if (taskInTestInstance != null) {
-				queryStringMiddle += " and sssL.taskInTestInstance.taskInTestInstanceId=:taskInTestInstanceId ";
+				queryStringMiddle += """
+						AND sss.task_in_test_instance_id=:taskInTestInstanceId
+						""";
 			}
 			if (onlyCorrect != null && onlyCorrect) {
 				queryStringMiddle += """
-						and sssL.evaluationSimple=true
-						and sssL.evaluationComplex=true
-						and sssL.evaluationExam=true
+						AND sss.evaluation_simple
+						AND sss.evaluation_complex
+						AND sss.evaluation_exam
 						""";
 			}
 			if (onlyForEval != null && onlyForEval) {
-				queryStringMiddle += " and sssL.notForEvaluation=false ";
+				queryStringMiddle += """
+						AND sss.not_for_evaluation=false
+						""";
 			}
 			String queryStringOutro = """
-					and sssL.submittedOn in (
-					    select max(sssR.submittedOn) from StudentSubmitSolution sssR
-					    where
-					    	sssL.studentStartedTest.student.studentId=sssR.studentStartedTest.student.studentId and
-					    	sssL.taskInTestInstance.taskInTestInstanceId=sssR.taskInTestInstance.taskInTestInstanceId
-					) order by sssL.submittedOn desc
+					AND sss.submitted_on=
+					(
+						SELECT max(sssin.submitted_on) FROM student_submit_solution sssin
+						WHERE sssin.student_started_test_id=sss.student_started_test_id AND sssin.task_in_test_instance_id=sss.task_in_test_instance_id
+					)
+					order by sss.submitted_on desc
 					""";
-			javax.persistence.Query q = getEntityManager()
-					.createQuery(queryStringIntro + queryStringMiddle + queryStringOutro);
+			String queryString = queryStringIntro + queryStringMiddle + queryStringOutro;
+			Query q = getEntityManager().createNativeQuery(queryString, StudentSubmitSolution.class);
 			q.setParameter("testInstanceId", testInstance.getTestInstanceId());
 			if (student != null) {
 				q.setParameter("studentId", student.getStudentId());
@@ -529,7 +581,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 					connection.setSchema(schema);
 					statusCounter = 2;
 
-					String evalQueryString = prepareQueryStringForViewing(queryToRun, schema, evalViewName, userName);
+					String evalQueryString = prepareQueryStringForViewing(taskInTestInstance, queryToRun, schema,
+							evalViewName, userName);
 
 					PreparedStatement pstmt = connection.prepareStatement(evalQueryString);
 					pstmt.setQueryTimeout(10 * 60);
