@@ -210,6 +210,9 @@ svg {
 	.card-header {
 		background-color: var(--main-bg-color-accent) !important;
 	}
+    .testType .card-header.bg-success {
+            background-color: var(--color-correct) !important;
+    }
 	.card-header h3 {
 		color: var(--main-font-color) !important;
 	}
