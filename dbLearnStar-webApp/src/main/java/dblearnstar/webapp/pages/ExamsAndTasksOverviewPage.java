@@ -213,7 +213,7 @@ public class ExamsAndTasksOverviewPage {
 	}
 
 	public List<TaskInTestInstance> getTaskInTestInstances() {
-		return testManager.getTasksInTestInstance(testInstance.getTestInstanceId());
+		return testManager.getTaskInTestInstancesByTestInstance(testInstance.getTestInstanceId());
 	}
 
 	public Long getNumPersonsSuccessful() {

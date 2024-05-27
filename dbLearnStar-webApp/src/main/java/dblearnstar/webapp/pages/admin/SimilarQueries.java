@@ -287,7 +287,7 @@ public class SimilarQueries {
 
 	@CommitAfter
 	public void onActionFromReevaluateSubmission(StudentSubmitSolution s) {
-		evaluationService.processSolution(userInfo.getUserName(), s);
+		evaluationService.reEvalSolution(userInfo.getUserName(), s);
 	}
 
 }

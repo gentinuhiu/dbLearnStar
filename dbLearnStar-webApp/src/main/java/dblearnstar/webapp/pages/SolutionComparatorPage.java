@@ -104,7 +104,7 @@ public class SolutionComparatorPage {
 		studentId = pm.getStudentsByPersonId(userInfo.getPersonId()).get(0).getStudentId();
 		if (selectedTestInstance != null) {
 			selectedTestInstance = genericService.getByPK(TestInstance.class, selectedTestInstance.getTestInstanceId());
-			taskInTestInstances = testManager.getTasksInTestInstance(selectedTestInstance.getTestInstanceId());
+			taskInTestInstances = testManager.getTaskInTestInstancesByTestInstance(selectedTestInstance.getTestInstanceId());
 			prepareMapOfEvaluationsAndTotal();
 		}
 	}
