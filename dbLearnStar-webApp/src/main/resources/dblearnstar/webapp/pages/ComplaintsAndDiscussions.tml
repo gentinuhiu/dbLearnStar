@@ -37,7 +37,7 @@
 					<t:if t:test="sql">
 						<pre>
 							<span t:type="outputRaw"
-								t:value="solutionAssessmentToDiscuss.studentSubmitSolution.submission" />
+							t:value="solutionAssessmentToDiscuss.studentSubmitSolution.submission" />
 						</pre>
 						<p:else>
 							<t:outputRaw
@@ -51,10 +51,16 @@
 					<div class="card-header">
 						<h5>${message:Evaluation-label}</h5>
 						<div class="row">
-							<div class="col-6">${message:grade-label}:
+							<div class="col-5">${message:grade-label}:
 								<span class="text-light bg-dark p-1">${solutionAssessmentToDiscuss.grade}</span>
 							</div>
-							<div class="col-6">${solutionAssessmentToDiscuss.evaluatedOn}</div>
+							<div class="col-7 text-right" t:type="if" t:test="administrator">${solutionAssessmentToDiscuss.evaluatedOn}
+								<a class="btn btn-sm btn-secondary" href=""
+									t:id="jumpToEvaluation" t:type="pagelink"
+									t:page="admin/SubmissionEvaluations"
+									t:context="solutionAssessmentToDiscuss">View</a>
+							</div>
+
 						</div>
 					</div>
 					<div class="card-body feedback"
