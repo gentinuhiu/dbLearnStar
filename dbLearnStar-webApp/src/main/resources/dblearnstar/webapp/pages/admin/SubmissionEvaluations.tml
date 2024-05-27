@@ -27,7 +27,7 @@
 				<div t:id="zSQLEval" t:type="zone">
 					<div class="card-header">
 						<div class="row m-0 p-0 ">
-							<div class="col-3">
+							<div class="col-2">
 								<a role="button" href="#" t:type="eventlink"
 									t:id="prettyFormatToggle"
 									class="btn btn-sm btn-primary ${classPrettyFormat}"
@@ -35,7 +35,7 @@
 										t:path="align-left" />
 								</a>
 							</div>
-							<div class="col-9 text-right">
+							<div class="col-10 text-right">
 								${message:evaluationSimple-label}:
 								<t:booleanindicator
 									t:value="editedAssessment.studentSubmitSolution.evaluationSimple"
@@ -54,9 +54,17 @@
 									<t:SVGIcon t:path="repeat" />
 								</a> <a href="" class="btn btn-sm btn-info" t:type="eventlink"
 									t:id="viewEvaluationResults" t:zone="zSQLEval"
-									t:context="editedAssessment.studentSubmitSolution">${message:sqlEvaluation-label}
+									t:context="editedAssessment.studentSubmitSolution">${message:viewEvalResults-label}
 									<t:SVGIcon t:path="eye" />
-								</a>
+								</a> <a href="" t:type="eventlink"
+									t:id="assessEditedAsCorrectSubmission" t:async="true"
+									t:zone="zModal" class="btn btn-sm btn-success correct"><img
+									t:type="svgicon" t:path="check" />${message:assessmentComment-correct}</a>
+								<a href="" t:type="eventlink"
+									t:id="assessEditedAsIncorrectSubmission" t:async="true"
+									t:zone="zModal" class="btn btn-sm btn-warning incorrect"><img
+									t:type="svgicon" t:path="x" />${message:assessmentComment-incorrect}</a>
+
 							</div>
 						</div>
 					</div>

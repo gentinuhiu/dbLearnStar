@@ -223,6 +223,12 @@ public class SubmissionEvaluations {
 		}
 	}
 
+	public void onActivate(SolutionAssessment sa) {
+		logger.warn("Activated with sa={} from {} by {} {}", sa, request.getRemoteHost(), userInfo.getUserName(),
+				request.getHeader("User-Agent"));
+		editedAssessment = genericService.getByPK(SolutionAssessment.class, sa.getSolutionAssessmentId());
+	}
+
 	public List<StudentSubmitSolution> getAllSubmissions() {
 		List<StudentSubmitSolution> lista = null;
 		if (filterTestInstance != null) {
@@ -374,7 +380,7 @@ public class SubmissionEvaluations {
 
 	@CommitAfter
 	public void onReevaluateSubmission(StudentSubmitSolution s) {
-		evaluationService.processSolution(userInfo.getUserName(), s);
+		evaluationService.reEvalSolution(userInfo.getUserName(), s);
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zSubmissions);
 		}
@@ -383,7 +389,7 @@ public class SubmissionEvaluations {
 	@CommitAfter
 	public void onReevaluateEditedSubmission(StudentSubmitSolution s) {
 		clearResultsAndErrors();
-		evaluationService.processSolution(userInfo.getUserName(), s);
+		evaluationService.reEvalSolution(userInfo.getUserName(), s);
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zSQLEval);
 		}
@@ -581,6 +587,28 @@ public class SubmissionEvaluations {
 		genericService.save(sa);
 		if (request.isXHR()) {
 			ajaxResponseRenderer.addRender(zSubmissions);
+		}
+	}
+
+	@CommitAfter
+	void onAssessEditedAsCorrectSubmission() {
+		editedAssessment.setFeedback(messages.get("assessmentComment-correct"));
+		editedAssessment.setEvaluatedOn(new Date());
+		editedAssessment.setGrade(editedAssessment.getStudentSubmitSolution().getTaskInTestInstance().getPoints());
+		editedAssessment.setPassed(true);
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zModal);
+		}
+	}
+
+	@CommitAfter
+	void onAssessEditedAsIncorrectSubmission() {
+		editedAssessment.setFeedback(messages.get("assessmentComment-incorrect"));
+		editedAssessment.setEvaluatedOn(new Date());
+		editedAssessment.setGrade(0.0F);
+		editedAssessment.setPassed(false);
+		if (request.isXHR()) {
+			ajaxResponseRenderer.addRender(zModal);
 		}
 	}
 
