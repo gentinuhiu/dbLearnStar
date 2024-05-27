@@ -46,7 +46,7 @@ import dblearnstar.webapp.services.TestManager;
 import dblearnstar.webapp.services.TranslationService;
 
 @AdministratorPage
-@Import(module = { "zoneUpdateEffect" })
+@Import(module = { "zoneUpdateEffect" }, stylesheet = { "StudentGroupProgress.css" })
 public class StudentGroupProgress {
 
 	@Inject
