@@ -88,6 +88,9 @@ public class AppModule {
 		configuration.add("tapestry.hibernate.early-startup", true);
 
 		configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
+
+		configuration.add(SymbolConstants.EXCEPTION_REPORTS_DIR,
+				AppConfig.getString("additionalFiles.path") + AppConfig.getString("exceptionReports.path"));
 	}
 
 	@Contribute(HibernateEntityPackageManager.class)
