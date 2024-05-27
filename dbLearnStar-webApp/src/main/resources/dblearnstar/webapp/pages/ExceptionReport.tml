@@ -1,5 +1,6 @@
 <html title="Exception"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
 
 <div class="card">
 	<div class="card-header bg-danger">Error</div>
