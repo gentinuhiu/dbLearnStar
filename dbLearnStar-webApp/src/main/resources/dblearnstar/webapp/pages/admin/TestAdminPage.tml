@@ -47,7 +47,7 @@
 								t:context="selectedTestInstance" t:id="deleteTestInstance"><svg
 									t:type="svgicon" t:path="trash" />
 								${message:symbol-removeObjectFromList}</a> <a href=""
-								class="btn btn-sm btn-default" t:type="actionlink"
+								class="btn btn-sm btn-secondary" t:type="actionlink"
 								t:context="selectedTestInstance" t:id="duplicateTestInstance"><svg
 									t:type="svgicon" t:path="copy" /> ${message:symbol-duplicate}</a>
 						</p>
