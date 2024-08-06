@@ -1,5 +1,6 @@
 .resultschema {
-	display: none;
+        color: var(--dark);
+        background: var(--light);
 }
 
 td {
