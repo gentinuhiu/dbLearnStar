@@ -94,6 +94,16 @@ public class Layout {
 		return new String[] { "ExamsAndTasksOverview", "OpenDiscussions", "PersonalAnalytics" };
 	}
 
+	public String[] getInstructorPageNames() {
+		if (userInfo.isInstructor()) {
+			return new String[] { "admin/ManageModels", "admin/TestAdmin",
+					"admin/TestCollectionManagement", "admin/GroupManagement", "admin/StudentGroupProgress", "admin/SubmissionEvaluations",
+					"admin/Reevaluation", "admin/TranslationPage", "admin/SystemParameters" };
+		} else {
+			return null;
+		}
+	}
+
 	public String[] getAdminPageNames() {
 		if (userInfo.isAdministrator()) {
 			return new String[] { "admin/ManagePersons", "admin/GroupManagement", "admin/ManageModels",
