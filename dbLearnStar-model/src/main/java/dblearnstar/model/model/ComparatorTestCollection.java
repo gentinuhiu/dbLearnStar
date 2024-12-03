@@ -20,29 +20,41 @@
 
 package dblearnstar.model.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import dblearnstar.model.entities.TestCollection;
 
 public class ComparatorTestCollection implements Comparator<TestCollection> {
 
-	public String getCoding(TestCollection i) {
+	public List<Integer> getCoding(TestCollection i) {
 		Integer broj = i.getOrdering();
 		if (broj == null) {
 			broj = 0;
 		}
+		List<Integer> l;
 		if (i.getParentCollection() == null) {
-			return Long.toString(broj) + "-";
+			l = new ArrayList<Integer>();
 		} else {
-			return getCoding(i.getParentCollection()) + Long.toString(broj) + "-";
+			l = getCoding(i.getParentCollection());
 		}
+		l.add(broj);
+		return l;
 	}
 
 	@Override
-	public int compare(TestCollection o1, TestCollection o2) {
-		String hier1 = getCoding(o1);
-		String hier2 = getCoding(o2);
-		return hier1.compareTo(hier2);
+	public int compare(TestCollection tc1, TestCollection tc2) {
+		List<Integer> o1 = getCoding(tc1);
+		List<Integer> o2 = getCoding(tc2);
+		for (int i = 0; i < Math.min(o1.size(), o2.size()); i++) {
+			int c = o1.get(i).compareTo(o2.get(i));
+			if (c != 0) {
+				return c;
+			}
+		}
+		return Integer.compare(o1.size(), o2.size());
 	}
 
 }

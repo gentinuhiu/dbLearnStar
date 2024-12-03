@@ -121,18 +121,6 @@ public class TestCollectionManagement {
 		}
 	}
 
-	public String getCoding(TestCollection i) {
-		Integer broj = i.getOrdering();
-		if (broj == null) {
-			broj = 0;
-		}
-		if (i.getParentCollection() == null) {
-			return Long.toString(broj) + "-";
-		} else {
-			return getCoding(i.getParentCollection()) + Long.toString(broj) + "-";
-		}
-	}
-
 	public List<TestCollection> getListTestCollections() {
 		List<TestCollection> list = UsefulMethods.castList(TestCollection.class,
 				genericService.getAll(TestCollection.class));

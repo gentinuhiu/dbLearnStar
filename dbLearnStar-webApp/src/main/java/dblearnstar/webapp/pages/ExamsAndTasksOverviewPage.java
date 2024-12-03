@@ -148,9 +148,6 @@ public class ExamsAndTasksOverviewPage {
 		if (list == null) {
 			return null;
 		} else {
-			ComparatorTestCollection c = new ComparatorTestCollection();
-			Collections.sort(list, c);
-			// return selectModelFactory.create(list, "title");
 			return new TestCollectionSelectModel(list, translationService, persistentLocale);
 		}
 	}
