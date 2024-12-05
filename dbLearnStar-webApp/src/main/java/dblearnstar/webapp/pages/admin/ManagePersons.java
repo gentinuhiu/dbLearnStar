@@ -21,6 +21,7 @@
 package dblearnstar.webapp.pages.admin;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -52,6 +53,9 @@ public class ManagePersons {
 	private UserInfo userInfo;
 
 	@Inject
+	private SelectModelFactory selectModelFactory;
+
+	@Inject
 	private PersonManager personManager;
 
 	@Inject
@@ -60,27 +64,47 @@ public class ManagePersons {
 	@Inject
 	private Logger logger;
 
+	@InjectComponent
+	private Form frmImport;
+
+	private Boolean cancelForm = false;
+
 	@Property
 	private Person person;
+
+	@Persist
+	@Property
+	private Person personToEdit;
 
 	@Property
 	@Persist
 	private String personListToImport;
 
+	@Property
+	Role selectedRole;
+
+	@Property
+	@Persist
+	private String searchString;
+
+	@Persist
+	@Property
+	private String errors;
+
 	public List<Person> getAllPersons() {
-		return personManager.getAllPersons();
+		List<Person> list = personManager.getAllPersons();
+		if (searchString == null || searchString.equals("")) {
+			return list;
+		} else {
+			return list.stream()
+					.filter(p -> (p.getFirstName() + p.getLastName() + p.getUserName()).contains(searchString))
+					.collect(Collectors.toList());
+		}
 	}
 
 	public void onActionFromImportPersons() {
 		personListToImport = "firstName,lastName,email,userName";
 	}
-
-	@InjectComponent
-	private Form frmImport;
-
-	@Persist
-	@Property
-	private String errors;
 
 	@CommitAfter
 	public void onSuccessFromFrmImport() {
@@ -93,7 +117,7 @@ public class ManagePersons {
 				try {
 					p = personManager.getPersonByUsername(lineFields[3]);
 					if (p != null) {
-						errors += ">>> Person " + p.getUserName() + " already exists, skipping.";
+						errors += ">>> Person " + p.getUserName() + " already exists, skipping creation, activating.";
 					} else {
 						p = new Person();
 						p.setFirstName(lineFields[0]);
@@ -132,19 +156,14 @@ public class ManagePersons {
 		}
 	}
 
-	@Inject
-	private SelectModelFactory selectModelFactory;
-
-	@Property
-	Role selectedRole;
-
-	public SelectModel getSelectRoleModel() {
-		return selectModelFactory.create(genericService.getAll(Role.class), "name");
+	@CommitAfter
+	public void onTogglePersonStatus(Person p) {
+		if (p.getUserName().contains(ModelConstants.PersonDeactivatedSuffix)) {
+			p.setUserName(p.getUserName().replace(ModelConstants.PersonDeactivatedSuffix, ""));
+		} else {
+			p.setUserName(p.getUserName() + ModelConstants.PersonDeactivatedSuffix);
+		}
 	}
-
-	@Persist
-	@Property
-	private Person personToEdit;
 
 	public void onActionFromNewPerson() {
 		personToEdit = new Person();
@@ -165,8 +184,6 @@ public class ManagePersons {
 		}
 	}
 
-	private Boolean cancelForm = false;
-
 	public void onCanceledFromFrmNewPerson() {
 		cancelForm = true;
 	}
@@ -181,13 +198,8 @@ public class ManagePersons {
 		personToEdit = null;
 	}
 
-	@CommitAfter
-	public void onTogglePersonStatus(Person p) {
-		if (p.getUserName().contains(ModelConstants.PersonDeactivatedSuffix)) {
-			p.setUserName(p.getUserName().replace(ModelConstants.PersonDeactivatedSuffix, ""));
-		} else {
-			p.setUserName(p.getUserName() + ModelConstants.PersonDeactivatedSuffix);
-		}
+	public SelectModel getSelectRoleModel() {
+		return selectModelFactory.create(genericService.getAll(Role.class), "name");
 	}
 
 }

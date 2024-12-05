@@ -16,6 +16,16 @@
 	</span>
 </p>
 
+<p>
+<form t:type="form" t:id="frmSearch" class="form-inline col-12">
+	<div class="form-group">
+		<t:label t:for="searchString"  class="mr-3"/>
+		<t:textfield t:id="searchString" />
+	</div>
+	<t:submit t:value="OK" />
+</form>
+</p>
+
 <div t:type="if" t:test="personListToImport"
 	class="card bg-light p-3 mb-3">
 	<form t:type="form" t:id="frmImport">
