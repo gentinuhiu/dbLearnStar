@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.tapestry5.EventContext;
@@ -143,18 +143,23 @@ public class QueryTest {
 	@Property
 //	@Persist
 	private TaskInTestInstance taskInTestInstance;
+
 	@Property
 	@Persist
 	private Boolean filterNotForEvalution;
+	
 	@Property
 	@Persist
 	private UploadedFile file;
+	
 	@Property
 	@Persist
 	private String fileComment;
+	
 	@Property
 	@Persist(PersistenceConstants.FLASH)
 	private String message;
+	
 	@Property
 	@Persist(PersistenceConstants.FLASH)
 	private String queryString;

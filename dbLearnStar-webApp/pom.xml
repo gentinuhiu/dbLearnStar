@@ -1,19 +1,19 @@
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://maven.apache.org/POM/4.0.0">
-
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.1.3</version>
 		<relativePath />
 	</parent>
 
 	<groupId>dblearnstar</groupId>
 	<artifactId>dblearnstar</artifactId>
-	<version>0.11.1</version>
+	<version>0.13.0-SNAPSHOT</version>
 	<name>dbLearnStar</name>
 
 	<packaging>war</packaging>
@@ -35,22 +35,23 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<maven-compiler-version>3.12.1</maven-compiler-version>
-		<maven-surefire-version>3.2.3</maven-surefire-version>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
-		<java.version>17</java.version>
+		<maven-compiler-version>3.13.0</maven-compiler-version>
+		<maven-surefire-version>3.5.0</maven-surefire-version>
+		<maven-enforcer-version>3.0.0</maven-enforcer-version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<java.version>21</java.version>
 
-		<spring-boot-version>2.7.18</spring-boot-version>
-		<tapestry-version>5.8.7</tapestry-version>
-		<jackson-version>2.13.5</jackson-version>
-		<log4j-version>2.23.0</log4j-version>
-		<junit-version>5.10.2</junit-version>
-		<yasson-version>3.0.3</yasson-version>
-		<servlet-version>4.0.1</servlet-version>
+		<spring-boot-version>3.1.3</spring-boot-version>
+		<tapestry-version>5.9.0</tapestry-version>
+		<jackson-version>2.13.1</jackson-version>
+		<log4j-version>2.24.0</log4j-version>
+		<junit-version>5.8.2</junit-version>
+		<yasson-version>2.0.4</yasson-version>
+		<servlet-version>5.0.0</servlet-version>
 
-		<postgresql-version>42.7.2</postgresql-version>
-		<cas-client-version>3.6.4</cas-client-version>
+		<postgresql-version>42.7.4</postgresql-version>
+		<cas-client-version>4.0.4</cas-client-version>
 	</properties>
 
 	<repositories>
@@ -64,7 +65,7 @@
 		<dependency>
 			<groupId>dblearnstar</groupId>
 			<artifactId>dblearnstar-model</artifactId>
-			<version>0.0.9-SNAPSHOT</version>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 
 
@@ -109,14 +110,14 @@
 		<!-- Apache Tapestry -->
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-core</artifactId>
+			<artifactId>tapestry-core-jakarta</artifactId>
 			<version>${tapestry-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<!-- CoffeeScript & Less support, plus resource minification -->
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-webresources</artifactId>
+			<artifactId>tapestry-webresources-jakarta</artifactId>
 			<version>${tapestry-version}</version>
 			<scope>compile</scope>
 		</dependency>
@@ -125,14 +126,14 @@
 		<!--
         <dependency>
             <groupId>org.apache.tapestry</groupId>
-            <artifactId>tapestry-spring</artifactId>
+            <artifactId>tapestry-spring-jakarta</artifactId>
             <version>${tapestry-version}</version>
             <scope>compile</scope>
         </dependency>
 		-->
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-hibernate</artifactId>
+			<artifactId>tapestry-hibernate-jakarta</artifactId>
 			<version>${tapestry-version}</version>
 			<scope>compile</scope>
 		</dependency>
@@ -144,14 +145,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-upload</artifactId>
+			<artifactId>tapestry-upload-jakarta</artifactId>
 			<version>${tapestry-version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<!-- Unit Testing -->
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-test</artifactId>
+			<artifactId>tapestry-test-jakarta</artifactId>
 			<version>${tapestry-version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -199,8 +200,8 @@
 			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<version>${servlet-version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -211,23 +212,34 @@
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql-version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
-			<version>5.1.0</version>
+			<version>6.2.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-hikaricp</artifactId>
-			<version>5.6.15.Final</version>
+			<version>5.4.33.Final</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.jasig.cas.client</groupId>
+			<groupId>org.apereo.cas.client</groupId>
 			<artifactId>cas-client-core</artifactId>
 			<version>${cas-client-version}</version>
+		</dependency>
+
+		<!-- jaxb for error -->
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>2.3.3</version>
+		</dependency>
+		<!-- Runtime, com.sun.xml.bind module -->
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>2.3.9</version>
 		</dependency>
 
 		<dependency>
@@ -251,7 +263,7 @@
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator</artifactId>
-			<version>0.48</version>
+			<version>0.52</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
@@ -291,6 +303,16 @@
 			<version>0.4.8</version>
 		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.hibernate.orm</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>5.4.33.Final</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<finalName>dbLearnStar</finalName>
@@ -356,7 +378,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>${maven-enforcer-version}</version>
 				<executions>
 					<execution>
 						<id>enforce-maven</id>
@@ -463,8 +485,7 @@
 									<outputDirectory>${project.basedir}/target/classes/META-INF/assets/codemirror/</outputDirectory>
 									<fileMappers>
 										<org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
-											<pattern>
-												^\QMETA-INF/resources/webjars/codemirror/6.65.7/\E</pattern>
+											<pattern>^\QMETA-INF/resources/webjars/codemirror/6.65.7/\E</pattern>
 											<replacement>./</replacement>
 										</org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
 									</fileMappers>
