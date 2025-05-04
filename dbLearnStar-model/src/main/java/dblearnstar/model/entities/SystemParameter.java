@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (C) 2021 Vangel V. Ajanovski
  *     
  * This file is part of the dbLearn* system (hereinafter: dbLearn*).
@@ -27,7 +28,7 @@ import javax.validation.constraints.*;
 /*
 */
 @Entity
-@Table (schema="sql_learning", name="system_parameter")
+@Table (schema="dblearnstar", name="system_parameter")
 public class SystemParameter implements java.io.Serializable {
 	private long systemParameterId;
 	private String className;
