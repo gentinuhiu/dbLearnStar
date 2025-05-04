@@ -26,7 +26,7 @@ import javax.persistence.*;
 /*
 */
 @Entity
-@Table(schema = "sql_learning", name = "group_member")
+@Table(schema = "dblearnstar", name = "group_member")
 public class GroupMember implements java.io.Serializable {
 	private long groupMemberId;
 	private Group group;

@@ -26,7 +26,7 @@ import javax.persistence.*;
 /*
 */
 @Entity
-@Table(schema = "sql_learning", name = "student_submit_solution")
+@Table(schema = "dblearnstar", name = "student_submit_solution")
 public class StudentSubmitSolution implements java.io.Serializable {
 	private long studentSubmitSolutionId;
 	private String submission;

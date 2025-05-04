@@ -26,7 +26,7 @@ import javax.persistence.*;
 /*
 */
 @Entity
-@Table(schema = "sql_learning", name = "roles")
+@Table(schema = "dblearnstar", name = "roles")
 public class Role implements java.io.Serializable {
 	private long roleId;
 	private String name;

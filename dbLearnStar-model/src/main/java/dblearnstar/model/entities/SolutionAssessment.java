@@ -27,7 +27,7 @@ import javax.validation.constraints.*;
 /*
 */
 @Entity
-@Table(schema = "sql_learning", name = "solution_assessment")
+@Table(schema = "dblearnstar", name = "solution_assessment")
 public class SolutionAssessment implements java.io.Serializable {
 	private long solutionAssessmentId;
 	private Date evaluatedOn;

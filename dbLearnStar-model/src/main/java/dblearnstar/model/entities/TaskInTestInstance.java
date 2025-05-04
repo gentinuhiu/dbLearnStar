@@ -26,7 +26,7 @@ import javax.persistence.*;
 /*
 */
 @Entity
-@Table(schema = "sql_learning", name = "task_in_test_instance")
+@Table(schema = "dblearnstar", name = "task_in_test_instance")
 public class TaskInTestInstance implements java.io.Serializable {
 	private long taskInTestInstanceId;
 	private Float points;

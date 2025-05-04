@@ -26,7 +26,7 @@ import javax.persistence.*;
 /*
 */
 @Entity
-@Table(schema = "sql_learning", name = "translations")
+@Table(schema = "dblearnstar", name = "translations")
 public class Translation implements java.io.Serializable {
 	private long translationId;
 	private String className;

@@ -26,7 +26,7 @@ import javax.persistence.*;
 /*
 */
 @Entity
-@Table(schema = "sql_learning", name = "test_instance")
+@Table(schema = "dblearnstar", name = "test_instance")
 public class TestInstance implements java.io.Serializable {
 	private long testInstanceId;
 	private String title;
