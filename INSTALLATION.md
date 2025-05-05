@@ -223,7 +223,7 @@ If all is setup properly the browser will automatically redirect you to the CAS 
 Before authentication you need an initial set of users in the MAIN DB.
 
 ```sql
-insert into dblearnstar.role (name) values ('ADMINISTRATOR'),('INSTRUCTOR');
+insert into dblearnstar.roles (name) values ('ADMINISTRATOR'),('INSTRUCTOR');
 insert into dblearnstar.person (user_name, first_name, last_name) values ('admin', 'Administrator', 'Administrator');
 insert into dblearnstar.person_role (person_id, role_id) values ((select person_id from dblearnstar.person where user_name='admin'), (select role_id from dblearnstar.role where name='ADMINISTRATOR');
 ```
