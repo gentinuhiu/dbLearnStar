@@ -45,14 +45,18 @@ import org.apache.tapestry5.services.ApplicationStateCreator;
 import org.apache.tapestry5.services.ApplicationStateManager;
 import org.apache.tapestry5.services.ComponentRequestFilter;
 import org.apache.tapestry5.services.ComponentSource;
+import org.apache.tapestry5.services.ExceptionReporter;
 import org.apache.tapestry5.services.PersistentLocale;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 
 import dblearnstar.model.entities.Person;
 import dblearnstar.model.entities.PersonRole;
+import dblearnstar.model.entities.Student;
 import dblearnstar.model.model.UserInfo;
 import dblearnstar.model.model.UserInfo.UserRole;
+import dblearnstar.webapp.model.ApplicationConstants;
 import dblearnstar.webapp.util.AppConfig;
 
 @ImportModule(Bootstrap4Module.class)
@@ -91,6 +95,15 @@ public class AppModule {
 
 		configuration.add(SymbolConstants.EXCEPTION_REPORTS_DIR,
 				AppConfig.getString("additionalFiles.path") + AppConfig.getString("exceptionReports.path"));
+	}
+
+	@Decorate(serviceInterface = ExceptionReporter.class)
+	public static ExceptionReporter preventExceptionFileWriting(final ExceptionReporter exceptionReporter) {
+		return new ExceptionReporter() {
+			@Override
+			public void reportException(Throwable exception) {
+			}
+		};
 	}
 
 	@Contribute(HibernateEntityPackageManager.class)
@@ -141,66 +154,76 @@ public class AppModule {
 				userInfo.setPersonId(null);
 				userInfo.setUserName(null);
 
-				try {
-					String userName = requestGlobals.getHTTPServletRequest().getRemoteUser();
-					userInfo.setUserName(userName);
-					logger.info("Login by user: " + userName);
+				String userName = requestGlobals.getHTTPServletRequest().getRemoteUser();
+				userInfo.setUserName(userName);
+				logger.info("External auth login by user {}. Checking privileges.", userName);
 
-					Person loggedInPerson = (Person) session.getSession()
-							.createQuery("from Person p where userName=:userName").setParameter("userName", userName)
-							.getSingleResult();
+				Person loggedInPerson = (Person) session.getSession()
+						.createQuery("from Person p where userName=:userName").setParameter("userName", userName)
+						.getResultStream().findFirst().orElse(null);
 
-					if (loggedInPerson == null) {
-						userInfo.setUserRoles(null);
-						userInfo.setPersonId(null);
-					} else {
-						logger.debug("Login personId: {}", loggedInPerson.getPersonId());
-
-						List<UserInfo.UserRole> userRoles = new ArrayList<UserRole>();
-
-						if (!(loggedInPerson.getStudents().isEmpty())) {
-							logger.debug("Login user is student");
-							userRoles.add(UserRole.STUDENT);
-						}
-
-						for (PersonRole pr : personManager.getPersonRolesForPerson(loggedInPerson.getPersonId())) {
-							if (pr.getRole().getName().equals("ADMINISTRATOR")) {
-								logger.debug("Login user is administrator");
-								userRoles.add(UserRole.ADMINISTRATOR);
-							} else if (pr.getRole().getName().equals("INSTRUCTOR")) {
-								logger.debug("Login user is instructor");
-								userRoles.add(UserRole.INSTRUCTOR);
-							}
-						}
-
-						if (userRoles.size() == 0) {
-							logger.debug("Login user role is set to NONE");
-							userRoles.add(UserRole.NONE);
-						}
-
-						logger.debug("Login user has {} roles", userRoles.size());
-
-						userInfo.setUserName(userName);
-						userInfo.setPersonId(loggedInPerson.getPersonId());
-						userInfo.setUserRoles(userRoles);
-						logger.debug("userInfo is now initialized");
-
+				if (loggedInPerson == null) {
+					logger.debug("These is no Person with userName: {}", userName);
+					if (AppConfig.getString(ApplicationConstants.AUTH_AUTO_CREATE_USER).equalsIgnoreCase("true")) {
+						logger.debug("  Creating Person with userName: {}", userName);
+						loggedInPerson = new Person();
+						loggedInPerson.setUserName(userName);
+						loggedInPerson.setFirstName(userName);
+						loggedInPerson.setLastName(userName);
+						logger.debug("  Creating Student for the Person with userName: {}", userName);
+						Student s = new Student();
+						s.setPerson(loggedInPerson);
+						session.save(loggedInPerson);
+						session.save(s);
+						session.getSession().getTransaction().commit();
+						logger.info("  Created user {}", userName);
+						loggedInPerson = (Person) session.getSession()
+								.createQuery("from Person p where userName=:userName")
+								.setParameter("userName", userName).getResultStream().findFirst().orElse(null);
 					}
-
-					return userInfo;
-
-				} catch (Exception e) {
-					if (userInfo.getUserName() != null) {
-						logger.error("userName {} is not found", userInfo.getUserName());
-					} else {
-						logger.error("userName is empty");
-					}
-					// throw new NoSuchUserException();
-					return userInfo;
 				}
+
+				if (loggedInPerson == null) {
+					userInfo.setUserRoles(null);
+					userInfo.setPersonId(null);
+					logger.info("Logged in userName: {} is not found", userInfo.getUserName());
+				} else {
+					logger.debug("Logged in personId: {}", loggedInPerson.getPersonId());
+
+					List<UserInfo.UserRole> userRoles = new ArrayList<UserRole>();
+
+					if (!(loggedInPerson.getStudents().isEmpty())) {
+						logger.debug("Logged in user: {} is a student", userName);
+						userRoles.add(UserRole.STUDENT);
+					}
+
+					for (PersonRole pr : personManager.getPersonRolesForPerson(loggedInPerson.getPersonId())) {
+						if (pr.getRole().getName().equals("ADMINISTRATOR")) {
+							logger.debug("Logged in user: {} is an administrator", userName);
+							userRoles.add(UserRole.ADMINISTRATOR);
+						} else if (pr.getRole().getName().equals("INSTRUCTOR")) {
+							logger.debug("Logged in user: {} is instructor", userName);
+							userRoles.add(UserRole.INSTRUCTOR);
+						}
+					}
+
+					if (userRoles.size() == 0) {
+						logger.debug("Loggen in user: {} role is set to NONE", userName);
+						userRoles.add(UserRole.NONE);
+					}
+
+					logger.debug("Logged in user: {} has {} roles", userName, userRoles.size());
+
+					userInfo.setUserName(userName);
+					userInfo.setPersonId(loggedInPerson.getPersonId());
+					userInfo.setUserRoles(userRoles);
+					logger.debug("userInfo is now initialized for logged in user: {}", userName);
+				}
+				return userInfo;
 			}
 		};
 		configuration.add(UserInfo.class, new ApplicationStateContribution("session", userInfoCreator));
+
 	}
 
 	public static void contributeClasspathAssetAliasManager(MappedConfiguration<String, String> configuration) {

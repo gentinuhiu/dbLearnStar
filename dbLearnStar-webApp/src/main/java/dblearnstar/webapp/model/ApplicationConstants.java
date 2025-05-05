@@ -22,4 +22,6 @@ public class ApplicationConstants {
 	public static String DATEFORMAT_GUI_DATETIME = "dd.MM.yyyy HH:mm:ss";
 	public static String DATEFORMAT_CONDENSED = "yyyyMMdd";
 
+	public static String AUTH_AUTO_CREATE_USER="auth.autoCreateUser";
+	
 }
