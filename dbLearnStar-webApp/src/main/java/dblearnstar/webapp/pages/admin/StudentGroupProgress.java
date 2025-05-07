@@ -30,8 +30,6 @@ import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.PersistentLocale;
 import org.apache.tapestry5.services.SelectModelFactory;
-import org.openqa.selenium.devtools.v100.debugger.Debugger.EvaluateOnCallFrameResponse;
-import org.slf4j.Logger;
 
 import dblearnstar.model.entities.Group;
 import dblearnstar.model.entities.GroupFocusOnTest;
@@ -51,8 +49,6 @@ public class StudentGroupProgress {
 
 	@Inject
 	private SelectModelFactory selectModelFactory;
-	@Inject
-	private Logger logger;
 
 	@Inject
 	private GenericService genericService;
