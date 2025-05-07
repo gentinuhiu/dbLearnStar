@@ -30,7 +30,6 @@ import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.PersistentLocale;
 import org.apache.tapestry5.services.SelectModelFactory;
-import org.openqa.selenium.devtools.v100.debugger.Debugger.EvaluateOnCallFrameResponse;
 import org.slf4j.Logger;
 
 import dblearnstar.model.entities.Group;
