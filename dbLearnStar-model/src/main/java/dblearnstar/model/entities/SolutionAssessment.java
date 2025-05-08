@@ -22,7 +22,6 @@ package dblearnstar.model.entities;
 
 import java.util.*;
 import javax.persistence.*;
-import javax.validation.constraints.*;
 
 /*
 */

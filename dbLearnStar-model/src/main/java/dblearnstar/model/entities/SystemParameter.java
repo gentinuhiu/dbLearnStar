@@ -23,7 +23,8 @@ package dblearnstar.model.entities;
 
 import java.util.*;
 import javax.persistence.*;
-import javax.validation.constraints.*;
+
+import jakarta.validation.constraints.NotNull;
 
 /*
 */
@@ -40,7 +41,6 @@ public class SystemParameter implements java.io.Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-
 	@NotNull
 	@Column(name = "system_parameter_id", unique = true, nullable = false)
 	public long getSystemParameterId() {
