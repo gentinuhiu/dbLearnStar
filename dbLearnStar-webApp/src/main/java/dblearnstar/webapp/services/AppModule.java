@@ -48,7 +48,6 @@ import org.apache.tapestry5.services.ComponentSource;
 import org.apache.tapestry5.services.ExceptionReporter;
 import org.apache.tapestry5.services.PersistentLocale;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 
 import dblearnstar.model.entities.Person;
@@ -158,7 +157,7 @@ public class AppModule {
 				userInfo.setUserName(userName);
 				logger.info("External auth login by user {}. Checking privileges.", userName);
 
-				Person loggedInPerson = (Person) session.getSession()
+				Person loggedInPerson = (Person) session.getEntityManagerFactory().createEntityManager()
 						.createQuery("from Person p where userName=:userName").setParameter("userName", userName)
 						.getResultStream().findFirst().orElse(null);
 
