@@ -33,16 +33,26 @@
 		<div class="collapse navbar-collapse" id="mainMenu">
 			<ul class="navbar-nav mr-auto">
 				<t:if t:test="userInfo?.student">
-					<li class="nav-item" t:type="loop" t:source="studentPageNames"
-						t:value="pageName"><a class="nav-link ${classForPageName}"
-						t:type="pagelink" t:page="prop:pageName">${pageNameTitle}</a></li>
-                                         <li class="nav-item"><a class="nav-link" href="/materijali" target="_blank">Материјали <t:SVGIcon t:path="external-link" t:width="16" /></a></li> 
+					<li class="nav-item dropdown"><a
+						class="nav-link dropdown-toggle" href="#" id="mainMenuStudent"
+						role="button" data-toggle="dropdown" aria-haspopup="true"
+						aria-expanded="false">${message:studentMenu-label}</a>
+						<div class="dropdown-menu" aria-labelledby="mainMenuStudent">
+							<t:loop t:source="studentPageNames" t:value="pageName">
+								<a class="dropdown-item ${classForPageName}" t:type="pagelink"
+									t:page="prop:pageName">${pageNameTitle}</a>
+							</t:loop>
+							<a class="dropdown-item " href="${message:materials-url}" target="_blank">${message:materials-label}
+								<t:SVGIcon t:path="external-link" t:width="16" />
+							</a>
+						</div></li>
+
 				</t:if>
 				<t:if t:test="userInfo?.instructor">
 					<li class="nav-item dropdown"><a
 						class="nav-link dropdown-toggle" href="#" id="mainMenuInstructor"
 						role="button" data-toggle="dropdown" aria-haspopup="true"
-						aria-expanded="false">${message:instructor-label}</a>
+						aria-expanded="false">${message:instructorMenu-label}</a>
 						<div class="dropdown-menu" aria-labelledby="mainMenuInstructor">
 							<t:loop t:source="instructorPageNames" t:value="pageName">
 								<a class="dropdown-item ${classForPageName}" t:type="pagelink"
