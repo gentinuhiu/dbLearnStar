@@ -21,15 +21,15 @@
 define(["jquery", "t5/core/ajax"], function($, ajax) {
 
 	$(document).keydown(function(e) {
-            if(e.ctrlKey && e.which == 13) {
-                $('#RunOnlySelection').click();
-                //event.preventDefault();
-                return false;
-            }
-        }
-    );
+		if (e.ctrlKey && e.which == 13) {
+			$('#RunOnlySelection').click();
+			//event.preventDefault();
+			return false;
+		}
+	}
+	);
 
-	$('#RunOnlySelection').click(function() {
+	function getEditorText(onlySelection) {
 		tekst = "";
 		if (typeof window.editor === 'undefined') {
 			tekst = "NOEDITOR";
@@ -45,12 +45,21 @@ define(["jquery", "t5/core/ajax"], function($, ajax) {
 			}
 		} else {
 			// CodeMirror
-			tekst = window.editor.getSelection();
+			if (onlySelection) {
+				tekst = window.editor.getSelection();
+			} else {
+				tekst = window.editor.getValue();
+			}
 		}
 
 		if (tekst == null) tekst = "NULL";
-
 		if (tekst == "") tekst = "NULL";
+
+		return tekst;
+	}
+
+	$('#RunOnlySelection').click(function() {
+		tekst = getEditorText(true);
 
 		ajax("execSelection", {
 			element: null,
@@ -63,27 +72,7 @@ define(["jquery", "t5/core/ajax"], function($, ajax) {
 	});
 
 	$('#RunOnly').click(function() {
-		tekst = "";
-		if (typeof window.editor === 'undefined') {
-			tekst = "NOEDITOR";
-			if (typeof CKEDITOR === 'undefined') {
-				tekst = "NOCMEDNOCKED";
-			} else {
-				var editorarea = CKEDITOR.instances['editorarea'];
-				if (typeof editorarea === 'undefined') {
-					tekst = "OTHERCK";
-				} else {
-					tekst = editorarea.getData();
-				}
-			}
-		} else {
-			// CodeMirror
-			tekst = window.editor.getValue();
-		}
-
-		if (tekst == null) tekst = "NULL";
-
-		if (tekst == "") tekst = "NULL";
+		tekst = getEditorText(false);
 
 		ajax("execAll", {
 			element: null,
@@ -96,27 +85,7 @@ define(["jquery", "t5/core/ajax"], function($, ajax) {
 	});
 
 	$('#Evaluate').click(function() {
-		tekst = "";
-		if (typeof window.editor === 'undefined') {
-			tekst = "NOEDITOR";
-			if (typeof CKEDITOR === 'undefined') {
-				tekst = "NOCMEDNOCKED";
-			} else {
-				var editorarea = CKEDITOR.instances['editorarea'];
-				if (typeof editorarea === 'undefined') {
-					tekst = "OTHERCK";
-				} else {
-					tekst = editorarea.getData();
-				}
-			}
-		} else {
-			// CodeMirror
-			tekst = window.editor.getValue();
-		}
-
-		if (tekst == null) tekst = "NULL";
-
-		if (tekst == "") tekst = "NULL";
+		tekst = getEditorText(false);
 
 		ajax("evalAll", {
 			element: null,
@@ -129,27 +98,7 @@ define(["jquery", "t5/core/ajax"], function($, ajax) {
 	});
 
 	$('#PlanOnly').click(function() {
-		tekst = "";
-		if (typeof window.editor === 'undefined') {
-			tekst = "NOEDITOR";
-			if (typeof CKEDITOR === 'undefined') {
-				tekst = "NOCMEDNOCKED";
-			} else {
-				var editorarea = CKEDITOR.instances['editorarea'];
-				if (typeof editorarea === 'undefined') {
-					tekst = "OTHERCK";
-				} else {
-					tekst = editorarea.getData();
-				}
-			}
-		} else {
-			// CodeMirror
-			tekst = window.editor.getValue();
-		}
-
-		if (tekst == null) tekst = "NULL";
-
-		if (tekst == "") tekst = "NULL";
+		tekst = getEditorText(false);
 
 		ajax("plan", {
 			element: null,

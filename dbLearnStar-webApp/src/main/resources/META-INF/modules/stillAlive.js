@@ -32,7 +32,7 @@ define(["jquery", "t5/core/ajax"], function($, ajax) {
 					tekst = "OTHERCK";
 				} else {
 					tekst = editorarea.getData();
-					if (tekst.length > 8000) {
+					if (tekst.length > 1000000) {
 						tekst = "VERYLONGTEXT";
 					}
 				}
@@ -67,6 +67,6 @@ define(["jquery", "t5/core/ajax"], function($, ajax) {
 				$("#serverStatus").addClass("mt-2 alert alert-danger");
 			}
 		});
-	}, 10000);
+	}, 30000);
 
 });
