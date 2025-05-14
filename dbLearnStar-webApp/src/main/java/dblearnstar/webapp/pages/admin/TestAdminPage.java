@@ -150,8 +150,7 @@ public class TestAdminPage {
 	}
 
 	public Object getModelTestTypes() {
-		return selectModelFactory.create(UsefulMethods.castList(TestType.class, genericService.getAll(TestType.class)),
-				"title");
+		return selectModelFactory.create(testManager.getAllTestTypes(), "title");
 	}
 
 	public Object onValueChangedFromSelectTestType(TestType selectedtestType) {
@@ -355,6 +354,10 @@ public class TestAdminPage {
 			chosentaskType = null;
 			whereToPutNewTask = null;
 			creatingANewTask = null;
+		} else {
+			TaskIsOfType type = editedTask.getTaskIsOfTypes().get(0);
+			type.setTaskType(chosentaskType);
+			genericService.saveOrUpdate(type);
 		}
 
 		editedTask = null;
@@ -380,7 +383,7 @@ public class TestAdminPage {
 	}
 
 	public SelectModel getAllTaskTypes() {
-		return selectModelFactory.create(genericService.getAll(TaskType.class), "title");
+		return selectModelFactory.create(testManager.getAllTaskTypes(), "title");
 	}
 
 	@CommitAfter

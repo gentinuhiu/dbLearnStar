@@ -10,13 +10,16 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import dblearnstar.model.entities.Model;
 import dblearnstar.webapp.annotations.AdministratorPage;
 import dblearnstar.webapp.services.GenericService;
-import dblearnstar.webapp.services.UsefulMethods;
+import dblearnstar.webapp.services.TestManager;
 
 @AdministratorPage
 public class ManageModels {
 
 	@Inject
 	private GenericService genericService;
+
+	@Inject
+	private TestManager testManager;
 
 	@Property
 	private Model model;
@@ -26,7 +29,7 @@ public class ManageModels {
 	private Model modelToEdit;
 
 	public List<Model> getAllModels() {
-		return UsefulMethods.castList(Model.class, genericService.getAll(Model.class));
+		return testManager.getAllModels();
 	}
 
 	public void onActionFromNewModel() {
