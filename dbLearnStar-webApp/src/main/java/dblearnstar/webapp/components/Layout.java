@@ -91,7 +91,7 @@ public class Layout {
 	}
 
 	public String[] getStudentPageNames() {
-		return new String[] { "ExamsAndTasksOverview", "OpenDiscussions", "PersonalAnalytics" };
+		return new String[] { "TasksOverview", "ExamsAndTasksOverview", "OpenDiscussions", "PersonalAnalytics" };
 	}
 
 	public String[] getInstructorPageNames() {

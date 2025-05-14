@@ -136,7 +136,7 @@
 			<t:ModalBox t:id="evalModal" t:additionalClass=""
 				t:additionalClassDialog="modal-lg bg-danger ">
 				<p class="pt-0 pb-3">
-					<a t:type="actionLink" t:id="hideEvalModal" t:zone="errorZone"
+					<a t:type="actionLink" id="hideEvalModal" t:id="hideEvalModal" t:zone="errorZone"
 						class="close float-right"><t:SVGIcon t:path="x" /></a>
 				</p>
 				<div class="alert ${styleClassForEvaluation}  mt-3" role="alert">

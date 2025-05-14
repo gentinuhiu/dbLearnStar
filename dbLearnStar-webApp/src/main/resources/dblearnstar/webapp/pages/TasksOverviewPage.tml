@@ -1,0 +1,67 @@
+<html t:type="layout" title="message:ExamsAndTasksOverview-pagelink"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<h1>${message:TasksOverview-pagelink}</h1>
+
+<div class="row">
+	<div class="col-5">
+
+		<h3>${message:FilterTasksBasedOnModel-label}</h3>
+		<p>
+			<a
+				class="btn btn-outline btn-outline-warning p-0 pl-1 pr-1 mb-1 mr-0"
+				t:type="eventlink" t:id="unChooseModel">/</a> <span t:type="loop"
+				t:source="allModels" t:value="listedModel"> <a
+				class="btn btn-outline btn-outline-primary p-0 pl-1 pr-1 mb-1 mr-0 ${classSelectedModel}"
+				t:type="eventlink" t:id="chooseModel" t:context="listedModel">${listedModel.title}</a>
+			</span>
+
+		</p>
+
+		<h3>${message:FilterTasksBasedOnType-label}</h3>
+		<p>
+			<a
+				class="btn btn-outline btn-outline-warning p-0 pl-1 pr-1 mb-1 mr-0"
+				t:type="eventlink" t:id="unChooseTaskType">/</a> <span t:type="loop"
+				t:source="allTaskTypes" t:value="listedTaskType"> <a
+				class="btn btn-outline btn-outline-primary p-0 pl-1 pr-1 mb-1 mr-0 ${classSelectedTaskType}"
+				t:type="eventlink" t:id="chooseTaskType" t:context="listedTaskType">${listedTaskType.title}</a>
+			</span>
+		</p>
+
+	</div>
+	<div class="col-7">
+		<h2>${message:tasks-label}</h2>
+
+		<t:loop t:source="allTasks" t:value="listedTaskInTestInstance">
+			<t:if t:test="prevTestInstance">
+				<h3 class="mt-3">${listedTaskInTestInstance.testInstance.title}</h3>
+				<div style="" class="overflow-auto">
+					<p t:type="outputRaw"
+						t:value="listedTaskInTestInstance.testInstance.description" />
+				</div>
+			</t:if>
+			<div class="card ${classForSolved} mb-3">
+				<div class="card-header">
+					${listedTaskInTestInstance.task.title} <a
+						class="btn btn-sm btn-primary float-right" t:type="PageLink"
+						t:page="QueryTest" t:id="SolveTest"
+						t:context="listedTaskInTestInstance">${message:attempt-label}</a>
+					<div class="p-1 pl-3 text-muted ">
+						<span class="mr-3">${message:numPersonsTriedToSolve-label}:
+							${numPersonsTriedToSolve}</span> - <span class="ml-3">${message:numPersonsSuccessful-label}:
+							${numPersonsSuccessful}</span>
+					</div>
+
+				</div>
+				<div class="card-body">
+					<p class="card-text">
+						<t:outputRaw t:value="listedTaskInTestInstance.task.description" />
+					</p>
+				</div>
+			</div>
+		</t:loop>
+	</div>
+</div>
+</html>
