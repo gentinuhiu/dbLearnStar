@@ -196,7 +196,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 					}
 					connection.rollback();
 				} catch (Exception e) {
-					logger.error("Error occured when evaluating submissionId={}", e.getMessage());
+					logger.error("Error occured when evaluating submission <<<\n{}\n>>> - {}", queryToRun, e.getMessage());
 					if (e.getMessage().contains("ERROR: each EXCEPT query must have the same number of columns")) {
 						rslts.getFirstItem().add(messages.get("sql-outputSchemaFormatError"));
 					} else if (e.getMessage().contains("ERROR: EXCEPT types")) {
