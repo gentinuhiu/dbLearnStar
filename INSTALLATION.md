@@ -137,7 +137,10 @@ Under the *profiles* section add a new build profile called development-dbLearnS
 			<jdbc.password>MAINDB_PASSWORD</jdbc.password>
 			<jdbc.default_schema>dbLearnStar</jdbc.default_schema>
 
-			<hib.hbm2ddlauto>update</hib.hbm2ddlauto>
+			<!-- For the first run on an empty database, this needs to be 'create', so that the import.sql script 
+			in src/main/resources will be run to initialize the database.
+			After that you can change it to update or validate. -->
+			<hib.hbm2ddlauto>create</hib.hbm2ddlauto>
 
 			<tapestry.hmac-passphrase>CHANGE_IT!</tapestry.hmac-passphrase>
 
@@ -221,12 +224,10 @@ Before first run, you need to register the account of the admin user and usernam
 If all is setup properly the browser will automatically redirect you to the CAS instance at [http://localhost:8080](http://localhost:8080) (or configured address and port).
 
 Before authentication you need an initial set of users in the MAIN DB.
+This process is automated by running the script import.sql which is in dbLearnStar-webapp/src/main/resources. 
+It should run automatically to seed initial data in the database during runs with the 'create' parameter in maven settings hib.dbm2ddl.auto.
+Otherwise run the script manually on the first run, before logging in.
 
-```sql
-insert into dblearnstar.roles (name) values ('ADMINISTRATOR'),('INSTRUCTOR');
-insert into dblearnstar.person (user_name, first_name, last_name) values ('admin', 'Administrator', 'Administrator');
-insert into dblearnstar.person_role (person_id, role_id) values ((select person_id from dblearnstar.person where user_name='admin'), (select role_id from dblearnstar.roles where name='ADMINISTRATOR'));
-```
 Then you can authenticate. Enter a user/password configured in your CAS instance in step 1.
 
 If authentication is successful you will be redirected back to the web aplication at [http://localpost:8081](http://localpost:8081) (or configured address and port).
