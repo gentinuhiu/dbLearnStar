@@ -219,11 +219,9 @@ If the build is successful, the web application will be running on the configure
 
 You can test it at: [http://localhost:8081](http://localhost:8081) (change to configured port)
 
-Before first run, you need to register the account of the admin user and username in the person table in the MAIN DB.
-
 If all is setup properly the browser will automatically redirect you to the CAS instance at [http://localhost:8080](http://localhost:8080) (or configured address and port).
 
-Before authentication you need an initial set of users in the MAIN DB.
+Before first run, you need to register the account of the admin user and username in the person table in the MAIN DB.
 This process is automated by running the script import.sql which is in dbLearnStar-webapp/src/main/resources. 
 It should run automatically to seed initial data in the database during runs with the 'create' parameter in maven settings hib.dbm2ddl.auto.
 Otherwise run the script manually on the first run, before logging in.
