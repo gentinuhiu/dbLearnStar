@@ -32,6 +32,9 @@ import org.apache.tapestry5.annotations.InjectPage;
 import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionState;
+import org.apache.tapestry5.beanmodel.BeanModel;
+import org.apache.tapestry5.beanmodel.services.BeanModelSource;
+import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.http.services.Request;
@@ -92,6 +95,8 @@ public class TestAdminPage {
 	private Zone testTypeZone;
 	@InjectComponent
 	private Zone testInstanceZone;
+	@InjectComponent
+	private Zone testTemplateZone;
 
 	@InjectPage
 	private QueryTest queryTest;
@@ -130,6 +135,8 @@ public class TestAdminPage {
 	@Property
 	private TestInstance selectedTestInstance;
 	@Property
+	private TestInstance listedTestInstance;
+	@Property
 	private TaskInTestInstance taskInTestInstance;
 	@Property
 	private TaskIsOfType taskIsOfType;
@@ -158,13 +165,8 @@ public class TestAdminPage {
 		return testTypeZone.getBody();
 	}
 
-	public Object getModelTestInstances() {
-		return selectModelFactory.create(testManager.getTestInstancesByTestType(testType.getTestTypeId()), "title");
-	}
-
-	public Object onValueChangedFromSelectTestInstance(TestInstance ti) {
-		selectedTestInstance = ti;
-		return testInstanceZone.getBody();
+	public List<TestInstance> getTestInstancesByTestType() {
+		return testManager.getTestInstancesByTestType(testType.getTestTypeId());
 	}
 
 	public List<TaskInTestInstance> getTaskInTestInstances() {
@@ -192,12 +194,6 @@ public class TestAdminPage {
 		}
 		editedTestInstanceParameters = null;
 		ajaxResponseRenderer.addRender(testInstanceEditZone);
-	}
-
-	void onActionFromAddTask(TestInstance testInstance) {
-		editedTaskInTestInstance = new TaskInTestInstance();
-		editedTaskInTestInstance.setTestInstance(testInstance);
-		isNewTaskInTestInstance = true;
 	}
 
 	@CommitAfter
@@ -361,7 +357,7 @@ public class TestAdminPage {
 		}
 
 		editedTask = null;
-		ajaxResponseRenderer.addRender(testInstanceZone);
+		//ajaxResponseRenderer.addRender(testInstanceZone);
 	}
 
 	void onActionFromNewTask(TestInstance testInstance) {
@@ -374,12 +370,19 @@ public class TestAdminPage {
 	void onActionFromNewTestTemplate(TestType testType) {
 		editedTestTemplate = new TestTemplate();
 		editedTestTemplate.setTestType(testType);
+		ajaxResponseRenderer.addRender(testTemplateZone);
 	}
 
 	@CommitAfter
 	void onSuccessFromFrmTestTemplate() {
 		genericService.saveOrUpdate(editedTestTemplate);
 		editedTestTemplate = null;
+		ajaxResponseRenderer.addRender(testTemplateZone);
+	}
+
+	void onCancelFrmTestTemplate() {
+		editedTestTemplate = null;
+		ajaxResponseRenderer.addRender(testTemplateZone);
 	}
 
 	public SelectModel getAllTaskTypes() {
@@ -397,4 +400,25 @@ public class TestAdminPage {
 		genericService.delete(tti);
 	}
 
+	@Inject
+	private BeanModelSource beanModelSource;
+	@Inject
+	private Messages messages;
+	@Property
+	@Persist
+	private BeanModel<TestTemplate> modelTestTemplate;
+
+	void setupRender() {
+		modelTestTemplate = beanModelSource.createEditModel(TestTemplate.class, messages);
+		modelTestTemplate.add("model");
+		modelTestTemplate.exclude("testTemplateId");
+	}
+
+	void onShowTestInstance(TestInstance ti) {
+		selectedTestInstance = ti;
+	}
+
+	void onHideTestInstance() {
+		selectedTestInstance = null;
+	}
 }

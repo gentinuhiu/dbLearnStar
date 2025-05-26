@@ -473,7 +473,11 @@ public class TestManagerImpl implements TestManager {
 	@Override
 	public List<TestInstance> getTestInstancesByTestType(long testTypeId) {
 		javax.persistence.Query query = getEntityManager().createQuery(
-				"from TestInstance t where t.testTemplate.testType.testTypeId = :testTypeId order by t.title desc")
+				"""
+				from TestInstance t 
+				where t.testTemplate.testType.testTypeId = :testTypeId 
+				order by t.title desc
+				""")
 				.setParameter("testTypeId", testTypeId);
 		return UsefulMethods.castList(TestInstance.class, query.getResultList());
 	}

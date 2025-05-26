@@ -170,6 +170,7 @@ svg {
 
 .datefield-popup {
 	background: white;
+	color:black !important;
 	padding: 0.5em;
 	border-radius: 6px;
 	border: 1px solid black;
@@ -182,6 +183,14 @@ svg {
 
 .glyphicon-calendar::before {
 	content: "📅";
+}
+
+.datePicker .glyphicon-chevron-left::before {
+	content: "<";
+}
+
+.datePicker .glyphicon-chevron-right::before {
+	content: ">";
 }
 
 .solutionCorrect {
