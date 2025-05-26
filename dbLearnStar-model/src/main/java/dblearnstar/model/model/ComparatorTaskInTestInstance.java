@@ -29,7 +29,8 @@ public class ComparatorTaskInTestInstance implements Comparator<TaskInTestInstan
 	@Override
 	public int compare(TaskInTestInstance o1, TaskInTestInstance o2) {
 		if (o1.getTestInstance().getTestInstanceId() == o2.getTestInstance().getTestInstanceId()) {
-			if (o1.getTask().getTitle() != null && o2.getTask().getTitle() != null) {
+			if (o1.getTask().getTitle() != null && o2.getTask().getTitle() != null
+					&& !o1.getTask().getTitle().equals(o2.getTask().getTitle())) {
 				return o1.getTask().getTitle().compareTo(o2.getTask().getTitle());
 			} else {
 				return Long.compare(o1.getTaskInTestInstanceId(), o2.getTaskInTestInstanceId());
