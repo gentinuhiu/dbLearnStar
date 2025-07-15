@@ -50,7 +50,7 @@
 		<yasson-version>2.0.4</yasson-version>
 		<servlet-version>5.0.0</servlet-version>
 
-		<postgresql-version>42.7.6</postgresql-version>
+		<postgresql-version>42.7.7</postgresql-version>
 		<cas-client-version>4.0.4</cas-client-version>
 	</properties>
 
