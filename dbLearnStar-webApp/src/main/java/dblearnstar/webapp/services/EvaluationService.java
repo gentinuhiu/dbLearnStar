@@ -23,6 +23,7 @@ package dblearnstar.webapp.services;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import dblearnstar.model.entities.Group;
 import dblearnstar.model.entities.GroupMember;
@@ -59,7 +60,7 @@ public interface EvaluationService {
 	public void reEvalSolution(String issuedByUserName, StudentSubmitSolution s);
 
 	public Triplet<List<Object[]>, List<String>, List<String>> getResultsForPrintingPurposes(String userName,
-			String queryToRun, TestInstanceParameters tip, String schema, String type);
+			String queryToRun, String correctQuery, Map<String, String> testCases, TestInstanceParameters tip, String schema, String type);
 
 	/**
 	 * @return <evaluationData, resultsHeadersSimple, resultsErrors>

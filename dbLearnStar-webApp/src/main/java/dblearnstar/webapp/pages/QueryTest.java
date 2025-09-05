@@ -31,8 +31,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -252,7 +256,7 @@ public class QueryTest {
 	}
 
 	@PublishEvent
-	@OnEvent("plan")
+	@OnEvent("plan") // run only plan
 	public void execPlan(@RequestParameter(value = "query") String query,
 			@RequestParameter(value = "issuer") String issuer) {
 		toUpload = false;
@@ -341,7 +345,7 @@ public class QueryTest {
 
 	void setupRender() {
 		if (codeType != null) {
-			if (isSQL()) {
+			if (isSQLOrTRANSACTION()) {
 				javaScriptSupport.require("codemirror-run");
 				javaScriptSupport.require("codemirror-error");
 			}
@@ -421,7 +425,21 @@ public class QueryTest {
 		logger.info("Evaluation starting - notForEval: {} {}", userInfo.getUserName(), notForEvaluation);
 		TestInstanceParameters testInstanceParameters = taskInTestInstance.getTestInstance().getTestInstanceParameters()
 				.get(0);
+		
+		String correctQuery = "";
+		Map<String, String> testCases = new HashMap<>();
+		String description = taskInTestInstance.getTask().getDescription().replace("&#39;", "'")
+				.replace("<p>", "").replace("</p>", "").replace("\n", "");
 
+		String[] parts = description.split("@");
+		if(parts.length > 1)
+			correctQuery = parts[1];
+		
+		for(int i = 2; i < parts.length - 1; i++) {
+			String[] line = parts[i].split(":");
+			testCases.put(line[0], line[1]);
+		}
+				
 		resultsSimple = new ArrayList<Object[]>();
 		resultsHeadersSimple = new ArrayList<String>();
 
@@ -434,7 +452,7 @@ public class QueryTest {
 
 		// For printing purposes
 		Triplet<List<Object[]>, List<String>, List<String>> rezultatiteZaListanje = evaluationService
-				.getResultsForPrintingPurposes(userInfo.getUserName(), queryToRun, testInstanceParameters,
+				.getResultsForPrintingPurposes(userInfo.getUserName(), queryToRun, correctQuery, testCases, testInstanceParameters,
 						testInstanceParameters.getSchemaSimple(), "simple");
 		resultsSimple = rezultatiteZaListanje.getFirstItem();
 		resultsHeadersSimple = rezultatiteZaListanje.getSecondItem();
@@ -612,7 +630,7 @@ public class QueryTest {
 	}
 
 	public String getClassLeft() {
-		if (TaskTypeChecker.isSQL(codeType)) {
+		if (TaskTypeChecker.isSQL(codeType) || TaskTypeChecker.isTRANSACTION(codeType)) {
 			return "col-lg-6";
 		} else if (TaskTypeChecker.isUPLOAD(codeType)) {
 			return "col-lg-9";
@@ -626,7 +644,7 @@ public class QueryTest {
 	}
 
 	public String getClassRight() {
-		if (TaskTypeChecker.isSQL(codeType)) {
+		if (TaskTypeChecker.isSQL(codeType) || TaskTypeChecker.isTRANSACTION(codeType)) {
 			return "col-lg-6";
 		} else if (TaskTypeChecker.isUPLOAD(codeType)) {
 			return "col-lg-3";
@@ -758,9 +776,17 @@ public class QueryTest {
 	public boolean isUPLOAD() {
 		return TaskTypeChecker.isUPLOAD(codeType);
 	}
+	
+	public boolean isTRANSACTION() {
+		return TaskTypeChecker.isTRANSACTION(codeType);
+	}
 
+	public boolean isSQLOrTRANSACTION() {
+	    return isSQL() || isTRANSACTION();
+	}
+	
 	public String getEditorAreaType() {
-		if (isSQL()) {
+		if (isSQLOrTRANSACTION()) {
 			return "SQL";
 		} else if (isTEXT()) {
 			return "CK";

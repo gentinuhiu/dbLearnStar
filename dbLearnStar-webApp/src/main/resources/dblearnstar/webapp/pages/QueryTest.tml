@@ -18,7 +18,7 @@
 			<div class="taskdescription">
 				<t:outputraw t:value="translateTaskDescription"></t:outputraw>
 			</div>
-			<div class="schemaimg" id="taskpane" t:type="if" t:test="SQL">
+			<div class="schemaimg" id="taskpane" t:type="if" t:test="SQLOrTRANSACTION">
 				<t:if
 					t:test="${taskInTestInstance.testInstance.testTemplate.model.diagramSvg}">
 					<t:outputraw
@@ -61,9 +61,14 @@
 			<form t:type="form" t:name="queryTestForm" t:id="queryTestForm"
 				t:async="${shouldBeAsync}">
 				<t:errors />
-				<t:if t:test="SQL">
-					<input t:type="submit" t:id="Evaluate"
+				
+				
+				<t:if t:test="SQLOrTRANSACTION">
+					<t:if t:test="SQL">
+						<input t:type="submit" t:id="Evaluate"
 						t:value="${message:Evaluate-label}" class="btn btn-primary btn-sm" />
+					</t:if>
+						
 					<input type="button" id="RunOnly"
 						value="${message:RunOnlyNoEvaluation-label}"
 						class="btn btn-secondary btn-sm"></input>
@@ -201,7 +206,7 @@
 							t:showCheckMark="true" t:showno="true" />
 					</p:evaluationComplexCell>
 					<p:submissionCell>
-						<t:if t:test="SQL">
+						<t:if t:test="SQLOrTRANSACTION">
 							<p class="code">${historicalSolution.submission}</p>
 						</t:if>
 						<t:if t:test="UPLOAD">
@@ -233,7 +238,7 @@
 	<t:if t:test="TEXT">
 	</t:if>
 
-	<t:if t:test="SQL">
+	<t:if t:test="SQLOrTRANSACTION">
 		<link rel="stylesheet"
 			href="${asset:classpath:META-INF/assets/codemirror/lib/codemirror.css}" />
 		<link rel="stylesheet"

@@ -31,8 +31,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import java.sql.Statement;
+import java.util.UUID;
+
+// Optional, if not already present
 
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -72,6 +77,9 @@ public class EvaluationServiceImpl implements EvaluationService {
 
 	@Inject
 	private Session session;
+	
+	@Inject
+	private TransactionService transactionService;
 
 	private Session getEntityManager() {
 		return session.getSession();
@@ -444,18 +452,30 @@ public class EvaluationServiceImpl implements EvaluationService {
 	 */
 	@Override
 	public Triplet<List<Object[]>, List<String>, List<String>> getResultsForPrintingPurposes(String userName,
-			String queryToRun, TestInstanceParameters tip, String schema, String type) {
+			String queryToRun, String correctQuery, Map<String, String> testCases, TestInstanceParameters tip, String schema, String type) {
 		List<Object[]> resultsSimple = new ArrayList<Object[]>();
 		List<String> resultsHeadersSimple = new ArrayList<String>();
 		List<String> resultsErrors = new ArrayList<String>();
 
 		if (queryToRun != null) {
-			String qtlc = queryToRun.toLowerCase();
-			if (qtlc.contains("delete") || qtlc.contains("update") || qtlc.contains("insert") || qtlc.contains("create")
-					|| qtlc.contains("drop") || qtlc.contains("alter") || qtlc.contains("information_schema")) {
-				resultsErrors.add(messages.get("sql-db-modifications"));
-				logger.error("Database modification or catalog or directory query issued by {}", userName);
-			} else {
+		    String qnorm = normalizeForKeywordScan(queryToRun);
+
+		    // Block sensitive catalog queries
+		    boolean isCatalog = qnorm.matches(".*\\b(information_schema|pg_catalog)\\b.*");
+
+		    // Detect any queries that change state or start transactions
+		    boolean isTxnControl = qnorm.matches(".*\\b(begin|start\\s+transaction|commit|rollback|savepoint|release\\s+savepoint|set\\s+transaction)\\b.*");
+		    boolean isDmlOrDdl  = qnorm.matches(".*\\b(insert|update|delete|merge|truncate|create|alter|drop)\\b.*");
+
+		    if (isCatalog) {
+		        resultsErrors.add(messages.get("sql-db-modifications"));
+		        logger.error("Catalog query issued by {}", userName);
+		    } else if (isTxnControl || isDmlOrDdl) {
+		        String templateDb = "dblearnstar_template"; // replace with your actual template name
+		        Triplet<List<Object[]>, List<String>, List<String>> t =
+		                transactionService.runInSandboxClone(queryToRun, correctQuery, testCases, tip, schema, userName, templateDb);
+		        return t;
+		    } else {
 				resultsSimple = new ArrayList<Object[]>();
 				resultsHeadersSimple = new ArrayList<String>();
 
@@ -538,6 +558,16 @@ public class EvaluationServiceImpl implements EvaluationService {
 		Triplet<List<Object[]>, List<String>, List<String>> results = new Triplet<List<Object[]>, List<String>, List<String>>(
 				resultsSimple, resultsHeadersSimple, resultsErrors);
 		return results;
+	}
+	
+	private static String normalizeForKeywordScan(String sql) {
+	    if (sql == null) return "";
+	    String s = sql;
+	    s = s.replaceAll("(?m)--.*?$", " "); // line comments
+	    s = s.replaceAll("/\\*.*?\\*/", " "); // block comments
+	    s = s.replaceAll("'([^']|'')*'", " "); // single-quoted strings
+	    s = s.replaceAll("\\$[a-zA-Z0-9_]*\\$[\\s\\S]*?\\$[a-zA-Z0-9_]*\\$", " "); // dollar-quoted strings
+	    return s.replaceAll("\\s+", " ").toLowerCase().trim();
 	}
 
 	/**

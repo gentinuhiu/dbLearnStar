@@ -1,4 +1,4 @@
-INSERT INTO dblearnstar.task_type (codetype, title) values ('SQL','SQL'),('DDL','DDL'),('TEXT','TEXT'),('UPLOAD','UPLOAD');
+INSERT INTO dblearnstar.task_type (codetype, title) values ('SQL','SQL'),('DDL','DDL'),('TEXT','TEXT'),('UPLOAD','UPLOAD'),('TRANSACTION','TRANSACTION');
 INSERT INTO dblearnstar.test_type (title) values ('Теориски'),('Практичен'),('Вежби'),('Експериментирање');
 INSERT INTO dblearnstar.roles (name) values ('ADMINISTRATOR'),('INSTRUCTOR');
 INSERT INTO dblearnstar.person (user_name, first_name, last_name) values ('admin', 'Administrator', 'Administrator');

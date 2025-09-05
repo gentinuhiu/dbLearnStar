@@ -21,7 +21,7 @@
 package dblearnstar.model.model;
 
 public class TaskTypeChecker {
-
+	
 	public static boolean isSQL(String codeType) {
 		if (codeType != null) {
 			return codeType.equals(ModelConstants.TaskCodeSQL);
@@ -49,6 +49,14 @@ public class TaskTypeChecker {
 	public static boolean isUPLOAD(String codeType) {
 		if (codeType != null) {
 			return codeType.equals(ModelConstants.TaskCodeUPLOAD);
+		} else {
+			return false;
+		}
+	}
+	
+	public static boolean isTRANSACTION(String codeType) {
+		if (codeType != null) {
+			return codeType.equals(ModelConstants.TaskCodeTRANSACTION);
 		} else {
 			return false;
 		}
